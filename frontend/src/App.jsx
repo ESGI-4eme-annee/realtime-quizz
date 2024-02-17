@@ -1,26 +1,29 @@
-import { useEffect, useState } from 'react'
-import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import RegisterPage from './Components/Register/RegisterPage';
+import LoginPage from './Components/Login/LoginPage';
+import NavBar from './Components/NavBar';
+import { useEffect, useState } from 'react';
 
 function App() {
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLogged, setIsLogged] = useState(false);
 
+  const isUserLogged = () => {
+    return localStorage.getItem("token") != null;
+  }
+  
   useEffect(() => {
-    fetch('http://localhost:3000/')
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data)
-        setIsLoading(false)
-      })
-  }, [])
+    setIsLogged(isUserLogged());
+  }, []);
 
   return (
     <>
-      {
-        isLoading 
-          ? <h1 className="text-3xl font-bold underline">Loading...</h1> 
-          : <h1 className="text-3xl font-bold underline">{data.message}</h1>
-      }
+      <BrowserRouter>
+        <NavBar/>
+          <Routes>
+            <Route path="register" element={<RegisterPage />} />
+            <Route index path="login" element={<LoginPage setIsLogged={setIsLogged}/>} />
+          </Routes>
+      </BrowserRouter>
     </>
   )
 }

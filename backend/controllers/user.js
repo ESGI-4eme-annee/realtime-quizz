@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+// const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../db").User;
 const generateToken = require("../utils/generateToken");
@@ -35,7 +35,7 @@ async function signup(req, res) {
     }
 
     const apiToken = generateToken(32);
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const hashedPassword =req.body.password;
     const user = User.create({
       email: req.body.email,
       password: hashedPassword,
@@ -73,10 +73,7 @@ async function login(req, res) {
         .json({ error: "Votre compte doit être validé par un administrateur" });
     }
 
-    const validPassword = await bcrypt.compare(
-      req.body.password,
-      user.password
-    );
+    const validPassword = req.body.password == user.password;
 
     if (!validPassword) {
       return res
