@@ -7,12 +7,12 @@ function NavBar() {
         <>
             <header>
                 <nav>
-                    <ul>                       
+                    <ul className=" flex-row bg-black  text-white ">                       
                         <>
                             <li>
                                 <Link to="/login">Connexion</Link>
                             </li>
-                            <li className="register">
+                            <li>
                                 <Link to="/register">Inscription</Link>
                             </li>
                         </>                   

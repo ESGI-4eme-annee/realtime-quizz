@@ -20,7 +20,12 @@ module.exports = function (connection) {
       name:{
         type: DataTypes.STRING,
         allowNull: false,
-      }
+      },
+      role:{
+        type: DataTypes.STRING,
+        defaultValue: "user",
+        allowNull: false,
+      },
     },
     {
       tableName: "users",

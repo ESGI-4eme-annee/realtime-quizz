@@ -1,17 +1,18 @@
 const express = require('express')
 const cors = require("cors");
+// const io = socketIo(server);
+// const http = require('http');
 const cookieParser = require("cookie-parser");
 const userRoutes = require("./routes/user");
+const handleConnection = require('./controllers/salon');
+const {app, server} = require('./socket/socket');
 
 require("dotenv").config({ path: ".env", override: true });
 
-
-const app = express()
-
 app.use(cors({
-    origin: [`${process.env.URL}:${process.env.PORT_FRONT}`, 'http://localhost:3000/'],
+    // origin: [`${process.env.URL}:${process.env.PORT_FRONT}`, 'http://localhost:3000'],
 
-    credentials : true,
+    // credentials : true,
   }));
 
 app.use(cookieParser());
@@ -22,14 +23,13 @@ const PORT = process.env.PORT_BACK || 3000
 const HOSTNAME = process.env.HOSTNAME_BACK || 'localhost'
 
 
+// io.on('connection', handleConnection);
 
-app.get('/', (req, res) => {
-    return res.status(200).json({ message: 'Hello World from backend!' })
-})
+
 app.use("/user", userRoutes);
 
 
-app.listen(PORT, "0.0.0.0", () => {
+server.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
 });
 
