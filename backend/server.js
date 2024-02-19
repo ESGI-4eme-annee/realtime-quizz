@@ -10,9 +10,9 @@ const {app, server} = require('./socket/socket');
 require("dotenv").config({ path: ".env", override: true });
 
 app.use(cors({
-    // origin: [`${process.env.URL}:${process.env.PORT_FRONT}`, 'http://localhost:3000'],
+    origin: [`${process.env.URL}:${process.env.PORT_FRONT}`, 'http://localhost:3000'],
 
-    // credentials : true,
+    credentials : true,
   }));
 
 app.use(cookieParser());
