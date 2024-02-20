@@ -29,13 +29,11 @@ const CreateQuizz = ({setShowQuizzCreate}) => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Vous pouvez traiter les données du formulaire ici
-    console.log('Question:', question);
-    console.log('Options:', options);
-    console.log('Réponse correcte (QCM):', correctOption);
+    // console.log('Question:', question);
+    // console.log('Options:', options);
+    // console.log('Réponse correcte (QCM):', correctOption);
 
     setQuizz([...quizz, { question, options, correctOption }]);
-    // Réinitialiser le formulaire après la soumission si nécessaire
     setQuestion('');
     setOptions(['', '', '']);
     setCorrectOption('');
