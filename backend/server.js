@@ -4,6 +4,7 @@ const cors = require("cors");
 // const http = require('http');
 const cookieParser = require("cookie-parser");
 const userRoutes = require("./routes/user");
+const quizzRoutes = require("./routes/quizz");
 const {app, server} = require('./socket/socket');
 
 require("dotenv").config({ path: ".env", override: true });
@@ -26,6 +27,7 @@ const HOSTNAME = process.env.HOSTNAME_BACK || 'localhost'
 
 
 app.use("/user", userRoutes);
+app.use("/quizz", quizzRoutes);
 
 
 server.listen(PORT, "0.0.0.0", () => {

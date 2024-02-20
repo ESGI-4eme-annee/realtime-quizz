@@ -14,5 +14,14 @@ files.forEach((file) => {
 });
 
 const User = db.User;
+const Quizz = db.Quizz;
+const Question = db.Question;
+const Answer = db.Answer;
+
+Quizz.hasMany(Question, {
+  foreignKey: "quizzId", alias: "quizz"});
+
+Question.hasMany(Answer, {
+  foreignKey: "questionId", alias: "question"});
 
 module.exports = db;

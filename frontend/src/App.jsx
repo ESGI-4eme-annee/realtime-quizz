@@ -3,7 +3,7 @@ import RegisterPage from './Components/Register/RegisterPage';
 import LoginPage from './Components/Login/LoginPage';
 import NavBar from './Components/NavBar';
 import Home from './Components/Home';
-import RoomPage from './Components/RoomPage';
+import RoomPage from './Components/Room/RoomPage';
 import { useEffect, useState } from 'react';
 import { accountService } from "../src/services/account.service";
 
