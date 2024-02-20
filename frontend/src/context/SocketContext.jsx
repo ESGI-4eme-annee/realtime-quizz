@@ -13,17 +13,19 @@ export const SocketContextProvider = ({ children }) => {
 
     const [socket, setSocket] = useState(null);
     const [userId, setUserId] = useState(null);
+    const [user,setUser] = useState(null);
     const [onlineUsers, setOnlineUsers] = useState([]);
+    const [room, setRoom] = useState({});
 
 
     const fetchdata = async () => {
         try {
             if (localStorage.getItem("token")) {
                 const data =  accountService.getValuesToken();
-                console.log("context", data.userId);
+                console.log("data", data);
                 if (data != null) {
-                    console.log("data.userId", data.userId);
                     setUserId(data.userId);
+                    setUser(data);
                 }
             } else {
                 console.log("Token not found in localStorage");
@@ -35,23 +37,20 @@ export const SocketContextProvider = ({ children }) => {
     
     useEffect(() => {
         fetchdata();
-        console.log("userId sockete", userId);
         if (userId != null) {
             const socket = io("http://localhost:3000", {
                 withCredentials: true ,
                 query: {
-                    userId: userId
+                    userId: userId,
+                    userEmail: user.userEmail,
+                    userRile: user.userRole
                 }
             });
-            
-
             setSocket(socket);
-
-            socket.on('getOnlineUsers', (users) => {
+            socket.on('onlineUsers', (users) => {
                 setOnlineUsers(users);
+                console.log("users", users);
             });
-
-
             return () => {
                 socket.close();
             };
@@ -62,11 +61,48 @@ export const SocketContextProvider = ({ children }) => {
                 setSocket(null);
             }
         }
-
     }, [userId]);
 
+    //ROOM create
+    const createRoom = (name, id) => {
+        socket.emit('createRoom', {
+            roomName: name,
+            roomId: id,
+            userId: userId
+        });
+        return room;
+    };
+
+    useEffect(() => {
+        if (socket) {
+            socket.on('roomCreated', (room) => {
+                setRoom(room);
+                console.log("room", room);
+            });
+            socket.on('userJoinedRoom', (userId) => {
+                console.log(`Le client ${userId} a rejoint le salon`);
+            });
+        }
+
+    }, [socket]); 
+
+
+    //ROOM join
+    const joinRoom = (roomId) => {
+        if (socket) {
+            socket.emit('joinRoom', {
+                roomId: roomId,
+                userId: userId
+            });
+        }
+    };
+
+
+
+
+
     return (
-        <SocketContext.Provider value={{socket,onlineUsers}}>
+        <SocketContext.Provider value={{socket,onlineUsers,createRoom,room,joinRoom}}>
             {children}
         </SocketContext.Provider>
     );

@@ -13,13 +13,15 @@ const io = new Server(server, {
     }
 });
 
+
+const roomSocketMap = {}; // {roomId: [socketId1, socketId2, ...]};
+
 const userSocketMap = {}; // {userId: socketId};
 
 io.on('connection', (socket) => {
     console.log('Un client est connecté', socket.id);
 
     const userId = socket.handshake.query.userId;
-    console.log("userId", userId);
     if (userId != "undefined") {
         console.log("je passe dans le user != undifined");
         userSocketMap[userId] = socket.id;
@@ -27,14 +29,38 @@ io.on('connection', (socket) => {
         // Envoi de la liste des utilisateurs connectés
         io.emit('onlineUsers', Object.keys(userSocketMap));
         console.log("userSocketMap", userSocketMap);
+        io.emit('roomCreated', roomSocketMap);
         
     }
 
-socket.on("disconnect", () => {
-    console.log("Client déconnecté");
-    delete userSocketMap[userId];
-    io.emit('onlineUsers', Object.keys(userSocketMap));
-});
+    socket.on('createRoom', (socket) => {
+        const roomId = socket.roomId;
+        const roomName = socket.roomName;
+        if (roomId != "undefined") {
+            roomSocketMap[roomId] = {name : roomName, userId:socket.userId};
+        }
+        console.log("roomSocketMap", roomSocketMap);
+
+        io.emit('roomCreated', roomSocketMap);
+    });
+
+    socket.on('joinRoom', (data) => {
+        const roomId = data.roomId;
+        const userId = data.userId;
+        if (roomSocketMap[roomId]) {
+            socket.join(roomId);
+            io.to(roomId).emit('userJoinedRoom', userId);
+            console.log(`Le client ${userId} a rejoint le salon ${roomId}`);
+        } else {
+            console.log(`Le salon ${roomId} n'existe pas`);
+        }
+    });
+
+    socket.on("disconnect", () => {
+        console.log("Client déconnecté");
+        delete userSocketMap[userId];
+        io.emit('onlineUsers', Object.keys(userSocketMap));
+    });
 });
 
 

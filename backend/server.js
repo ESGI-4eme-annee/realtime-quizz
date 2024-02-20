@@ -4,7 +4,6 @@ const cors = require("cors");
 // const http = require('http');
 const cookieParser = require("cookie-parser");
 const userRoutes = require("./routes/user");
-const handleConnection = require('./controllers/salon');
 const {app, server} = require('./socket/socket');
 
 require("dotenv").config({ path: ".env", override: true });
