@@ -14,7 +14,8 @@ const io = new Server(server, {
 });
 
 
-const roomSocketMap = {}; // {roomId: [socketId1, socketId2, ...]};
+const roomSocketMap = {}; // {roomId: {name: roomName, userId: userId}};
+const roomUserMap = {}; // {roomId: [userId]};
 
 const userSocketMap = {}; // {userId: socketId};
 
@@ -39,7 +40,6 @@ io.on('connection', (socket) => {
         if (roomId != "undefined") {
             roomSocketMap[roomId] = {name : roomName, userId:socket.userId};
         }
-        console.log("roomSocketMap", roomSocketMap);
 
         io.emit('roomCreated', roomSocketMap);
     });
@@ -47,11 +47,21 @@ io.on('connection', (socket) => {
     socket.on('joinRoom', (data) => {
         const roomId = data.roomId;
         const userId = data.userId;
-        if (roomSocketMap[roomId]) {
+
+        if (roomSocketMap[roomId])
+        {
             socket.join(roomId);
             io.to(roomId).emit('userJoinedRoom', userId);
+
+            roomUserMap[roomId] = roomUserMap[roomId] || [];
+            if (!roomUserMap[roomId].includes(userId)) {
+            roomUserMap[roomId].push(userId);
+            }
+            io.to(roomId).emit('roomUsers', roomUserMap[roomId]);
+
             console.log(`Le client ${userId} a rejoint le salon ${roomId}`);
-        } else {
+        } else 
+        {
             console.log(`Le salon ${roomId} n'existe pas`);
         }
     });

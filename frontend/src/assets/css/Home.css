@@ -49,3 +49,32 @@
     margin-top: 20px;
     border: solid 1px #000000;
 }
+
+/*back*/
+.viewSalle{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 20px;
+    align-items: center;
+    padding: 10px;
+}
+
+.listRoom{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-right: 20px;
+    flex-wrap: wrap;
+}
+
+.room{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    padding: 10px;
+    border: solid 1px #000000;
+    margin-right: 10px;
+}

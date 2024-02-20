@@ -16,13 +16,13 @@ export const SocketContextProvider = ({ children }) => {
     const [user,setUser] = useState(null);
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [room, setRoom] = useState({});
+    const [roomUsers, setRoomUsers] = useState([]);
 
 
     const fetchdata = async () => {
         try {
             if (localStorage.getItem("token")) {
                 const data =  accountService.getValuesToken();
-                console.log("data", data);
                 if (data != null) {
                     setUserId(data.userId);
                     setUser(data);
@@ -49,7 +49,6 @@ export const SocketContextProvider = ({ children }) => {
             setSocket(socket);
             socket.on('onlineUsers', (users) => {
                 setOnlineUsers(users);
-                console.log("users", users);
             });
             return () => {
                 socket.close();
@@ -77,10 +76,12 @@ export const SocketContextProvider = ({ children }) => {
         if (socket) {
             socket.on('roomCreated', (room) => {
                 setRoom(room);
-                console.log("room", room);
             });
             socket.on('userJoinedRoom', (userId) => {
                 console.log(`Le client ${userId} a rejoint le salon`);
+            });
+            socket.on('roomUsers', (roomUserMap) => {
+                setRoomUsers(roomUserMap);
             });
         }
 
@@ -102,7 +103,16 @@ export const SocketContextProvider = ({ children }) => {
 
 
     return (
-        <SocketContext.Provider value={{socket,onlineUsers,createRoom,room,joinRoom}}>
+        <SocketContext.Provider value={
+            {
+                socket,
+                onlineUsers,
+                createRoom,
+                room,
+                joinRoom,
+                user,
+                roomUsers
+            }}>
             {children}
         </SocketContext.Provider>
     );

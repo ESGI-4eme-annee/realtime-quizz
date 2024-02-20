@@ -2,32 +2,52 @@ import React, { useState } from "react";
 import { useSocketContext } from '../context/SocketContext';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useEffect } from "react";
 import '../assets/css/Home.css';
 
 
 function Home({ isConnected }) {
-    const { onlineUsers, createRoom, room } = useSocketContext(); // Updated to include createRoom from context
+    const { onlineUsers, createRoom, room, user } = useSocketContext(); // Updated to include createRoom from context
     const [roomId, setRoomId] = useState('');
     const [messages, setMessages] = useState('');
+    const [userIsAdmin, setUserIsAdmin] = useState(false);
+    const [userData, setUserData] = useState({});
 
     const navigate = useNavigate();
+
+
+    useEffect(() => {
+        if (user != null ) {
+            setUserData(user);
+            if (user.userRole === 'admin') {
+                setUserIsAdmin(true);
+            }
+        }
+    },[user]);
+        
+    
 
     const handleCreateRoom = () => {
         const name = document.querySelector('#nameRoom').value;
         const newUuid = uuidv4();
 
-        createRoom(name, newUuid); // Call createRoom from context
+        if(name !== '')
+        { 
+            createRoom(name, newUuid);
+        }else{
+            alert('Veuillez entrer un nom de salle')
+
+        }
     };
 
     const handleJoinRoom = (roomId) => {
-        console.log("join room");
         navigate(`/room/${roomId}`);
     };
 
     return (
         <div>
             <h1 className="title">Home</h1>
-            <p>Utilisateur connecté : {isConnected ? 'Oui' : 'Non'}</p>
+            <p>Utilisateur connecté : {user?.userEmail}</p>
 
             <div className="right">
                 <div className="userOnline">
@@ -40,24 +60,25 @@ function Home({ isConnected }) {
                 </div>
             </div>
 
-            <div className="divCenter">
+            { userIsAdmin ? <div className="divCenter">
                 <div className="divCreateRoom">
                     <h2>Créer une salle</h2>
-                    <input className="inputDesign" type="text" id="nameRoom" placeholder="Nom de la salle" />
+                    <input className="inputDesign" type="text" id="nameRoom" placeholder="Nom de la salle" required />
                     <button onClick={handleCreateRoom}>Créer</button>
                 </div>
-                <div>
+            </div> : <></>}
+                <div className="viewSalle">
                     <p>Salles :</p>
-                    <ul>
+                    <ul className="listRoom">
                         {Object.keys(room).map((key, index) => (
-                            <li key={index}>
+                            <li className="room" key={index}>
                             {room[key].name}
                             <button className="border border-blue-300" onClick={() => handleJoinRoom(key)}>Rejoindre</button>
                             </li>
                         ))}
                     </ul>
                 </div>
-            </div>
+           
         </div>
     );
 }
