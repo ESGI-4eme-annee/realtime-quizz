@@ -17,7 +17,6 @@ export const SocketContextProvider = ({ children }) => {
     const [room, setRoom] = useState({});
     const [roomUsers, setRoomUsers] = useState([]);
 
-
     const fetchdata = async () => {
         try {
             if (localStorage.getItem("token")) {
