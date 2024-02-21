@@ -35,7 +35,6 @@ function App() {
             <Route index path="login" element={<LoginPage setIsLogged={setIsLogged}/>} />
             <Route path="/" element={<Home isConnected={isLogged} isAdmin={isAdmin} />} />
             <Route path="room/:roomId" element={<RoomPage isLogged={isLogged}/>} />
-            
           </Routes>
       </BrowserRouter>
     </>

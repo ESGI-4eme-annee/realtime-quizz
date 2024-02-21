@@ -84,17 +84,22 @@ function RoomPage({ isLogged }) {
                 </div>
             </div>: null}
             <div className="viewQuestionQuizz">
-                {userIsAdmin? <div className="cote">
-                    {quizzView ? <ViewQuizz quizz={quizz}/> : null }
-                </div>: null}
+                { 
+                    userIsAdmin 
+                    ? (quizzView ? <ViewQuizz quizz={quizz}/> : null )
+                    : null
+                }
                 <div className="cote">
                     <ViewQuestion />
                 </div>
             </div>
-            {userIsAdmin? <div className="lanceQuizz"> 
-                <button onClick={() => { }}>Lancer le quizz</button>
-            </div>: null}
-                
+            {
+                userIsAdmin 
+                ? <div className="lanceQuizz"> 
+                    <button onClick={() => { }}>Lancer le quizz</button>
+                </div>
+                : null
+            }
         </div>
     );
 }

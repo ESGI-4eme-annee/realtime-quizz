@@ -49,7 +49,7 @@ function Home({ isConnected }) {
             <h1 className="title">Home</h1>
             <p>Utilisateur connecté : {user?.userEmail}</p>
 
-            <div className="right">
+            <div className="right border">
                 <div className="userOnline">
                     <h2>Utilisateurs en ligne</h2>
                     <ul className="listUserOnline">
@@ -78,7 +78,6 @@ function Home({ isConnected }) {
                         ))}
                     </ul>
                 </div>
-           
         </div>
     );
 }
