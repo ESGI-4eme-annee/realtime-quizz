@@ -1,8 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useSocketContext } from '../../context/SocketContext';
 
 const ViewQuizz = ({ quizz }) => {
+  const { socket } = useSocketContext();
+  const [time, setTime] = useState(null); // WIP
+
+  useEffect(() => {
+    socket.on('timer', (time) => {
+      setTime(time);
+    });
+  }, []);
+
+
   return (
-    <div className="w-1/2 flex flex-col">
+    <div className="w-full flex flex-col">
       <h2 className="text-3xl border-b mb-6 pb-2">Partie administration</h2>
       <h2 className="mb-2">
         Nom du quizz : 

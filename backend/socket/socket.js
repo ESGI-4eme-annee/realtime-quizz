@@ -66,14 +66,23 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('startQuizz', () => {
+        let time = 5;
+        io.emit('timerBeforeStart', time);
+        let interval = setInterval(() => {
+            time--;
+            if (time < 0) {
+                return clearInterval(interval);
+            }
+            io.emit('timerBeforeStart', time);
+        }, 1000);
+    });
+
     socket.on("disconnect", () => {
         console.log("Client déconnecté");
         delete userSocketMap[userId];
         io.emit('onlineUsers', Object.keys(userSocketMap));
     });
 });
-
-
-
 
 module.exports = {app, io, server};

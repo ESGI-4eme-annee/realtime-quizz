@@ -9,7 +9,6 @@ const getQuizz = async (id) => {
                 "Content-Type": "application/json",
             },
             credentials : 'include',
-           
         });
 
         return await result.json();

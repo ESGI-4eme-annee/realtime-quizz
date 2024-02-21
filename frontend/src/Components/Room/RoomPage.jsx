@@ -13,12 +13,13 @@ function RoomPage({ isLogged }) {
 
     const { roomId } = useParams();
 
-    const {joinRoom,roomUsers,user } = useSocketContext();
+    const {joinRoom, roomUsers, user, socket } = useSocketContext();
     const [showQuizzCreate, setShowQuizzCreate] = useState(false);
     const [quizzList, setQuizzList] = useState([]);
     const [quizz, setQuizz] = useState({});
     const [quizzView, setQuizzView] = useState(false);
     const [userIsAdmin, setUserIsAdmin] = useState(false);
+    const [timerBeforeStart, setTimerBeforeStart] = useState(null);
 
     const fetchdata = async () => {
         const data = await getQuizzList();
@@ -35,6 +36,17 @@ function RoomPage({ isLogged }) {
         }
     }, [user]);
 
+    useEffect(() => {
+        socket?.on('timerBeforeStart', (time) => {
+            setTimerBeforeStart(time);
+            if (time === 0) {
+                setTimeout(() => {
+                    setTimerBeforeStart(null);
+                }, 1000);
+            }
+        });
+    }, [socket]);
+
     const createQuizz = () => {
         setShowQuizzCreate(!showQuizzCreate);
     }
@@ -47,8 +59,17 @@ function RoomPage({ isLogged }) {
         setQuizzView(true);
     }
 
+    const beginQuizz = () => {
+        socket.emit('startQuizz', roomId);
+    }
+
     return (
         <div>
+            <h1 className="text-9xl absolute inset-1/2 font-bold shadow-2xl">
+                {timerBeforeStart ? timerBeforeStart : null}
+                {timerBeforeStart === 0 ? 'Go' : null}
+            </h1>
+
             <h1>Room</h1>
             <p>Utilisateur connecté : {isLogged ? 'Oui' : 'Non'}</p>
 
@@ -63,26 +84,44 @@ function RoomPage({ isLogged }) {
                 </div>
             </div>
 
-            {userIsAdmin?<div className="createQuizz">
-                <button className="buttonCreate" onClick={() => { createQuizz () }}>Cree un quizz</button>
-                { showQuizzCreate? <CreateQuizz setShowQuizzCreate={setShowQuizzCreate}/> : null}
-            </div>: null}
+            {
+                userIsAdmin 
+                ? <div className="createQuizz">
+                    <button className="buttonCreate" onClick={() => { createQuizz () }}>Cree un quizz</button>
+                    { showQuizzCreate? <CreateQuizz setShowQuizzCreate={setShowQuizzCreate}/> : null}
+                </div>
+                : null
+            }
 
-              {userIsAdmin?<div className="selectQuizz">
-                <div className="selectText">
-                <select>
-                    <option value="">Sélectionnez un quizz</option>
-                        {quizzList.map((quizz, index) => (
-                            <option key={index} value={quizz.id}>
-                                {quizz.name}
-                            </option>
-                        ))}
-                </select>
+            {
+                userIsAdmin 
+                ? <div className="selectQuizz">
+                    <div className="selectText">
+                        <select>
+                            <option value="">Sélectionnez un quizz</option>
+                                {quizzList.map((quizz, index) => (
+                                    <option key={index} value={quizz.id}>
+                                        {quizz.name}
+                                    </option>
+                                ))}
+                        </select>
+                    </div>
+                    <div className="selectText">
+                        <button onClick={handleChooseQuizz}>Choisir</button>
+                    </div>
                 </div>
-                <div className="selectText">
-                <button onClick={handleChooseQuizz}>Choisir</button>
+                : null
+            }
+
+            
+            {
+                userIsAdmin 
+                ? <div className="btn btn-active"> 
+                    <button onClick={() => beginQuizz()}>Lancer le quizz</button>
                 </div>
-            </div>: null}
+                : null
+            }
+
             <div className="viewQuestionQuizz">
                 { 
                     userIsAdmin 
@@ -93,13 +132,6 @@ function RoomPage({ isLogged }) {
                     <ViewQuestion />
                 </div>
             </div>
-            {
-                userIsAdmin 
-                ? <div className="lanceQuizz"> 
-                    <button onClick={() => { }}>Lancer le quizz</button>
-                </div>
-                : null
-            }
         </div>
     );
 }

@@ -10,7 +10,6 @@ export const useSocketContext = () => {
 }
 
 export const SocketContextProvider = ({ children }) => {
-
     const [socket, setSocket] = useState(null);
     const [userId, setUserId] = useState(null);
     const [user,setUser] = useState(null);
@@ -97,10 +96,6 @@ export const SocketContextProvider = ({ children }) => {
             });
         }
     };
-
-
-
-
 
     return (
         <SocketContext.Provider value={
