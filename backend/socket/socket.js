@@ -66,6 +66,11 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('chatMessage', (msg) => {
+        console.log(`Message reçu : ${msg}`);
+        socket.broadcast.emit('chatMessage', msg);
+    });
+
     socket.on("disconnect", () => {
         console.log("Client déconnecté");
         delete userSocketMap[userId];

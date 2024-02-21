@@ -8,6 +8,7 @@ import getQuizzList from '../../hook/getQuizzList';
 import getQuizz from '../../hook/getQuizz';
 import ViewQuizz from "./ViewQuizz";
 import ViewQuestion from "./ViewQuestion";
+import Chat from "../Chat/Chat";
 
 function RoomPage({ isLogged }) {
 
@@ -89,6 +90,9 @@ function RoomPage({ isLogged }) {
                 </div>: null}
                 <div className="cote">
                     <ViewQuestion />
+                </div>
+                <div className="cote">
+                    <Chat />
                 </div>
             </div>
             {userIsAdmin? <div className="lanceQuizz"> 
