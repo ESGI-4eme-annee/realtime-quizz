@@ -1,9 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSocketContext } from '../../context/SocketContext';
 
-const ViewQuestion = () => {
+const ViewQuestion = ({roomId}) => {
+  const { question,sendResponse,responseCounts } = useSocketContext();
+
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [answers, setAnswers] = useState([]);
+
+  useEffect(() => {
+    setAnswers(question?.question?.Answers || []);
+  }, [question]);
+
+  useEffect(() => {
+   sendResponse(roomId,question.idQuizz,question.question?.id,selectedAnswer);
+  
+  }, [selectedAnswer]);
+
+
   return (
-    <div className="viewQuestionheight">
-     <h2>Vue des Clients </h2>
+    <div className="viewQuestionheightQuizz">
+      <h2>Quizz</h2>
+      Temps : {question.question?.time}
+      <div className='centreQuizz'>
+        
+        Question : {question.question?.name}
+        <ul>
+          {answers.map((answer, index) => (
+            <li key={answer.id}>
+              <label>
+                <input
+                  type="radio"
+                  name="answer"
+                  value={answer.id}
+                  checked={selectedAnswer === answer.id}
+                  onChange={() => setSelectedAnswer(answer.id)}
+                />
+                {answer.name}( {responseCounts[answer.id] || 0})
+              </label>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

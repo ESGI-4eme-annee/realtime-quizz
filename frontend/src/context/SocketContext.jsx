@@ -17,6 +17,8 @@ export const SocketContextProvider = ({ children }) => {
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [room, setRoom] = useState({});
     const [roomUsers, setRoomUsers] = useState([]);
+    const [question, setQuestion] = useState({});
+    const [responseCounts, setResponseCounts] = useState({});
 
 
     const fetchdata = async () => {
@@ -62,16 +64,6 @@ export const SocketContextProvider = ({ children }) => {
         }
     }, [userId]);
 
-    //ROOM create
-    const createRoom = (name, id) => {
-        socket.emit('createRoom', {
-            roomName: name,
-            roomId: id,
-            userId: userId
-        });
-        return room;
-    };
-
     useEffect(() => {
         if (socket) {
             socket.on('roomCreated', (room) => {
@@ -83,10 +75,26 @@ export const SocketContextProvider = ({ children }) => {
             socket.on('roomUsers', (roomUserMap) => {
                 setRoomUsers(roomUserMap);
             });
+            socket.on('question', (question) => {
+                setQuestion(question);
+            });
+            socket.on('responseCounts', (responseCounts) => {
+                setResponseCounts(responseCounts);
+            });
         }
 
     }, [socket]); 
 
+
+    //ROOM create
+    const createRoom = (name, id) => {
+        socket.emit('createRoom', {
+            roomName: name,
+            roomId: id,
+            userId: userId
+        });
+        return room;
+    };
 
     //ROOM join
     const joinRoom = (roomId) => {
@@ -98,10 +106,23 @@ export const SocketContextProvider = ({ children }) => {
         }
     };
 
+    //Quizz lancer le quizz
+    const sendQuizz = (quizz,salle ) => {
+        if (socket) {
+            socket.emit('sendQuizz', {
+                quizz: quizz,
+                salle: salle
+            });
+        };
+    }
 
-
-
-
+    //Qizz question clique
+    const sendResponse = (salle,idQuizz,idQuestion,idResponse) => {
+        if (socket) {
+            socket.emit('sendResponse',userId, salle,idQuizz,idQuestion,idResponse);
+        };
+    }
+    
     return (
         <SocketContext.Provider value={
             {
@@ -111,7 +132,11 @@ export const SocketContextProvider = ({ children }) => {
                 room,
                 joinRoom,
                 user,
-                roomUsers
+                roomUsers,
+                sendQuizz,
+                question,
+                sendResponse,
+                responseCounts
             }}>
             {children}
         </SocketContext.Provider>

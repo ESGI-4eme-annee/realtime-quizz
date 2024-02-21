@@ -13,17 +13,21 @@ function RoomPage({ isLogged }) {
 
     const { roomId } = useParams();
 
-    const {joinRoom,roomUsers,user } = useSocketContext();
+    const {joinRoom,roomUsers,user,sendQuizz } = useSocketContext();
     const [showQuizzCreate, setShowQuizzCreate] = useState(false);
     const [quizzList, setQuizzList] = useState([]);
     const [quizz, setQuizz] = useState({});
     const [quizzView, setQuizzView] = useState(false);
     const [userIsAdmin, setUserIsAdmin] = useState(false);
+    const [reload, setReload] = useState(false);
+    const [quizzProgress, setQuizzProgress] = useState(true);
 
+    //liste des quizz dans le select
     const fetchdata = async () => {
         const data = await getQuizzList();
         setQuizzList(data);
     }
+    
     
     useEffect(() => {
         fetchdata();
@@ -35,16 +39,32 @@ function RoomPage({ isLogged }) {
         }
     }, [user]);
 
+    useEffect(() => {
+        fetchdata();
+    }, [reload]);
+
+    //affiche le formulaire de création de quizz
     const createQuizz = () => {
         setShowQuizzCreate(!showQuizzCreate);
     }
 
+    //choisir un quizz dans le select
     const handleChooseQuizz =  async () => {
         const select = document.querySelector('select');
         const quizzId = select.value;
         const thequizz = await getQuizz(quizzId);
         setQuizz(thequizz);
         setQuizzView(true);
+    }
+
+    const handleStartQuizz = () => {
+        console.log('Lancement du quizz');
+        sendQuizz(quizz, roomId);
+        setQuizzProgress(false);    
+        //envoyer le quizz aux clients
+       
+
+
     }
 
     return (
@@ -63,14 +83,15 @@ function RoomPage({ isLogged }) {
                 </div>
             </div>
 
-            {userIsAdmin?<div className="createQuizz">
+            
+            {userIsAdmin && quizzProgress?<div className="createQuizz">
                 <button className="buttonCreate" onClick={() => { createQuizz () }}>Cree un quizz</button>
-                { showQuizzCreate? <CreateQuizz setShowQuizzCreate={setShowQuizzCreate}/> : null}
+                { showQuizzCreate? <CreateQuizz setShowQuizzCreate={setShowQuizzCreate} setReload={setReload} reload={reload} /> : null}
             </div>: null}
 
-              {userIsAdmin?<div className="selectQuizz">
+              {userIsAdmin && quizzProgress?<div className="selectQuizz">
                 <div className="selectText">
-                <select>
+                <select onFocus={() => setShowQuizzCreate(false)}>
                     <option value="">Sélectionnez un quizz</option>
                         {quizzList.map((quizz, index) => (
                             <option key={index} value={quizz.id}>
@@ -83,16 +104,17 @@ function RoomPage({ isLogged }) {
                 <button onClick={handleChooseQuizz}>Choisir</button>
                 </div>
             </div>: null}
+
             <div className="viewQuestionQuizz">
                 {userIsAdmin? <div className="cote">
                     {quizzView ? <ViewQuizz quizz={quizz}/> : null }
                 </div>: null}
                 <div className="cote">
-                    <ViewQuestion />
+                    <ViewQuestion roomId={roomId} />
                 </div>
             </div>
             {userIsAdmin? <div className="lanceQuizz"> 
-                <button onClick={() => { }}>Lancer le quizz</button>
+                <button onClick={handleStartQuizz}>Lancer le quizz</button>
             </div>: null}
                 
         </div>

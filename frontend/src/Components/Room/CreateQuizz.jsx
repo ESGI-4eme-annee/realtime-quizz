@@ -1,40 +1,44 @@
 import React, { useState } from 'react';
-import postQuizz from '../../hook/postQuizz'
+import postQuizz from '../../hook/postQuizz';
 
-const CreateQuizz = ({setShowQuizzCreate}) => {
-  const [question, setQuestion] = useState('');
+const CreateQuizz = ({ setShowQuizzCreate, setReload, reload }) => {
+  const [questionName, setQuestionName] = useState('');
   const [options, setOptions] = useState(['', '', '']);
   const [correctOption, setCorrectOption] = useState('');
+  const [time, setTime] = useState(15);
   const [quizz, setQuizz] = useState([]);
   const [title, setTitle] = useState('');
 
   const handleQuestionChange = (event) => {
-    setQuestion(event.target.value);
+    setQuestionName(event.target.value);
   };
 
-  const handleTitlehange = (event) => {
+  const handleTitleChange = (event) => {
     setTitle(event.target.value);
-    };
-
-  const handleOptionChange = (index, event) => {
-    const newOptions = [...options];
-    newOptions[index] = event.target.value;
-    setOptions(newOptions);
   };
 
   const handleCorrectOptionChange = (event) => {
     setCorrectOption(event.target.value);
   };
 
+  const handleTimeChange = (event) => {
+    setTime(event.target.value);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // console.log('Question:', question);
-    // console.log('Options:', options);
-    // console.log('Réponse correcte (QCM):', correctOption);
+    const newQuestion = {
+      question: questionName,
+      time: time,
+      options: options,
+      correctOption: correctOption
+    };
 
-    setQuizz([...quizz, { question, options, correctOption }]);
-    setQuestion('');
+    setQuizz([...quizz, newQuestion]);
+
+    setQuestionName('');
+    setTime(15);
     setOptions(['', '', '']);
     setCorrectOption('');
   };
@@ -46,19 +50,25 @@ const CreateQuizz = ({setShowQuizzCreate}) => {
   };
 
   const handleSendQuizz = async () => {
-    console.log('Quizz:', quizz);
-    await postQuizz({"name" : title ,"quizz" : quizz });
+    await postQuizz({ name: title, quizz: quizz });
     setShowQuizzCreate(false);
+    setReload(!reload);
   };
 
   return (
     <div>
       <form onSubmit={handleSubmit}>
         <h2>Title</h2>
-        <input type="text" value={title} onChange={handleTitlehange} />
+        <input type="text" value={title} onChange={handleTitleChange} />
+
         <label>
           Question:
-          <input type="text" value={question} onChange={handleQuestionChange} />
+          <input type="text" value={questionName} onChange={handleQuestionChange} />
+        </label>
+
+        <label>
+          Temps de la question en seconde:
+          <input type="number" value={time} onChange={handleTimeChange} />
         </label>
 
         <label>

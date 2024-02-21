@@ -7,12 +7,6 @@ function LoginPage({setIsLogged}) {
 
     const [userData, setUserData] = useState("");
 
-    // const fetchdata = async () => {
-    //     const data = await accountService.getValuesToken();
-    //     console.log(data);
-    //     setUserData(data);
-    // }
-
     useEffect(() => {
         // fetchdata();
             if (localStorage.getItem("token")){

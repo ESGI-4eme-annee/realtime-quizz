@@ -14,10 +14,12 @@ const io = new Server(server, {
 });
 
 
-const roomSocketMap = {}; // {roomId: {name: roomName, userId: userId}};
-const roomUserMap = {}; // {roomId: [userId]};
+const roomSocketMap = {}; // {roomId: {name: roomName, userId: userId}}; : liste des salles et des utilisateurs qui les ont créées
 
-const userSocketMap = {}; // {userId: socketId};
+const roomUserMap = {}; // {roomId: [userId]}; : toues les salles et les utilisateurs qui sont dedans
+
+const userSocketMap = {}; // {userId: socketId}; : liste des utilisateurs connectés
+
 
 io.on('connection', (socket) => {
     console.log('Un client est connecté', socket.id);
@@ -33,6 +35,22 @@ io.on('connection', (socket) => {
         io.emit('roomCreated', roomSocketMap);
         
     }
+
+    room(socket,io);
+
+    quizz(socket,io);
+
+    socket.on("disconnect", () => {
+        console.log("Client déconnecté");
+        delete userSocketMap[userId];
+        io.emit('onlineUsers', Object.keys(userSocketMap));
+    });
+});
+
+
+
+
+function room(socket,io)  {
 
     socket.on('createRoom', (socket) => {
         const roomId = socket.roomId;
@@ -65,13 +83,51 @@ io.on('connection', (socket) => {
             console.log(`Le salon ${roomId} n'existe pas`);
         }
     });
+}
 
-    socket.on("disconnect", () => {
-        console.log("Client déconnecté");
-        delete userSocketMap[userId];
-        io.emit('onlineUsers', Object.keys(userSocketMap));
+const roomQuizzMap = {}; // {roomId: quizz}; : liste des salles et des quizz qui les ont créées
+const roomQuizzProgressMap = {}; // {roomId: {time: time, question: question}}; : liste des salles et des quizz qui les ont créées
+
+function quizz(socket,io) {
+    socket.on('sendQuizz', (data) => {
+        console.log("data", data);
+        roomQuizzMap[data.salle] = {"name":data.quizz.name, "questions":data.quizz.Questions};
+        console.log("roomQuizzMap", roomQuizzMap[data.salle]);
+        
+        let time = 0;
+        io.to(data.salle).emit('question', {"question":roomQuizzMap[data.salle].questions[time], "idQuizz": data.quizz.id});
+        console.log(roomQuizzMap[data.salle].questions[time]);
     });
-});
+    
+    
+    socket.on('sendResponse', (userId, salle, idQuizz, idQuestion, idResponse) => {
+        console.log("sendResponse", userId, salle, idQuizz, idQuestion, idResponse);
+    
+        if (!roomQuizzProgressMap[salle]) {
+            roomQuizzProgressMap[salle] = {};
+        }
+    
+        if (!roomQuizzProgressMap[salle][idQuizz]) {
+            roomQuizzProgressMap[salle][idQuizz] = {};
+        }
+    
+        if (!roomQuizzProgressMap[salle][idQuizz][idQuestion]) {
+            roomQuizzProgressMap[salle][idQuizz][idQuestion] = {};
+        }
+    
+        roomQuizzProgressMap[salle][idQuizz][idQuestion][userId] = idResponse;
+
+        console.log("roomQuizzProgressMap", roomQuizzProgressMap[salle][idQuizz][idQuestion]);
+    
+        const responseCounts = Object.values(roomQuizzProgressMap[salle][idQuizz][idQuestion]).reduce((acc, value) => {
+            acc[value] = (acc[value] || 0) + 1;
+            return acc;
+        }, {});
+
+        io.to(salle).emit('responseCounts', responseCounts);
+    
+    });
+}
 
 
 

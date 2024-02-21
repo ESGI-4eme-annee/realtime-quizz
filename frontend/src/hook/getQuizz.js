@@ -12,7 +12,10 @@ const getQuizz = async (id) => {
            
         });
 
-        return await result.json();
+        let data = await result.json();
+        console.log("data", data);
+
+        return data;
     } catch (error) {
         console.error("Erreur lors de la recherche :", error);
         throw error;

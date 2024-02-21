@@ -9,6 +9,10 @@ module.exports = function (connection) {
           type: DataTypes.STRING,
           allowNull: false,
         },
+        time:{
+          type: DataTypes.INTEGER,
+          allowNull: false,
+        },
       },
       {
         tableName: "questions",

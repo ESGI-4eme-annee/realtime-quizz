@@ -16,9 +16,11 @@ async function postQuizz(req, res) {
         });
 
         data.quizz.forEach(async (line) => {
+            console.log(line.question, line.time, line.options, line.correctOption);
             let newQuestion = await Question.create({
                 name: line.question,
                 quizzId: newQuizz.id,
+                time: line.time,
             });
             line.options.forEach(async (option) => {
                 let newAnswer = await Answer.create({
