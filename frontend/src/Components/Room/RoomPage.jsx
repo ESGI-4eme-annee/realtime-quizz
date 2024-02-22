@@ -8,6 +8,7 @@ import getQuizzList from '../../hook/getQuizzList';
 import getQuizz from '../../hook/getQuizz';
 import ViewQuizz from "./ViewQuizz";
 import ViewQuestion from "./ViewQuestion";
+import Notification from "../Notification/Notification.jsx";
 
 function RoomPage({ isLogged }) {
 
@@ -23,6 +24,8 @@ function RoomPage({ isLogged }) {
     const [reload, setReload] = useState(false);
     const [quizzProgress, setQuizzProgress] = useState(true);
     const [viewQuestion, setViewQuestion] = useState(false);
+    const [displayNotification, setDisplayNotification] = useState(false);
+    const [notification, setNotification] = useState({});
 
     //liste des quizz dans le select
     const fetchdata = async () => {
@@ -50,6 +53,30 @@ function RoomPage({ isLogged }) {
                     setTimerBeforeStart(null);
                 }, 1000);
             }
+        });
+
+        socket?.on('alertQuizzStarting', (data) => {
+            setNotification(data);
+            setDisplayNotification(true);
+            setTimeout(() => {
+                setDisplayNotification(false);
+            }, 3000);
+        });
+
+        socket?.on('alertNextQuestion', (data) => {
+            setNotification(data);
+            setDisplayNotification(true);
+            setTimeout(() => {
+                setDisplayNotification(false);
+            }, 3000);
+        });
+
+        socket?.on('alertQuizzEnd', (data) => {
+            setNotification(data);
+            setDisplayNotification(true);
+            setTimeout(() => {
+                setDisplayNotification(false);
+            }, 3000);
         });
     }, [socket,roomId]);
 
@@ -152,6 +179,7 @@ function RoomPage({ isLogged }) {
                 }
                 <div className="cote">
                    <ViewQuestion roomId={roomId} handleNextQuestion={handleNextQuestion} />
+                   <Notification isVisible={displayNotification} notification={notification} />
                 </div>
             </div>
             {userIsAdmin? <div className="lanceQuizz"> 

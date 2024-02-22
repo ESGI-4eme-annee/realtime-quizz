@@ -108,6 +108,10 @@ function room(socket,io)  {
         let interval = setInterval(() => {
             time--;
             if (time < 0) {
+                io.emit('alertQuizzStarting', {
+                    title: 'Le quizz commence 🏁',
+                    message: 'Bon courage ! 💪'
+                });
                 return clearInterval(interval);
             }
             io.emit('timerBeforeStart', time);
@@ -166,11 +170,22 @@ function quizz(socket,io) {
             io.to(roomId).emit('scoreQuizz', scoreUserMap[roomId][quizzId]);
             console.log("scoreUserMap", scoreUserMap[roomId][quizzId]);
 
+            setTimeout(() => {
+                io.emit('alertQuestionWillEnd', {
+                    title: 'La question va bientôt se terminer !',
+                    message: 'Il ne reste plus que quelques secondes pour répondre'
+                });
+            }, 2000);
+
             //question suivante
             setTimeout(function() {
                 io.to(roomId).emit('responseValid', null);
                 time++;
                io.to(roomId).emit('question', {"question":roomQuizzMap[roomId].questions[time], "idQuizz": quizzId});
+               io.emit('alertNextQuestion', {
+                   title: 'Question suivante',
+                   message: 'La question suivante commence'
+               });
             }, 5000);
         }, 5000);
     });
