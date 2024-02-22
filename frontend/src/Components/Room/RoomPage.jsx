@@ -153,7 +153,7 @@ function RoomPage({ isLogged }) {
                     : null
                 }
                 <div className="cote">
-                    {viewQuestion? <ViewQuestion roomId={roomId} handleNextQuestion={handleNextQuestion} />:null}
+                   <ViewQuestion roomId={roomId} handleNextQuestion={handleNextQuestion} />
                 </div>
             </div>
             {userIsAdmin? <div className="lanceQuizz"> 
