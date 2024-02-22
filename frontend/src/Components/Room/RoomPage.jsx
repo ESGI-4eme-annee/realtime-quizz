@@ -14,7 +14,7 @@ function RoomPage({ isLogged }) {
 
     const { roomId } = useParams();
 
-    const {joinRoom,roomUsers,user,sendQuizz,room,scoreQuizz,socket } = useSocketContext();
+    const {joinRoom,roomUsers,user,sendQuizz,room,scoreQuizz,socket,clientJoin } = useSocketContext();
     const [showQuizzCreate, setShowQuizzCreate] = useState(false);
     const [quizzList, setQuizzList] = useState([]);
     const [quizz, setQuizz] = useState({});
@@ -32,18 +32,17 @@ function RoomPage({ isLogged }) {
         const data = await getQuizzList();
         setQuizzList(data);
     }
-    
+
+
     useEffect(() => {
         fetchdata();
         joinRoom(roomId);
         if (user != null ) {
-            if (user.userRole === 'admin'&& room[roomId].userEmail === user.userEmail ) {
+            if (user.userRole === 'admin'&& room[roomId]?.userEmail === user.userEmail ) {
                 setUserIsAdmin(true);
             }
         }
-
-
-    }, [user]);
+    }, [user,roomId,clientJoin]);
 
     useEffect(() => {
         socket?.on('timerBeforeStart', (time) => {
@@ -78,7 +77,7 @@ function RoomPage({ isLogged }) {
                 setDisplayNotification(false);
             }, 3000);
         });
-    }, [socket,roomId]);
+    }, [socket,roomId,reload]);
 
     useEffect(() => {
         fetchdata();
