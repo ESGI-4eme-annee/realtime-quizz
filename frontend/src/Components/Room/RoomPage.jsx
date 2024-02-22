@@ -20,6 +20,7 @@ function RoomPage({ isLogged }) {
     const [quizz, setQuizz] = useState({});
     const [quizzView, setQuizzView] = useState(false);
     const [userIsAdmin, setUserIsAdmin] = useState(false);
+    const [username, setUsername] = useState('');
 
     const fetchdata = async () => {
         const data = await getQuizzList();
@@ -34,6 +35,7 @@ function RoomPage({ isLogged }) {
                 setUserIsAdmin(true);
             }
         }
+        setUsername(user.name);
     }, [user]);
 
     const createQuizz = () => {
@@ -92,7 +94,7 @@ function RoomPage({ isLogged }) {
                     <ViewQuestion />
                 </div>
                 <div className="cote">
-                    <Chat />
+                    <Chat username={username} />
                 </div>
             </div>
             {userIsAdmin? <div className="lanceQuizz"> 

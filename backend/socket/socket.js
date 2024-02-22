@@ -66,9 +66,9 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('chatMessage', (msg) => {
-        console.log(`Message reçu : ${msg}`);
-        socket.broadcast.emit('chatMessage', msg);
+    socket.on('sendMessage', (data) => {
+        // console.log(`Message reçu : ${data}`);
+        socket.to(data.room).emit('receiveMessage', data);
     });
 
     socket.on("disconnect", () => {
