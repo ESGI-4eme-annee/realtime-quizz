@@ -120,19 +120,20 @@ function RoomPage({ isLogged }) {
                 : null
             }
 
-              {userIsAdmin && quizzProgress?
-              <div className="selectQuizz">
-              <h2>Choisir un quizz</h2>
-                <div className="selectText">
-                <select onFocus={() => setShowQuizzCreate(false)} onChange={(event) => handleChooseQuizz(event.target.value)}>
-                        {quizzList.map((quizz, index) => (
-                            <option key={index} value={quizz.id}>
-                                {quizz.name}
-                            </option>
-                        ))}
-                </select>
+            {
+                userIsAdmin && quizzProgress
+                ? <div className="selectQuizz">
+                    <h2>Choisir un quizz</h2>
+                    <select onFocus={() => setShowQuizzCreate(false)} onChange={(event) => handleChooseQuizz(event.target.value)}
+                        className="select select-bordered w-full max-w-xs">
+                            <option value="" disabled selected>Choississez un quizz</option>
+                            {quizzList.map((quizz, index) => (
+                                <option key={index} value={quizz.id}>
+                                    {quizz.name}
+                                </option>
+                            ))}
+                    </select>
                 </div>
-              </div>
                 : null
             }
 
