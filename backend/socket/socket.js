@@ -50,8 +50,9 @@ function room(socket,io)  {
     socket.on('createRoom', (socket) => {
         const roomId = socket.roomId;
         const roomName = socket.roomName;
+        const password = socket.password;
         if (roomId != "undefined") {
-            roomSocketMap[roomId] = {name : roomName, userEmail:socket.userEmail};
+            roomSocketMap[roomId] = {name : roomName, userEmail:socket.userEmail, password:password};
         }
 
         io.emit('roomCreated', roomSocketMap);
