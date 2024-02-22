@@ -22,8 +22,7 @@ function LoginPage({setIsLogged}) {
 
             <div className="register-login__container">
                 <div className="register-login__container__logo">
-                    
-                    <h2>Quizz</h2>
+                    <h2 className="text-3xl underline text-center mb-3">Connexion</h2>
                 </div>
                 <FormLogin setIsLogged={setIsLogged}/>
                 <p>Vous n’avez pas de compte ? <Link to="/register">Inscrivez-vous</Link></p>

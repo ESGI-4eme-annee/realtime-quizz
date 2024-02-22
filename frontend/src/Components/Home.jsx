@@ -113,7 +113,7 @@ function Home({ isConnected }) {
                     {showPassword && (
                         <input className="inputDesign" type="password" id="passwordRoom" placeholder="Mot de passe" />
                     )}
-                    <button onClick={handleCreateRoom}>Créer</button>
+                    <button onClick={handleCreateRoom} className="btn">Créer</button>
                 </div>
             </div> : <></>}
                 <div className="viewSalle">

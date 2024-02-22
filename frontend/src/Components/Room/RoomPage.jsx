@@ -8,6 +8,7 @@ import getQuizzList from '../../hook/getQuizzList';
 import getQuizz from '../../hook/getQuizz';
 import ViewQuizz from "./ViewQuizz";
 import ViewQuestion from "./ViewQuestion";
+import Notification from "../Notification/Notification.jsx";
 
 function RoomPage({ isLogged }) {
 
@@ -23,6 +24,8 @@ function RoomPage({ isLogged }) {
     const [reload, setReload] = useState(false);
     const [quizzProgress, setQuizzProgress] = useState(true);
     const [viewQuestion, setViewQuestion] = useState(false);
+    const [displayNotification, setDisplayNotification] = useState(false);
+    const [notification, setNotification] = useState({});
 
     //liste des quizz dans le select
     const fetchdata = async () => {
@@ -50,7 +53,31 @@ function RoomPage({ isLogged }) {
                 }, 1000);
             }
         });
-    }, [socket,reload]);
+
+        socket?.on('alertQuizzStarting', (data) => {
+            setNotification(data);
+            setDisplayNotification(true);
+            setTimeout(() => {
+                setDisplayNotification(false);
+            }, 3000);
+        });
+
+        socket?.on('alertNextQuestion', (data) => {
+            setNotification(data);
+            setDisplayNotification(true);
+            setTimeout(() => {
+                setDisplayNotification(false);
+            }, 3000);
+        });
+
+        socket?.on('alertQuizzEnd', (data) => {
+            setNotification(data);
+            setDisplayNotification(true);
+            setTimeout(() => {
+                setDisplayNotification(false);
+            }, 3000);
+        });
+    }, [socket,roomId,reload]);
 
     useEffect(() => {
         fetchdata();
@@ -119,22 +146,21 @@ function RoomPage({ isLogged }) {
                 : null
             }
 
-              {userIsAdmin && quizzProgress?
-              <div className="selectQuizz">
-              <h2>Choisir un quizz</h2>
-                <div className="selectText">
-                <select onFocus={() => setShowQuizzCreate(false)} onChange={(event) => handleChooseQuizz(event.target.value)}>
-                        {quizzList.map((quizz, index) => (
-                            <option key={index} value={quizz.id}>
-                                {quizz.name}
-                            </option>
-                        ))}
-                </select>
+            {
+                userIsAdmin && quizzProgress
+                ? <div className="selectQuizz">
+                    <h2>Choisir un quizz</h2>
+                    <select onFocus={() => setShowQuizzCreate(false)} onChange={(event) => handleChooseQuizz(event.target.value)}
+                        className="select select-bordered w-full max-w-xs">
+                            {quizzList.map((quizz, index) => (
+                                <option key={index} value={quizz.id}>
+                                    {quizz.name}
+                                </option>
+                            ))}
+                    </select>
                 </div>
-              </div>
                 : null
             }
-
 
             {
                 userIsAdmin
@@ -152,6 +178,7 @@ function RoomPage({ isLogged }) {
                 }
                 <div className="cote">
                    <ViewQuestion roomId={roomId} handleNextQuestion={handleNextQuestion} />
+                   <Notification isVisible={displayNotification} notification={notification} />
                 </div>
             </div>
             {userIsAdmin? <div className="lanceQuizz"> 

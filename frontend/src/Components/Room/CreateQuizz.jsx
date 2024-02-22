@@ -87,7 +87,7 @@ const CreateQuizz = ({ setShowQuizzCreate, setReload, reload }) => {
           </select>
         </label>
 
-        <button type="submit">Ajouter la question</button>
+        <button type="submit" className='btn btn-success'>Ajouter la question</button>
       </form>
 
       <div>
@@ -97,14 +97,14 @@ const CreateQuizz = ({ setShowQuizzCreate, setReload, reload }) => {
             <div key={index}>
               <h3>
                 Q{index + 1}: {item.question}
-                <button onClick={() => handleDeleteQuestion(index)}>Supprimer</button>
+                <button onClick={() => handleDeleteQuestion(index)} className='btn btn-error'>Supprimer</button>
               </h3>
             </div>
           ))}
         </ul>
       </div>
 
-      <button onClick={handleSendQuizz}>Valider le quizz</button>
+      <button onClick={handleSendQuizz} className='btn btn-primary'>Valider le quizz</button>
     </div>
   );
 };
