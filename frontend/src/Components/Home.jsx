@@ -17,7 +17,6 @@ function Home({ isConnected }) {
 
     const navigate = useNavigate();
 
-
     useEffect(() => {
         if (user != null ) {
             setUserData(user);
@@ -26,7 +25,7 @@ function Home({ isConnected }) {
             }
         }
         leaveRoom();
-    },[user]);
+    },[user,isConnected]);
         
     
 
@@ -48,20 +47,39 @@ function Home({ isConnected }) {
     };
 
     return (
-        <div>
-            <h1 className="title">Home</h1>
-            <p>Utilisateur connecté : {user?.userEmail}</p>
-
-            <div className="right">
-                <div className="userOnline">
-                    <h2>Utilisateurs en ligne</h2>
-                    <ul className="listUserOnline">
-                        {onlineUsers.map((user, index) => (
-                            <li key={index}>{user}</li>
-                        ))}
-                    </ul>
-                </div>
+        <div className="p-5">
+            <div className="text-end font-semibold">
+                {
+                    isConnected
+                    ? <div className="badge badge-primary mb-4 p-3">Connecté</div>
+                    : <div className="badge badge-ghost mb-4 p-3">Non connecté</div>
+                }
             </div>
+            {
+                isConnected &&
+                <div className="drawer drawer-end">
+                    <input id="my-drawer" type="checkbox" className="drawer-toggle" />
+                    <div className="drawer-content flex justify-end">
+                        {/* Page content here */}
+                        <label htmlFor="my-drawer" className="drawer-button btn btn-sm">Utilisateurs connecté</label>
+                    </div>
+                    <div className="drawer-side">
+                        <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
+                        <ul className="menu p-4 w-96 min-h-full bg-base-200 text-base-content">
+                            <h2 className="text-2xl max-w-64 text-center mx-auto">Identifiants des utilisateurs connectés</h2>
+                            <ul className="listUserOnline text-center my-6 font-semibold">
+                                {
+                                    onlineUsers.length === 0
+                                    ? <li>Aucun utilisateur connecté</li>
+                                    : onlineUsers.map((user, index) => (
+                                        <li key={index}>{user}</li>
+                                    ))
+                                }
+                            </ul>
+                        </ul>
+                    </div>
+                </div>
+            }
 
             { userIsAdmin ? <div className="divCenter">
                 <div className="divCreateRoom">
@@ -81,7 +99,6 @@ function Home({ isConnected }) {
                         ))}
                     </ul>
                 </div>
-           
         </div>
     );
 }

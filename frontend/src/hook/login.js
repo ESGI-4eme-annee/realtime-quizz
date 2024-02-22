@@ -3,7 +3,7 @@ const env = import.meta.env
 
 const register = async (data) => {
     try {
-        const result = await fetch(`http://${env.VITE_URL}:3000/user/login`, {
+        const result = await fetch(`${env.VITE_URL_BACK}/user/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

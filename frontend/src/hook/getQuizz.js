@@ -3,17 +3,15 @@ const env = import.meta.env
 
 const getQuizz = async (id) => {
     try {
-        const result = await fetch(`http://${env.VITE_URL}:3000/quizz/info/${id}`, {
+        const result = await fetch(`${env.VITE_URL_BACK}/quizz/info/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
             },
             credentials : 'include',
-           
         });
 
         let data = await result.json();
-        console.log("data", data);
 
         return data;
     } catch (error) {

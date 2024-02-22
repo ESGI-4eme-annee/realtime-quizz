@@ -10,7 +10,6 @@ export const useSocketContext = () => {
 }
 
 export const SocketContextProvider = ({ children }) => {
-
     const [socket, setSocket] = useState(null);
     const [userId, setUserId] = useState(null);
     const [userEmail, setUserEmail] = useState(null);
@@ -22,7 +21,6 @@ export const SocketContextProvider = ({ children }) => {
     const [responseCounts, setResponseCounts] = useState({});
     const [responseValid, setResponseValid] = useState(null);
     const [scoreQuizz, setScoreQuizz] = useState([]);
-
 
     const fetchdata = async () => {
         try {
@@ -77,7 +75,6 @@ export const SocketContextProvider = ({ children }) => {
                 console.log(`Le client ${data.userId} a rejoint le salon`);
             });
             socket.on('roomUsers', (roomUserMap) => {
-                console.log(roomUserMap);
                 setRoomUsers(roomUserMap);
             });
             socket.on('question', (question) => {
@@ -143,7 +140,7 @@ export const SocketContextProvider = ({ children }) => {
             socket.emit('sendResponse',userId, salle,idQuizz,idQuestion,idResponse);
         };
     }
-    
+
     return (
         <SocketContext.Provider value={
             {

@@ -20,8 +20,6 @@ function App() {
 
 
   useEffect(() => {
-    
-    
     setIsLogged(isUserLogged());
   }, []);
   
@@ -29,14 +27,13 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <NavBar/>
-          <Routes>
-            <Route path="register" element={<RegisterPage />} />
-            <Route index path="login" element={<LoginPage setIsLogged={setIsLogged}/>} />
-            <Route path="/" element={<Home isConnected={isLogged} isAdmin={isAdmin} />} />
-            <Route path="room/:roomId" element={<RoomPage isLogged={isLogged}/>} />
-            
-          </Routes>
+        <NavBar isLogged={isLogged}/>
+        <Routes>
+          <Route path="register" element={<RegisterPage />} />
+          <Route index path="login" element={<LoginPage setIsLogged={setIsLogged}/>} />
+          <Route path="/" element={<Home isConnected={isLogged} isAdmin={isAdmin} />} />
+          <Route path="room/:roomId" element={<RoomPage isLogged={isLogged}/>} />
+        </Routes>
       </BrowserRouter>
     </>
   )

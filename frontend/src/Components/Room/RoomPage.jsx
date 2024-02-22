@@ -13,12 +13,13 @@ function RoomPage({ isLogged }) {
 
     const { roomId } = useParams();
 
-    const {joinRoom,roomUsers,user,sendQuizz,room,scoreQuizz } = useSocketContext();
+    const {joinRoom,roomUsers,user,sendQuizz,room,scoreQuizz,socket } = useSocketContext();
     const [showQuizzCreate, setShowQuizzCreate] = useState(false);
     const [quizzList, setQuizzList] = useState([]);
     const [quizz, setQuizz] = useState({});
     const [quizzView, setQuizzView] = useState(false);
     const [userIsAdmin, setUserIsAdmin] = useState(false);
+    const [timerBeforeStart, setTimerBeforeStart] = useState(null);
     const [reload, setReload] = useState(false);
     const [quizzProgress, setQuizzProgress] = useState(true);
 
@@ -37,8 +38,19 @@ function RoomPage({ isLogged }) {
             }
         }
 
-       
+
     }, [user]);
+
+    useEffect(() => {
+        socket?.on('timerBeforeStart', (time) => {
+            setTimerBeforeStart(time);
+            if (time === 0) {
+                setTimeout(() => {
+                    setTimerBeforeStart(null);
+                }, 1000);
+            }
+        });
+    }, [socket]);
 
     useEffect(() => {
         fetchdata();
@@ -61,28 +73,27 @@ function RoomPage({ isLogged }) {
     const handleStartQuizz = () => {
         console.log('Lancement du quizz');
         sendQuizz(quizz, roomId);
-        setQuizzProgress(false);  
+        setQuizzProgress(false);
         //envoyer le quizz aux clients
     }
 
     const handleNextQuestion = () => {
-        console.log(roomUsers);
-        console.log(scoreQuizz);
         roomUsers.forEach(user => {
             user.score = scoreQuizz[user.userId];
-
-        //     console.log("user.userId",user.userId);
-        //     console.log("scoreQuizz[user.userId]",scoreQuizz[user.userId]);
-        //    if (scoreQuizz[user.userId] == user.userId) {
-        //        console.log('Utilisateur trouvé');
-        //       }
         });
-        console.log('Question suivante');
+    }
 
+    const beginQuizz = () => {
+        socket.emit('startQuizz', roomId);
     }
 
     return (
         <div>
+            <h1 className="text-9xl absolute inset-1/2 font-bold shadow-2xl">
+                {timerBeforeStart ? timerBeforeStart : null}
+                {timerBeforeStart === 0 ? 'Go' : null}
+            </h1>
+
             <h1>Room</h1>
             <p>Utilisateur connecté : {isLogged ? 'Oui' : 'Non'}</p>
 
@@ -97,13 +108,17 @@ function RoomPage({ isLogged }) {
                 </div>
             </div>
 
-            
-            {userIsAdmin && quizzProgress?<div className="createQuizz">
-                <button className="buttonCreate" onClick={() => { createQuizz () }}>Cree un quizz</button>
-                { showQuizzCreate? <CreateQuizz setShowQuizzCreate={setShowQuizzCreate} setReload={setReload} reload={reload} /> : null}
-            </div>: null}
+            {
+                userIsAdmin
+                ? <div className="createQuizz">
+                    <button className="buttonCreate" onClick={() => { createQuizz () }}>Cree un quizz</button>
+                    { showQuizzCreate? <CreateQuizz setShowQuizzCreate={setShowQuizzCreate} setReload={setReload}/> : null}
+                </div>
+                : null
+            }
 
-              {userIsAdmin && quizzProgress?<div className="selectQuizz">
+              {userIsAdmin && quizzProgress?
+              <div className="selectQuizz">
               <h2>Choisir un quizz</h2>
                 <div className="selectText">
                 <select onFocus={() => setShowQuizzCreate(false)} onChange={(event) => handleChooseQuizz(event.target.value)}>
@@ -114,12 +129,25 @@ function RoomPage({ isLogged }) {
                         ))}
                 </select>
                 </div>
-            </div>: null}
+              </div>
+                : null
+            }
+
+
+            {
+                userIsAdmin
+                ? <div className="btn btn-active">
+                    <button onClick={() => beginQuizz()}>Lancer le quizz</button>
+                </div>
+                : null
+            }
 
             <div className="viewQuestionQuizz">
-                {userIsAdmin? <div className="cote">
-                    {quizzView ? <ViewQuizz quizz={quizz}/> : null }
-                </div>: null}
+                {
+                    userIsAdmin
+                    ? (quizzView ? <ViewQuizz quizz={quizz}/> : null )
+                    : null
+                }
                 <div className="cote">
                     <ViewQuestion roomId={roomId} handleNextQuestion={handleNextQuestion} />
                 </div>

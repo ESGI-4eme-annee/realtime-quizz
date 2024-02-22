@@ -3,7 +3,7 @@ const env = import.meta.env
 
 const postQuizz = async (data) => {
     try {
-        const result = await fetch(`http://${env.VITE_URL}:3000/quizz`, {
+        const result = await fetch(`${env.VITE_URL_BACK}/quizz`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
