@@ -127,7 +127,7 @@ function quizz(socket,io) {
         const quizzId = quizz.id;
         const quizzName = quizz.name;
         const quizzQuestions = quizz.Questions;
-        let time = 1;//ca prend +1 a chaque fin de temps de question pour passer a la question suivante
+        let time = 0;//ca prend +1 a chaque fin de temps de question pour passer a la question suivante
 
         roomQuizzMap[roomId] = {"name":quizzName, "questions":quizzQuestions};
 
@@ -168,7 +168,7 @@ function quizz(socket,io) {
             //question suivante
             setTimeout(function() {
                 io.to(roomId).emit('responseValid', null);
-                time--;
+                time++;
                io.to(roomId).emit('question', {"question":roomQuizzMap[roomId].questions[time], "idQuizz": quizzId});
             }, 5000);
 

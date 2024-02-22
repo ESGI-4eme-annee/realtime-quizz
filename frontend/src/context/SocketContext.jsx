@@ -22,6 +22,7 @@ export const SocketContextProvider = ({ children }) => {
     const [responseValid, setResponseValid] = useState(null);
     const [scoreQuizz, setScoreQuizz] = useState([]);
     const [reloadData, setReloadData] = useState(false);
+    const [clientJoin, setClientJoin] = useState(false);
 
     const fetchdata = async () => {
         try {
@@ -76,8 +77,10 @@ export const SocketContextProvider = ({ children }) => {
             socket.on('roomCreated', (room) => {
                 setRoom(room);
             });
-            socket.on('userJoinedRoom', (data) => {
-                console.log(`Le client ${data.userId} a rejoint le salon`);
+            socket.on('userJoinedRoom', (userEmail) => {
+                console.log(`Le client ${userEmail} a rejoint le salon`);
+                setClientJoin(userEmail);
+
             });
             socket.on('roomUsers', (roomUserMap) => {
                 setRoomUsers(roomUserMap);
@@ -164,7 +167,8 @@ export const SocketContextProvider = ({ children }) => {
                 responseCounts,
                 responseValid,
                 leaveRoom,
-                scoreQuizz
+                scoreQuizz,
+                clientJoin
             }}>
             {children}
         </SocketContext.Provider>
