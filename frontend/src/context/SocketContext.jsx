@@ -130,16 +130,6 @@ export const SocketContextProvider = ({ children }) => {
         }
     };
 
-    //Quizz lancer le quizz
-    const sendQuizz = (quizz,salle ) => {
-        if (socket) {
-            socket.emit('sendQuizz', {
-                quizz: quizz,
-                salle: salle
-            });
-        };
-    }
-
     //Qizz question clique
     const sendResponse = (salle,idQuizz,idQuestion,idResponse) => {
         if (socket) {
@@ -158,7 +148,6 @@ export const SocketContextProvider = ({ children }) => {
                 joinRoom,
                 user,
                 roomUsers,
-                sendQuizz,
                 question,
                 sendResponse,
                 responseCounts,

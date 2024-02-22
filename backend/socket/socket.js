@@ -120,77 +120,101 @@ const roomQuizzProgressMap = {};
 const questionResponseMap = {};
 const scoreUserMap = {};
 
+const roomQuestions = [
+    // Exemple de données
+    // {
+    //     roomId: "1",
+    //     quizzId: "1",
+    //     questions: [
+    //         {
+    //             id: 10,
+    //             name: 'Couleur blanche',
+    //             time: 5,
+    //             quizzId: 9,
+    //             Answers: [
+    //                 { id: 28, name: 'blanc', valid: true, questionId: 10 },
+    //                 { id: 29, name: 'vert', valid: false, questionId: 10 },
+    //                 { id: 30, name: 'jaune', valid: false, questionId: 10 }
+    //             ]
+    //         }
+    //     ]
+    // }
+];
+
 function quizz(socket,io) {
-    socket.on('sendQuizz', (data) => {
+    socket.on('startQuizz', (data) => {
         const roomId = data.salle;
         const quizz = data.quizz;
-        const quizzId = quizz.id;
-        const quizzName = quizz.name;
-        const quizzQuestions = quizz.Questions;
-        let time = 0;//ca prend +1 a chaque fin de temps de question pour passer a la question suivante
 
-        roomQuizzMap[roomId] = {"name":quizzName, "questions":quizzQuestions};
+        roomQuestions.push({
+            roomId: roomId,
+            quizzId: quizz.id,
+            questions: quizz.Questions,
+            numberOfQuestions: quizz.Questions.length
+        });
 
-        io.to(roomId).emit('question', {"question":roomQuizzMap[roomId].questions[time], "idQuizz": quizzId});
+        let time = 5;
+        io.emit('timerBeforeStart', time);
+        let interval = setInterval(() => {
+            time--;
+            if (time < 0) {
+                clearInterval(interval);
 
-        //reponse a la question
-        setTimeout(function() {
-            if (!questionResponseMap[roomId]) {
-                questionResponseMap[roomId] = {};
+                let timer = quizz.Questions[0].time;
+                let interval2 = setInterval(() => {
+                    timer--;
+                    if (timer < 0) {
+                        return clearInterval(interval2);
+                    }
+                    io.to(roomId).emit('timerQuestion', timer);
+                }, 1000);
+
+                io.to(roomId).emit('nextQuestion', quizz.Questions[0]);
+
+                return;
             }
-            if (!questionResponseMap[roomId][quizzId]) {
-                questionResponseMap[roomId][quizzId] = {};
-            }
-            questionResponseMap[roomId][quizzId][quizzQuestions[time].id] = quizzQuestions[time].Answers.find(answer => answer.valid === true).id;
+            io.to(roomId).emit('timerBeforeStart', time);
+        }, 1000);
+    });
 
-            let responseId = questionResponseMap[roomId][quizzId][quizzQuestions[time].id];
-            io.to(roomId).emit('responseValid', {"response":responseId});
+    socket.on('needNextQuestion', (data) => {
+        const roomId = data.roomId;
+        const quizzId = data.quizzId;
+        const questionId = data.questionId;
 
-            // calccul du score
-            if (!scoreUserMap[roomId]) {
-                scoreUserMap[roomId] = {};
-            }
-            if (!scoreUserMap[roomId][quizzId]) {
-                scoreUserMap[roomId][quizzId] ={};
-            }
+        let indexQuestion = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions.findIndex(question => question.id === questionId);
+        let nextQuestion = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions[indexQuestion + 1];
 
-            for (const user in roomQuizzProgressMap[roomId][ quizzId][quizzQuestions[time].id]) {
-                if (!scoreUserMap[roomId][ quizzId][user]) {
-                    scoreUserMap[roomId][ quizzId][user] = 0;
+        if (nextQuestion) {
+            let timer = nextQuestion.time;
+
+            let interval = setInterval(() => {
+                timer--;
+                if (timer < 0) {
+                    return clearInterval(interval);
                 }
-               if(roomQuizzProgressMap[roomId][ quizzId][quizzQuestions[time].id][user] === questionResponseMap[roomId][quizzId][quizzQuestions[time].id]){
+                io.to(roomId).emit('timerQuestion', timer);
+            }, 1000);
+        }
 
-                scoreUserMap[roomId][ quizzId][user] +=1;
-               }
-            }
-            io.to(roomId).emit('scoreQuizz', scoreUserMap[roomId][quizzId]);
-            console.log("scoreUserMap", scoreUserMap[roomId][quizzId]);
-
-            //question suivante
-            setTimeout(function() {
-                io.to(roomId).emit('responseValid', null);
-                time++;
-               io.to(roomId).emit('question', {"question":roomQuizzMap[roomId].questions[time], "idQuizz": quizzId});
-            }, 5000);
-        }, 5000);
+        io.to(roomId).emit('nextQuestion', nextQuestion);
     });
 
     //response envoyer par les joueurs
     socket.on('sendResponse', (userId, salle, idQuizz, idQuestion, idResponse) => {
-        roomQuizzProgressMap[salle] ??= {};
-        roomQuizzProgressMap[salle][idQuizz] ??= {};
-        roomQuizzProgressMap[salle][idQuizz][idQuestion] ??= {};
-        roomQuizzProgressMap[salle][idQuizz][idQuestion][userId] = idResponse;
+        // roomQuizzProgressMap[salle] ??= {};
+        // roomQuizzProgressMap[salle][idQuizz] ??= {};
+        // roomQuizzProgressMap[salle][idQuizz][idQuestion] ??= {};
+        // roomQuizzProgressMap[salle][idQuizz][idQuestion][userId] = idResponse;
 
-        console.log("roomQuizzProgressMap", roomQuizzProgressMap[salle][idQuizz][idQuestion]);
+        // console.log("roomQuizzProgressMap", roomQuizzProgressMap[salle][idQuizz][idQuestion]);
 
-        const responseCounts = Object.values(roomQuizzProgressMap[salle][idQuizz][idQuestion]).reduce((acc, value) => {
-            acc[value] = (acc[value] || 0) + 1;
-            return acc;
-        }, {});
+        // const responseCounts = Object.values(roomQuizzProgressMap[salle][idQuizz][idQuestion]).reduce((acc, value) => {
+        //     acc[value] = (acc[value] || 0) + 1;
+        //     return acc;
+        // }, {});
 
-        io.to(salle).emit('responseCounts', responseCounts);
-
+        // io.to(salle).emit('responseCounts', responseCounts);
     });
 }
 
