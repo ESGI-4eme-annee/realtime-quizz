@@ -21,6 +21,7 @@ export const SocketContextProvider = ({ children }) => {
     const [responseCounts, setResponseCounts] = useState({});
     const [responseValid, setResponseValid] = useState(null);
     const [scoreQuizz, setScoreQuizz] = useState([]);
+    const [reloadData, setReloadData] = useState(false);
 
     const fetchdata = async () => {
         try {
@@ -64,7 +65,11 @@ export const SocketContextProvider = ({ children }) => {
                 setSocket(null);
             }
         }
-    }, [userId]);
+    }, [userId,reloadData]);
+
+    const handleReloadData = () => {
+        fetchdata()
+    }
 
     useEffect(() => {
         if (socket) {
@@ -146,6 +151,7 @@ export const SocketContextProvider = ({ children }) => {
             {
                 socket,
                 onlineUsers,
+                handleReloadData,
                 createRoom,
                 room,
                 joinRoom,
