@@ -14,6 +14,8 @@ function Home({ isConnected }) {
     const [userIsAdmin, setUserIsAdmin] = useState(false);
     const [userData, setUserData] = useState({});
     const [roomClosed, setRoomClosed] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
 
     const navigate = useNavigate();
 
@@ -37,10 +39,13 @@ function Home({ isConnected }) {
     const handleCreateRoom = () => {
         const name = document.querySelector('#nameRoom').value;
         const newUuid = uuidv4();
-
+        let password = "";
+        if(showPassword){
+            password = document.querySelector('#passwordRoom').value;
+        }
         if(name !== '')
         { 
-            createRoom(name, newUuid);
+            createRoom(name, newUuid, password);
         }else{
             alert('Veuillez entrer un nom de salle')
 
@@ -48,8 +53,22 @@ function Home({ isConnected }) {
     };
 
     const handleJoinRoom = (roomId) => {
-        navigate(`/room/${roomId}`);
+        if (room[roomId].password !="") {
+            const password = document.querySelector('#testPasswordRoom').value;
+            if (password === room[roomId].password) {
+                navigate(`/room/${roomId}`);
+            } else {
+                alert('Mauvais mot de passe');
+            }    
+        }else
+        {
+            navigate(`/room/${roomId}`);
+        }
     };
+
+    const handleCheckboxChange = () => {
+        setShowPassword(!showPassword);
+      };
 
     return (
         <div className="p-5">
@@ -90,6 +109,10 @@ function Home({ isConnected }) {
                 <div className="divCreateRoom">
                     <h2>Créer une salle</h2>
                     <input className="inputDesign" type="text" id="nameRoom" placeholder="Nom de la salle" required />
+                    <input className="inputDesign" type="checkbox" id="checkRoom" onChange={handleCheckboxChange} />
+                    {showPassword && (
+                        <input className="inputDesign" type="password" id="passwordRoom" placeholder="Mot de passe" />
+                    )}
                     <button onClick={handleCreateRoom}>Créer</button>
                 </div>
             </div> : <></>}
@@ -99,6 +122,8 @@ function Home({ isConnected }) {
                         {Object.keys(room).map((key, index) => (
                             <li className="room" key={index}>
                             {room[key].name}
+                            {room[key].password? <p>Privée</p>:<p>Public</p>}
+                            {room[key].password?<input className="inputDesign" type="password" id="testPasswordRoom" />:null}
                             {!roomClosed? <button className="border border-blue-300" onClick={() => handleJoinRoom(key)}>Rejoindre</button>:<img src={close}/>}
                             </li>
                         ))}
