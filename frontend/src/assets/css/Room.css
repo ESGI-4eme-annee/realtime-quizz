@@ -57,6 +57,25 @@
     flex-grow: 1;
 }
 
+.viewQuestionheightQuizz{
+    display: flex;
+    flex-direction: column;
+    height: 30em;
+    flex-grow: 1;
+}
+
+.centreQuizz{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    padding: 10px;
+    border: solid 1px #000000;
+    width: 80%;
+
+}
+
 .lanceQuizz{
     display: flex;
     flex-direction: row;
@@ -74,3 +93,12 @@
 .answer{
     margin-left: 50px;
 }
+
+.answerAlone{
+    display: flex;
+}
+
+.valid{
+    background-color: #127920;
+}
+

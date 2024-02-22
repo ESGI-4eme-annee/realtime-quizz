@@ -12,10 +12,15 @@ export const useSocketContext = () => {
 export const SocketContextProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
     const [userId, setUserId] = useState(null);
+    const [userEmail, setUserEmail] = useState(null);
     const [user,setUser] = useState(null);
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [room, setRoom] = useState({});
     const [roomUsers, setRoomUsers] = useState([]);
+    const [question, setQuestion] = useState({});
+    const [responseCounts, setResponseCounts] = useState({});
+    const [responseValid, setResponseValid] = useState(null);
+    const [scoreQuizz, setScoreQuizz] = useState([]);
 
     const fetchdata = async () => {
         try {
@@ -24,6 +29,7 @@ export const SocketContextProvider = ({ children }) => {
                 if (data != null) {
                     setUserId(data.userId);
                     setUser(data);
+                    setUserEmail(data.userEmail);
                 }
             } else {
                 console.log("Token not found in localStorage");
@@ -60,41 +66,80 @@ export const SocketContextProvider = ({ children }) => {
         }
     }, [userId]);
 
-    //ROOM create
-    const createRoom = (name, id) => {
-        socket.emit('createRoom', {
-            roomName: name,
-            roomId: id,
-            userId: userId
-        });
-        return room;
-    };
-
     useEffect(() => {
         if (socket) {
             socket.on('roomCreated', (room) => {
                 setRoom(room);
             });
-            socket.on('userJoinedRoom', (userId) => {
-                console.log(`Le client ${userId} a rejoint le salon`);
+            socket.on('userJoinedRoom', (data) => {
+                console.log(`Le client ${data.userId} a rejoint le salon`);
             });
             socket.on('roomUsers', (roomUserMap) => {
                 setRoomUsers(roomUserMap);
+            });
+            socket.on('question', (question) => {
+                setQuestion(question);
+            });
+            socket.on('responseCounts', (responseCounts) => {
+                setResponseCounts(responseCounts);
+            });
+            socket.on('responseValid', (responseValid) => {
+                setResponseValid(responseValid);
+            });
+            socket.on('scoreQuizz', (scoreQuizz) => {
+                setScoreQuizz(scoreQuizz);
             });
         }
 
     }, [socket]); 
 
 
+    //ROOM create
+    const createRoom = (name, id) => {
+        socket.emit('createRoom', {
+            roomName: name,
+            roomId: id,
+            userEmail: userEmail
+        });
+        return room;
+    };
+
     //ROOM join
     const joinRoom = (roomId) => {
         if (socket) {
             socket.emit('joinRoom', {
                 roomId: roomId,
+                userEmail: userEmail,
                 userId: userId
             });
         }
     };
+
+    //ROOM leave
+    const leaveRoom = () => {
+        if (socket) {
+            socket.emit('leaveRoom', {
+                userId: userId
+            });
+        }
+    };
+
+    //Quizz lancer le quizz
+    const sendQuizz = (quizz,salle ) => {
+        if (socket) {
+            socket.emit('sendQuizz', {
+                quizz: quizz,
+                salle: salle
+            });
+        };
+    }
+
+    //Qizz question clique
+    const sendResponse = (salle,idQuizz,idQuestion,idResponse) => {
+        if (socket) {
+            socket.emit('sendResponse',userId, salle,idQuizz,idQuestion,idResponse);
+        };
+    }
 
     return (
         <SocketContext.Provider value={
@@ -105,7 +150,14 @@ export const SocketContextProvider = ({ children }) => {
                 room,
                 joinRoom,
                 user,
-                roomUsers
+                roomUsers,
+                sendQuizz,
+                question,
+                sendResponse,
+                responseCounts,
+                responseValid,
+                leaveRoom,
+                scoreQuizz
             }}>
             {children}
         </SocketContext.Provider>

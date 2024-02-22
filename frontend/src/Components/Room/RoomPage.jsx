@@ -13,14 +13,17 @@ function RoomPage({ isLogged }) {
 
     const { roomId } = useParams();
 
-    const {joinRoom, roomUsers, user, socket } = useSocketContext();
+    const {joinRoom,roomUsers,user,sendQuizz,room,scoreQuizz,socket } = useSocketContext();
     const [showQuizzCreate, setShowQuizzCreate] = useState(false);
     const [quizzList, setQuizzList] = useState([]);
     const [quizz, setQuizz] = useState({});
     const [quizzView, setQuizzView] = useState(false);
     const [userIsAdmin, setUserIsAdmin] = useState(false);
     const [timerBeforeStart, setTimerBeforeStart] = useState(null);
+    const [reload, setReload] = useState(false);
+    const [quizzProgress, setQuizzProgress] = useState(true);
 
+    //liste des quizz dans le select
     const fetchdata = async () => {
         const data = await getQuizzList();
         setQuizzList(data);
@@ -30,10 +33,12 @@ function RoomPage({ isLogged }) {
         fetchdata();
         joinRoom(roomId);
         if (user != null ) {
-            if (user.userRole === 'admin') {
+            if (user.userRole === 'admin'&& room[roomId].userEmail === user.userEmail ) {
                 setUserIsAdmin(true);
             }
         }
+
+
     }, [user]);
 
     useEffect(() => {
@@ -47,16 +52,35 @@ function RoomPage({ isLogged }) {
         });
     }, [socket]);
 
+    useEffect(() => {
+        fetchdata();
+    }, [reload]);
+
+    //affiche le formulaire de création de quizz
     const createQuizz = () => {
         setShowQuizzCreate(!showQuizzCreate);
     }
 
+    //choisir un quizz dans le select
     const handleChooseQuizz =  async () => {
         const select = document.querySelector('select');
         const quizzId = select.value;
         const thequizz = await getQuizz(quizzId);
         setQuizz(thequizz);
         setQuizzView(true);
+    }
+
+    const handleStartQuizz = () => {
+        console.log('Lancement du quizz');
+        sendQuizz(quizz, roomId);
+        setQuizzProgress(false);
+        //envoyer le quizz aux clients
+    }
+
+    const handleNextQuestion = () => {
+        roomUsers.forEach(user => {
+            user.score = scoreQuizz[user.userId];
+        });
     }
 
     const beginQuizz = () => {
@@ -78,60 +102,60 @@ function RoomPage({ isLogged }) {
                     <h2>Utilisateurs dans la salle</h2>
                     <ul className="listUserOnline">
                         {roomUsers?.map((user, index) => (
-                            <li key={index}>{user}</li>
+                            <li key={index}>{user.userEmail} score:{user.score || 0}</li>
                         ))}
                     </ul>
                 </div>
             </div>
 
             {
-                userIsAdmin 
+                userIsAdmin
                 ? <div className="createQuizz">
                     <button className="buttonCreate" onClick={() => { createQuizz () }}>Cree un quizz</button>
-                    { showQuizzCreate? <CreateQuizz setShowQuizzCreate={setShowQuizzCreate}/> : null}
+                    { showQuizzCreate? <CreateQuizz setShowQuizzCreate={setShowQuizzCreate} setReload={setReload}/> : null}
                 </div>
                 : null
             }
 
-            {
-                userIsAdmin 
-                ? <div className="selectQuizz">
-                    <div className="selectText">
-                        <select>
-                            <option value="">Sélectionnez un quizz</option>
-                                {quizzList.map((quizz, index) => (
-                                    <option key={index} value={quizz.id}>
-                                        {quizz.name}
-                                    </option>
-                                ))}
-                        </select>
-                    </div>
-                    <div className="selectText">
-                        <button onClick={handleChooseQuizz}>Choisir</button>
-                    </div>
+              {userIsAdmin && quizzProgress?
+              <div className="selectQuizz">
+              <h2>Choisir un quizz</h2>
+                <div className="selectText">
+                <select onFocus={() => setShowQuizzCreate(false)} onChange={(event) => handleChooseQuizz(event.target.value)}>
+                        {quizzList.map((quizz, index) => (
+                            <option key={index} value={quizz.id}>
+                                {quizz.name}
+                            </option>
+                        ))}
+                </select>
                 </div>
+              </div>
                 : null
             }
 
-            
+
             {
-                userIsAdmin 
-                ? <div className="btn btn-active"> 
+                userIsAdmin
+                ? <div className="btn btn-active">
                     <button onClick={() => beginQuizz()}>Lancer le quizz</button>
                 </div>
                 : null
             }
 
             <div className="viewQuestionQuizz">
-                { 
-                    userIsAdmin 
+                {
+                    userIsAdmin
                     ? (quizzView ? <ViewQuizz quizz={quizz}/> : null )
                     : null
                 }
                 <div className="cote">
-                    <ViewQuestion />
+                    <ViewQuestion roomId={roomId} handleNextQuestion={handleNextQuestion} />
                 </div>
             </div>
+            {userIsAdmin? <div className="lanceQuizz"> 
+                <button onClick={handleStartQuizz}>Lancer le quizz</button>
+            </div>: null}
+                
         </div>
     );
 }

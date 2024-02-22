@@ -11,7 +11,9 @@ const getQuizz = async (id) => {
             credentials : 'include',
         });
 
-        return await result.json();
+        let data = await result.json();
+
+        return data;
     } catch (error) {
         console.error("Erreur lors de la recherche :", error);
         throw error;

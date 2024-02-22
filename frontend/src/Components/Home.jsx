@@ -4,14 +4,16 @@ import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useEffect } from "react";
 import '../assets/css/Home.css';
+import close from '../assets/img/close.png';
 
 
 function Home({ isConnected }) {
-    const { onlineUsers, createRoom, room, user } = useSocketContext(); // Updated to include createRoom from context
+    const { onlineUsers, createRoom, room, user,leaveRoom } = useSocketContext(); // Updated to include createRoom from context
     const [roomId, setRoomId] = useState('');
     const [messages, setMessages] = useState('');
     const [userIsAdmin, setUserIsAdmin] = useState(false);
     const [userData, setUserData] = useState({});
+    const [roomClosed, setRoomClosed] = useState(false);
 
     const navigate = useNavigate();
 
@@ -22,7 +24,8 @@ function Home({ isConnected }) {
                 setUserIsAdmin(true);
             }
         }
-    }, [isConnected, user]);
+        leaveRoom();
+    },[user,isConnected]);
         
     
 
@@ -44,11 +47,11 @@ function Home({ isConnected }) {
     };
 
     return (
-        <div className="p-5">            
+        <div className="p-5">
             <div className="text-end font-semibold">
                 {
-                    isConnected 
-                    ? <div className="badge badge-primary mb-4 p-3">Connecté</div> 
+                    isConnected
+                    ? <div className="badge badge-primary mb-4 p-3">Connecté</div>
                     : <div className="badge badge-ghost mb-4 p-3">Non connecté</div>
                 }
             </div>
@@ -59,20 +62,20 @@ function Home({ isConnected }) {
                     <div className="drawer-content flex justify-end">
                         {/* Page content here */}
                         <label htmlFor="my-drawer" className="drawer-button btn btn-sm">Utilisateurs connecté</label>
-                    </div> 
+                    </div>
                     <div className="drawer-side">
                         <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
                         <ul className="menu p-4 w-96 min-h-full bg-base-200 text-base-content">
                             <h2 className="text-2xl max-w-64 text-center mx-auto">Identifiants des utilisateurs connectés</h2>
                             <ul className="listUserOnline text-center my-6 font-semibold">
                                 {
-                                    onlineUsers.length === 0 
-                                    ? <li>Aucun utilisateur connecté</li> 
+                                    onlineUsers.length === 0
+                                    ? <li>Aucun utilisateur connecté</li>
                                     : onlineUsers.map((user, index) => (
                                         <li key={index}>{user}</li>
                                     ))
                                 }
-                            </ul>                        
+                            </ul>
                         </ul>
                     </div>
                 </div>
@@ -91,7 +94,7 @@ function Home({ isConnected }) {
                         {Object.keys(room).map((key, index) => (
                             <li className="room" key={index}>
                             {room[key].name}
-                            <button className="border border-blue-300" onClick={() => handleJoinRoom(key)}>Rejoindre</button>
+                            {!roomClosed? <button className="border border-blue-300" onClick={() => handleJoinRoom(key)}>Rejoindre</button>:<img src={close}/>}
                             </li>
                         ))}
                     </ul>
