@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSocketContext } from '../../context/SocketContext';
 
 const ViewQuestion = ({roomId}) => {
-  const { question,sendResponse,responseCounts } = useSocketContext();
+  const { question,sendResponse,responseCounts,responseValid } = useSocketContext();
 
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answers, setAnswers] = useState([]);
@@ -16,6 +16,8 @@ const ViewQuestion = ({roomId}) => {
   
   }, [selectedAnswer]);
 
+  console.log("responseValid",responseValid?.response);
+
 
   return (
     <div className="viewQuestionheightQuizz">
@@ -26,8 +28,8 @@ const ViewQuestion = ({roomId}) => {
         Question : {question.question?.name}
         <ul>
           {answers.map((answer, index) => (
-            <li key={answer.id}>
-              <label>
+            <li key={answer.id} className={responseValid?.response === answer.id ? "valid" : ""}>
+              <label className='answerAlone' >
                 <input
                   type="radio"
                   name="answer"

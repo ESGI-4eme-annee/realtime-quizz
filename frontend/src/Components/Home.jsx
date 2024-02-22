@@ -7,7 +7,7 @@ import '../assets/css/Home.css';
 
 
 function Home({ isConnected }) {
-    const { onlineUsers, createRoom, room, user } = useSocketContext(); // Updated to include createRoom from context
+    const { onlineUsers, createRoom, room, user,leaveRoom } = useSocketContext(); // Updated to include createRoom from context
     const [roomId, setRoomId] = useState('');
     const [messages, setMessages] = useState('');
     const [userIsAdmin, setUserIsAdmin] = useState(false);
@@ -23,6 +23,7 @@ function Home({ isConnected }) {
                 setUserIsAdmin(true);
             }
         }
+        leaveRoom();
     },[user]);
         
     

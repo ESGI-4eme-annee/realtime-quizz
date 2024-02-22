@@ -95,3 +95,12 @@
 .answer{
     margin-left: 50px;
 }
+
+.answerAlone{
+    display: flex;
+}
+
+.valid{
+    background-color: #127920;
+}
+

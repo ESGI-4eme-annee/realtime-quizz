@@ -19,6 +19,7 @@ export const SocketContextProvider = ({ children }) => {
     const [roomUsers, setRoomUsers] = useState([]);
     const [question, setQuestion] = useState({});
     const [responseCounts, setResponseCounts] = useState({});
+    const [responseValid, setResponseValid] = useState(null);
 
 
     const fetchdata = async () => {
@@ -81,6 +82,9 @@ export const SocketContextProvider = ({ children }) => {
             socket.on('responseCounts', (responseCounts) => {
                 setResponseCounts(responseCounts);
             });
+            socket.on('responseValid', (responseValid) => {
+                setResponseValid(responseValid);
+            });
         }
 
     }, [socket]); 
@@ -101,6 +105,15 @@ export const SocketContextProvider = ({ children }) => {
         if (socket) {
             socket.emit('joinRoom', {
                 roomId: roomId,
+                userId: userId
+            });
+        }
+    };
+
+    //ROOM leave
+    const leaveRoom = () => {
+        if (socket) {
+            socket.emit('leaveRoom', {
                 userId: userId
             });
         }
@@ -136,7 +149,9 @@ export const SocketContextProvider = ({ children }) => {
                 sendQuizz,
                 question,
                 sendResponse,
-                responseCounts
+                responseCounts,
+                responseValid,
+                leaveRoom
             }}>
             {children}
         </SocketContext.Provider>
