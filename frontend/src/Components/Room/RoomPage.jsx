@@ -22,6 +22,7 @@ function RoomPage({ isLogged }) {
     const [timerBeforeStart, setTimerBeforeStart] = useState(null);
     const [reload, setReload] = useState(false);
     const [quizzProgress, setQuizzProgress] = useState(true);
+    const [viewQuestion, setViewQuestion] = useState(false);
 
     //liste des quizz dans le select
     const fetchdata = async () => {
@@ -50,11 +51,11 @@ function RoomPage({ isLogged }) {
                 }, 1000);
             }
         });
-    }, [socket]);
+    }, [socket,roomId]);
 
     useEffect(() => {
         fetchdata();
-    }, [reload]);
+    }, [reload,roomId]);
 
     //affiche le formulaire de création de quizz
     const createQuizz = () => {
@@ -74,6 +75,7 @@ function RoomPage({ isLogged }) {
         console.log('Lancement du quizz');
         sendQuizz(quizz, roomId);
         setQuizzProgress(false);
+        setViewQuestion(true);
         //envoyer le quizz aux clients
     }
 
@@ -101,7 +103,8 @@ function RoomPage({ isLogged }) {
                 <div className="userOnline">
                     <h2>Utilisateurs dans la salle</h2>
                     <ul className="listUserOnline">
-                        {roomUsers?.map((user, index) => (
+                        {roomUsers?.sort((a, b) => (b.score || 0) - (a.score || 0))
+                        .map((user, index) => (
                             <li key={index}>{user.userEmail} score:{user.score || 0}</li>
                         ))}
                     </ul>
@@ -149,7 +152,7 @@ function RoomPage({ isLogged }) {
                     : null
                 }
                 <div className="cote">
-                    <ViewQuestion roomId={roomId} handleNextQuestion={handleNextQuestion} />
+                    {viewQuestion? <ViewQuestion roomId={roomId} handleNextQuestion={handleNextQuestion} />:null}
                 </div>
             </div>
             {userIsAdmin? <div className="lanceQuizz"> 

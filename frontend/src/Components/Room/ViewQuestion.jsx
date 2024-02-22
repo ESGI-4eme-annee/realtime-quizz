@@ -6,7 +6,6 @@ const ViewQuestion = ({roomId, handleNextQuestion} ) => {
 
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answers, setAnswers] = useState([]);
-  
 
   useEffect(() => {
     setAnswers(question?.question?.Answers || []);
