@@ -100,11 +100,12 @@ export const SocketContextProvider = ({ children }) => {
 
 
     //ROOM create
-    const createRoom = (name, id) => {
+    const createRoom = (name, id,password) => {
         socket.emit('createRoom', {
             roomName: name,
             roomId: id,
-            userEmail: userEmail
+            userEmail: userEmail,
+            password: password
         });
         return room;
     };
