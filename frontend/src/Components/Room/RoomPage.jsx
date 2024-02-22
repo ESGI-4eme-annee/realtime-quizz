@@ -126,7 +126,6 @@ function RoomPage({ isLogged }) {
                     <h2>Choisir un quizz</h2>
                     <select onFocus={() => setShowQuizzCreate(false)} onChange={(event) => handleChooseQuizz(event.target.value)}
                         className="select select-bordered w-full max-w-xs">
-                            <option value="" disabled selected>Choississez un quizz</option>
                             {quizzList.map((quizz, index) => (
                                 <option key={index} value={quizz.id}>
                                     {quizz.name}
@@ -136,7 +135,6 @@ function RoomPage({ isLogged }) {
                 </div>
                 : null
             }
-
 
             {
                 userIsAdmin

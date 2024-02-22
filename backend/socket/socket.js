@@ -143,14 +143,15 @@ function quizz(socket,io) {
             }
             questionResponseMap[roomId][quizzId][quizzQuestions[time].id] = quizzQuestions[time].Answers.find(answer => answer.valid === true).id;
 
-            io.to(roomId).emit('responseValid', {"response":questionResponseMap[roomId][quizzId][quizzQuestions[time].id]});
+            let responseId = questionResponseMap[roomId][quizzId][quizzQuestions[time].id];
+            io.to(roomId).emit('responseValid', {"response":responseId});
 
             // calccul du score
             if (!scoreUserMap[roomId]) {
                 scoreUserMap[roomId] = {};
             }
-            if (!scoreUserMap[roomId][ quizzId]) {
-                scoreUserMap[roomId][ quizzId] ={};
+            if (!scoreUserMap[roomId][quizzId]) {
+                scoreUserMap[roomId][quizzId] ={};
             }
 
             for (const user in roomQuizzProgressMap[roomId][ quizzId][quizzQuestions[time].id]) {
@@ -171,27 +172,14 @@ function quizz(socket,io) {
                 time++;
                io.to(roomId).emit('question', {"question":roomQuizzMap[roomId].questions[time], "idQuizz": quizzId});
             }, 5000);
-
         }, 5000);
-
-
     });
 
     //response envoyer par les joueurs
     socket.on('sendResponse', (userId, salle, idQuizz, idQuestion, idResponse) => {
-
-        if (!roomQuizzProgressMap[salle]) {
-            roomQuizzProgressMap[salle] = {};
-        }
-
-        if (!roomQuizzProgressMap[salle][idQuizz]) {
-            roomQuizzProgressMap[salle][idQuizz] = {};
-        }
-
-        if (!roomQuizzProgressMap[salle][idQuizz][idQuestion]) {
-            roomQuizzProgressMap[salle][idQuizz][idQuestion] = {};
-        }
-
+        roomQuizzProgressMap[salle] ??= {};
+        roomQuizzProgressMap[salle][idQuizz] ??= {};
+        roomQuizzProgressMap[salle][idQuizz][idQuestion] ??= {};
         roomQuizzProgressMap[salle][idQuizz][idQuestion][userId] = idResponse;
 
         console.log("roomQuizzProgressMap", roomQuizzProgressMap[salle][idQuizz][idQuestion]);

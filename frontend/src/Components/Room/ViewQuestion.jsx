@@ -10,12 +10,12 @@ const ViewQuestion = ({roomId, handleNextQuestion} ) => {
   useEffect(() => {
     setAnswers(question?.question?.Answers || []);
     handleNextQuestion();
-    
   }, [question]);
 
   useEffect(() => {
-   sendResponse(roomId, question.idQuizz, question.question?.id, selectedAnswer);
-  
+    if (selectedAnswer !== null && responseValid == null) {
+      sendResponse(roomId, question.idQuizz, question.question?.id, selectedAnswer);
+    }  
   }, [selectedAnswer,answers]);
 
   return (
