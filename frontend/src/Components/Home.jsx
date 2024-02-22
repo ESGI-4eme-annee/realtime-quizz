@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useEffect } from "react";
 import '../assets/css/Home.css';
+import close from '../assets/img/close.png';
 
 
 function Home({ isConnected }) {
@@ -12,6 +13,7 @@ function Home({ isConnected }) {
     const [messages, setMessages] = useState('');
     const [userIsAdmin, setUserIsAdmin] = useState(false);
     const [userData, setUserData] = useState({});
+    const [roomClosed, setRoomClosed] = useState(false);
 
     const navigate = useNavigate();
 
@@ -74,7 +76,7 @@ function Home({ isConnected }) {
                         {Object.keys(room).map((key, index) => (
                             <li className="room" key={index}>
                             {room[key].name}
-                            <button className="border border-blue-300" onClick={() => handleJoinRoom(key)}>Rejoindre</button>
+                            {!roomClosed? <button className="border border-blue-300" onClick={() => handleJoinRoom(key)}>Rejoindre</button>:<img src={close}/>}
                             </li>
                         ))}
                     </ul>

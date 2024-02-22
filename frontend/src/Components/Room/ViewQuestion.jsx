@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useSocketContext } from '../../context/SocketContext';
 
-const ViewQuestion = ({roomId}) => {
+const ViewQuestion = ({roomId, handleNextQuestion} ) => {
   const { question,sendResponse,responseCounts,responseValid } = useSocketContext();
 
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answers, setAnswers] = useState([]);
+  
 
   useEffect(() => {
     setAnswers(question?.question?.Answers || []);
+    handleNextQuestion();
   }, [question]);
 
   useEffect(() => {
-   sendResponse(roomId,question.idQuizz,question.question?.id,selectedAnswer);
+   sendResponse(roomId, question.idQuizz, question.question?.id, selectedAnswer);
   
-  }, [selectedAnswer]);
+  }, [selectedAnswer,answers]);
 
-  console.log("responseValid",responseValid?.response);
 
 
   return (
@@ -34,7 +35,7 @@ const ViewQuestion = ({roomId}) => {
                   type="radio"
                   name="answer"
                   value={answer.id}
-                  checked={selectedAnswer === answer.id}
+                  checked={index === 0 || selectedAnswer === answer.id}
                   onChange={() => setSelectedAnswer(answer.id)}
                 />
                 {answer.name}( {responseCounts[answer.id] || 0})

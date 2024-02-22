@@ -24,9 +24,9 @@ const userSocketMap = {}; // {userId: socketId}; : liste des utilisateurs connec
 io.on('connection', (socket) => {
     console.log('Un client est connecté', socket.id);
 
-    const userId = socket.handshake.query.userId;
-    if (userId != "undefined") {
-        userSocketMap[userId] = socket.id;
+    const userEmail = socket.handshake.query.userEmail;
+    if (userEmail != "undefined") {
+        userSocketMap[userEmail] = socket.id;
 
         // Envoi de la liste des utilisateurs connectés
         io.emit('onlineUsers', Object.keys(userSocketMap));
@@ -36,17 +36,14 @@ io.on('connection', (socket) => {
 
     room(socket,io);
 
-    quizz(socket,io,userId);
+    quizz(socket,io);
 
     socket.on("disconnect", () => {
         console.log("Client déconnecté");
-        delete userSocketMap[userId];
+        delete userSocketMap[userEmail];
         io.emit('onlineUsers', Object.keys(userSocketMap));
     });
 });
-
-
-
 
 function room(socket,io)  {
 
@@ -54,7 +51,7 @@ function room(socket,io)  {
         const roomId = socket.roomId;
         const roomName = socket.roomName;
         if (roomId != "undefined") {
-            roomSocketMap[roomId] = {name : roomName, userId:socket.userId};
+            roomSocketMap[roomId] = {name : roomName, userEmail:socket.userEmail};
         }
 
         io.emit('roomCreated', roomSocketMap);
@@ -62,35 +59,38 @@ function room(socket,io)  {
 
     socket.on('joinRoom', (data) => {
         const roomId = data.roomId;
+        const userEmail = data.userEmail;
         const userId = data.userId;
 
         if (roomSocketMap[roomId])
         {
             socket.join(roomId);
-            io.to(roomId).emit('userJoinedRoom', userId);
+            io.to(roomId).emit('userJoinedRoom', userEmail);
 
             roomUserMap[roomId] = roomUserMap[roomId] || [];
-            if (!roomUserMap[roomId].includes(userId)) {
-            roomUserMap[roomId].push(userId);
+
+            const userObject = {userEmail: userEmail, userId: userId};
+            if (!roomUserMap[roomId].some(user => user.userId === userId)) {
+                roomUserMap[roomId].push(userObject);
             }
             io.to(roomId).emit('roomUsers', roomUserMap[roomId]);
 
-            console.log(`Le client ${userId} a rejoint le salon ${roomId}`);
+            console.log(`Le client ${userEmail} a rejoint le salon ${roomId}`);
         } else 
         {
-            console.log(`Le salon ${roomId} n'existe pas`);
+            console.log(`Le salon ${userEmail} n'existe pas`);
         }
        
     });
     socket.on('leaveRoom', (data) => {
-        const userId = data.userId;
+        const userEmail = data.userEmail;
 
         const roomsJoined = socket.rooms;
 
         roomsJoined?.forEach(room => {
             socket.leave(room);
-        console.log(`Le client ${userId} a quitté le salon ${room}`);
-        const userIndex = roomUserMap[room]?.indexOf(userId);
+        console.log(`Le client ${userEmail} a quitté le salon ${room}`);
+        const userIndex = roomUserMap[room]?.indexOf(userEmail);
     
         if (roomUserMap[room] && userIndex !== -1) {
             roomUserMap[room].splice(userIndex, 1);
@@ -102,10 +102,10 @@ function room(socket,io)  {
     });
 }
 
-const roomQuizzMap = {}; // {roomId: quizz}; : liste des salles et des quizz qui les ont créées
-const roomQuizzProgressMap = {}; // {roomId: {time: time, question: question}}; : liste des salles et des quizz qui les ont créées
-const questionResponseMap = {}; // {}}; 
-const scoreUserMap = {}; // {roomId: {userId: score}}; : liste des salles et des utilisateurs et leur score
+const roomQuizzMap = {};
+const roomQuizzProgressMap = {}; 
+const questionResponseMap = {};
+const scoreUserMap = {}; 
 
 function quizz(socket,io) {
     socket.on('sendQuizz', (data) => {
@@ -149,7 +149,7 @@ function quizz(socket,io) {
                 scoreUserMap[roomId][ quizzId][user] +=1;
                }
             }
-            
+            io.to(roomId).emit('scoreQuizz', scoreUserMap[roomId][quizzId]);
             console.log("scoreUserMap", scoreUserMap[roomId][quizzId]);
 
             //question suivante

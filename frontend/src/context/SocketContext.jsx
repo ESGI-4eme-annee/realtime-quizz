@@ -13,6 +13,7 @@ export const SocketContextProvider = ({ children }) => {
 
     const [socket, setSocket] = useState(null);
     const [userId, setUserId] = useState(null);
+    const [userEmail, setUserEmail] = useState(null);
     const [user,setUser] = useState(null);
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [room, setRoom] = useState({});
@@ -20,6 +21,7 @@ export const SocketContextProvider = ({ children }) => {
     const [question, setQuestion] = useState({});
     const [responseCounts, setResponseCounts] = useState({});
     const [responseValid, setResponseValid] = useState(null);
+    const [scoreQuizz, setScoreQuizz] = useState([]);
 
 
     const fetchdata = async () => {
@@ -29,6 +31,7 @@ export const SocketContextProvider = ({ children }) => {
                 if (data != null) {
                     setUserId(data.userId);
                     setUser(data);
+                    setUserEmail(data.userEmail);
                 }
             } else {
                 console.log("Token not found in localStorage");
@@ -70,10 +73,11 @@ export const SocketContextProvider = ({ children }) => {
             socket.on('roomCreated', (room) => {
                 setRoom(room);
             });
-            socket.on('userJoinedRoom', (userId) => {
-                console.log(`Le client ${userId} a rejoint le salon`);
+            socket.on('userJoinedRoom', (data) => {
+                console.log(`Le client ${data.userId} a rejoint le salon`);
             });
             socket.on('roomUsers', (roomUserMap) => {
+                console.log(roomUserMap);
                 setRoomUsers(roomUserMap);
             });
             socket.on('question', (question) => {
@@ -85,6 +89,9 @@ export const SocketContextProvider = ({ children }) => {
             socket.on('responseValid', (responseValid) => {
                 setResponseValid(responseValid);
             });
+            socket.on('scoreQuizz', (scoreQuizz) => {
+                setScoreQuizz(scoreQuizz);
+            });
         }
 
     }, [socket]); 
@@ -95,7 +102,7 @@ export const SocketContextProvider = ({ children }) => {
         socket.emit('createRoom', {
             roomName: name,
             roomId: id,
-            userId: userId
+            userEmail: userEmail
         });
         return room;
     };
@@ -105,6 +112,7 @@ export const SocketContextProvider = ({ children }) => {
         if (socket) {
             socket.emit('joinRoom', {
                 roomId: roomId,
+                userEmail: userEmail,
                 userId: userId
             });
         }
@@ -151,7 +159,8 @@ export const SocketContextProvider = ({ children }) => {
                 sendResponse,
                 responseCounts,
                 responseValid,
-                leaveRoom
+                leaveRoom,
+                scoreQuizz
             }}>
             {children}
         </SocketContext.Provider>

@@ -13,7 +13,7 @@ function RoomPage({ isLogged }) {
 
     const { roomId } = useParams();
 
-    const {joinRoom,roomUsers,user,sendQuizz } = useSocketContext();
+    const {joinRoom,roomUsers,user,sendQuizz,room,scoreQuizz } = useSocketContext();
     const [showQuizzCreate, setShowQuizzCreate] = useState(false);
     const [quizzList, setQuizzList] = useState([]);
     const [quizz, setQuizz] = useState({});
@@ -28,15 +28,16 @@ function RoomPage({ isLogged }) {
         setQuizzList(data);
     }
     
-    
     useEffect(() => {
         fetchdata();
         joinRoom(roomId);
         if (user != null ) {
-            if (user.userRole === 'admin') {
+            if (user.userRole === 'admin'&& room[roomId].userEmail === user.userEmail ) {
                 setUserIsAdmin(true);
             }
         }
+
+       
     }, [user]);
 
     useEffect(() => {
@@ -60,10 +61,23 @@ function RoomPage({ isLogged }) {
     const handleStartQuizz = () => {
         console.log('Lancement du quizz');
         sendQuizz(quizz, roomId);
-        setQuizzProgress(false);    
+        setQuizzProgress(false);  
         //envoyer le quizz aux clients
-       
+    }
 
+    const handleNextQuestion = () => {
+        console.log(roomUsers);
+        console.log(scoreQuizz);
+        roomUsers.forEach(user => {
+            user.score = scoreQuizz[user.userId];
+
+        //     console.log("user.userId",user.userId);
+        //     console.log("scoreQuizz[user.userId]",scoreQuizz[user.userId]);
+        //    if (scoreQuizz[user.userId] == user.userId) {
+        //        console.log('Utilisateur trouvé');
+        //       }
+        });
+        console.log('Question suivante');
 
     }
 
@@ -77,7 +91,7 @@ function RoomPage({ isLogged }) {
                     <h2>Utilisateurs dans la salle</h2>
                     <ul className="listUserOnline">
                         {roomUsers?.map((user, index) => (
-                            <li key={index}>{user}</li>
+                            <li key={index}>{user.userEmail} score:{user.score || 0}</li>
                         ))}
                     </ul>
                 </div>
@@ -110,7 +124,7 @@ function RoomPage({ isLogged }) {
                     {quizzView ? <ViewQuizz quizz={quizz}/> : null }
                 </div>: null}
                 <div className="cote">
-                    <ViewQuestion roomId={roomId} />
+                    <ViewQuestion roomId={roomId} handleNextQuestion={handleNextQuestion} />
                 </div>
             </div>
             {userIsAdmin? <div className="lanceQuizz"> 
