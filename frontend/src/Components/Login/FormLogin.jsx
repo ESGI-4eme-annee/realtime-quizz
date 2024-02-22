@@ -73,7 +73,7 @@ function FormTheme({setIsLogged}) {
                 />
             </div>
         </div>
-        <input type="submit" value="Se connecter" className="register-login__form__submit"/>
+        <input type="submit" value="Se connecter" className="register-login__form__submit cursor-pointer"/>
       </form>
 
   );
