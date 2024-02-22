@@ -11,14 +11,13 @@ const ViewQuestion = ({roomId, handleNextQuestion} ) => {
   useEffect(() => {
     setAnswers(question?.question?.Answers || []);
     handleNextQuestion();
+    
   }, [question]);
 
   useEffect(() => {
    sendResponse(roomId, question.idQuizz, question.question?.id, selectedAnswer);
   
   }, [selectedAnswer,answers]);
-
-
 
   return (
     <div className="viewQuestionheightQuizz">
@@ -35,8 +34,11 @@ const ViewQuestion = ({roomId, handleNextQuestion} ) => {
                   type="radio"
                   name="answer"
                   value={answer.id}
-                  checked={index === 0 || selectedAnswer === answer.id}
-                  onChange={() => setSelectedAnswer(answer.id)}
+                  checked={selectedAnswer === answer.id}
+                  onChange={() => { 
+                    if (responseValid == null) {
+                      setSelectedAnswer(answer.id);
+                    }}}
                 />
                 {answer.name}( {responseCounts[answer.id] || 0})
               </label>

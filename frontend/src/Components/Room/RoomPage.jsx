@@ -104,18 +104,15 @@ function RoomPage({ isLogged }) {
             </div>: null}
 
               {userIsAdmin && quizzProgress?<div className="selectQuizz">
+              <h2>Choisir un quizz</h2>
                 <div className="selectText">
-                <select onFocus={() => setShowQuizzCreate(false)}>
-                    <option value="">Sélectionnez un quizz</option>
+                <select onFocus={() => setShowQuizzCreate(false)} onChange={(event) => handleChooseQuizz(event.target.value)}>
                         {quizzList.map((quizz, index) => (
                             <option key={index} value={quizz.id}>
                                 {quizz.name}
                             </option>
                         ))}
                 </select>
-                </div>
-                <div className="selectText">
-                <button onClick={handleChooseQuizz}>Choisir</button>
                 </div>
             </div>: null}
 

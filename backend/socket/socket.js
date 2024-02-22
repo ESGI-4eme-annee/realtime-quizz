@@ -76,6 +76,7 @@ function room(socket,io)  {
             io.to(roomId).emit('roomUsers', roomUserMap[roomId]);
 
             console.log(`Le client ${userEmail} a rejoint le salon ${roomId}`);
+
         } else 
         {
             console.log(`Le salon ${userEmail} n'existe pas`);
@@ -154,6 +155,7 @@ function quizz(socket,io) {
 
             //question suivante
             setTimeout(function() {
+                io.to(roomId).emit('responseValid', null);
                 time--;
                io.to(roomId).emit('question', {"question":roomQuizzMap[roomId].questions[time], "idQuizz": quizzId});
             }, 5000); 
