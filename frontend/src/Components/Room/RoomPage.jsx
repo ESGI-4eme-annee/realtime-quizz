@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
 import '../../assets/css/Room.css';
 
 import { useSocketContext } from '../../context/SocketContext';
@@ -27,14 +27,19 @@ function RoomPage({ isLogged }) {
     const [displayNotification, setDisplayNotification] = useState(false);
     const [notification, setNotification] = useState({});
 
+    const navigate = useNavigate();
+
+
     //liste des quizz dans le select
     const fetchdata = async () => {
         const data = await getQuizzList();
         setQuizzList(data);
     }
 
-
     useEffect(() => {
+        // if(roomDontExist){
+        //     navigate(`/`);
+        // }
         fetchdata();
         joinRoom(roomId);
         if (user != null ) {
@@ -86,10 +91,11 @@ function RoomPage({ isLogged }) {
     //affiche le formulaire de création de quizz
     const createQuizz = () => {
         setShowQuizzCreate(!showQuizzCreate);
+        document.getElementById('my_modal_1').showModal()
     }
 
     //choisir un quizz dans le select
-    const handleChooseQuizz =  async () => {
+    const handleConfirmation =  async () => {
         const select = document.querySelector('select');
         const quizzId = select.value;
         const thequizz = await getQuizz(quizzId);
@@ -140,8 +146,21 @@ function RoomPage({ isLogged }) {
             {
                 userIsAdmin
                 ? <div className="createQuizz">
-                    <button className="buttonCreate" onClick={() => { createQuizz () }}>Cree un quizz</button>
-                    { showQuizzCreate? <CreateQuizz setShowQuizzCreate={setShowQuizzCreate} setReload={setReload}/> : null}
+                    {/* <button className="buttonCreate" onClick={() => { createQuizz () }}>Cree un quizz</button> */}
+                    {/* { showQuizzCreate? <CreateQuizz setShowQuizzCreate={setShowQuizzCreate} setReload={setReload}/> : null} */}
+                   <button className="btn" onClick={() => { createQuizz () }}>open modal</button> 
+                    <dialog id="my_modal_1" className="modal">
+                        <div className="modal-box">
+                        <h3 className="font-bold text-lg">Creation du Quizz</h3>
+                        { showQuizzCreate?<CreateQuizz setShowQuizzCreate={setShowQuizzCreate} setReload={setReload}/>: null}
+                            <div className="modal-action">
+                            <form method="dialog">
+                                {/* if there is a button in form, it will close the modal */}
+                                <button className="btn">Close</button>
+                            </form>
+                            </div>
+                        </div>
+                    </dialog>
                 </div>
                 : null
             }
@@ -149,15 +168,17 @@ function RoomPage({ isLogged }) {
             {
                 userIsAdmin && quizzProgress
                 ? <div className="selectQuizz">
-                    <h2>Choisir un quizz</h2>
-                    <select onFocus={() => setShowQuizzCreate(false)} onChange={(event) => handleChooseQuizz(event.target.value)}
-                        className="select select-bordered w-full max-w-xs">
+                     <h2>Choisir un quizz</h2>
+                        <select onFocus={() => setShowQuizzCreate(false)} className="select select-bordered w-full max-w-xs">
+                            <option value="" disabled>Choisissez un quizz</option>
                             {quizzList.map((quizz, index) => (
-                                <option key={index} value={quizz.id}>
-                                    {quizz.name}
-                                </option>
+                            <option key={index} value={quizz.id}>
+                                {quizz.name}
+                            </option>
                             ))}
-                    </select>
+                        </select>
+                        <button className="btn" onClick={() => handleConfirmation()}>Confirmer</button>
+
                 </div>
                 : null
             }
