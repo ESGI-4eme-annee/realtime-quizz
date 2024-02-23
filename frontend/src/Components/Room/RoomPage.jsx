@@ -81,7 +81,7 @@ function RoomPage({ isLogged }) {
             }, 3000);
         });
 
-        socket?.on('alertQuizzEnd', (data) => {
+        socket?.on('alertQuestionWillEnd', (data) => {
             setNotification(data);
             setDisplayNotification(true);
             setTimeout(() => {

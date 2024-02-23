@@ -111,10 +111,6 @@ function room(socket,io)  {
         let interval = setInterval(() => {
             time--;
             if (time < 0) {
-                io.emit('alertQuizzStarting', {
-                    title: 'Le quizz commence 🏁',
-                    message: 'Bon courage ! 💪'
-                });
                 return clearInterval(interval);
             }
             io.emit('timerBeforeStart', time);
@@ -136,12 +132,16 @@ function quizz(socket,io) {
         const quizzQuestions = quizz.Questions;
         let time = 0;//ca prend +1 a chaque fin de temps de question pour passer a la question suivante
 
+        io.emit('alertQuizzStarting', {
+            title: 'Le quizz commence 🏁',
+            message: 'Bon courage ! 💪'
+        });
+
         roomQuizzMap[roomId] = {"name":quizzName, "questions":quizzQuestions};
 
         roomSocketMap[roomId].state = false;
         io.emit('roomCreated', roomSocketMap);
         io.to(roomId).emit('question', {"question":roomQuizzMap[roomId].questions[time], "idQuizz": quizzId});
-        
 
         //reponse a la question
         setTimeout(function() {
