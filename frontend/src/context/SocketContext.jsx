@@ -21,6 +21,8 @@ export const SocketContextProvider = ({ children }) => {
     const [responseCounts, setResponseCounts] = useState({});
     const [responseValid, setResponseValid] = useState(null);
     const [reloadData, setReloadData] = useState(false);
+    const [clientJoin, setClientJoin] = useState(false);
+    const [roomDontExist, setRoomDontExist] = useState(false);
 
     const fetchdata = async () => {
         try {
@@ -73,10 +75,13 @@ export const SocketContextProvider = ({ children }) => {
     useEffect(() => {
         if (socket) {
             socket.on('roomCreated', (room) => {
+                console.log('roomCreated', room);
                 setRoom(room);
             });
-            socket.on('userJoinedRoom', (data) => {
-                console.log(`Le client ${data.userId} a rejoint le salon`);
+            socket.on('userJoinedRoom', (userEmail) => {
+                console.log(`Le client ${userEmail} a rejoint le salon`);
+                setClientJoin(userEmail);
+
             });
             socket.on('roomUsers', (roomUserMap) => {
                 setRoomUsers(roomUserMap);
@@ -91,7 +96,6 @@ export const SocketContextProvider = ({ children }) => {
                 setResponseValid(responseValid);
             });
         }
-
     }, [socket]); 
 
 
@@ -148,7 +152,9 @@ export const SocketContextProvider = ({ children }) => {
                 sendResponse,
                 responseCounts,
                 responseValid,
-                leaveRoom
+                leaveRoom,
+                clientJoin,
+                roomDontExist
             }}>
             {children}
         </SocketContext.Provider>

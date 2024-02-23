@@ -52,7 +52,7 @@ function room(socket,io)  {
         const roomName = socket.roomName;
         const password = socket.password;
         if (roomId != "undefined") {
-            roomSocketMap[roomId] = {name : roomName, userEmail:socket.userEmail, password:password};
+            roomSocketMap[roomId] = {name : roomName, userEmail:socket.userEmail, password:password, state : true};
         }
 
         io.emit('roomCreated', roomSocketMap);
@@ -91,12 +91,15 @@ function room(socket,io)  {
 
         roomsJoined?.forEach(room => {
             socket.leave(room);
-        console.log(`Le client ${userEmail} a quitté le salon ${room}`);
-        const userIndex = roomUserMap[room]?.indexOf(userEmail);
 
-        if (roomUserMap[room] && userIndex !== -1) {
-            roomUserMap[room].splice(userIndex, 1);
-        }
+            const userIndex = roomUserMap[room]?.findIndex(user => user.userEmail === userEmail);
+            console.log('userIndex', userIndex);
+
+            if (roomUserMap[room]) {
+                roomUserMap[room].splice(userIndex, 1);
+            }
+            console.log('roomUserMap', roomUserMap[room]);
+
         io.to(room).emit('roomUsers', roomUserMap[room]);
         });
 
@@ -172,6 +175,10 @@ function quizz(socket,io) {
                 return;
             }
             io.to(roomId).emit('timerBeforeStart', time);
+            io.to(roomId).emit('alertQuizzStarting', {
+                title: 'Le quizz commence 🏁',
+                message: 'Bon courage ! 💪'
+            });
         }, 1000);
     });
 

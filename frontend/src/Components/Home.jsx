@@ -8,16 +8,18 @@ import close from '../assets/img/close.png';
 
 
 function Home({ isConnected }) {
-    const { onlineUsers, createRoom, room, user,leaveRoom,handleReloadData } = useSocketContext(); // Updated to include createRoom from context
+    const { onlineUsers, createRoom, room, user,leaveRoom,handleReloadData,question } = useSocketContext(); // Updated to include createRoom from context
     const [roomId, setRoomId] = useState('');
     const [messages, setMessages] = useState('');
     const [userIsAdmin, setUserIsAdmin] = useState(false);
     const [userData, setUserData] = useState({});
-    const [roomClosed, setRoomClosed] = useState(false);
+    const [roomClosed, setRoomClosed] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
 
 
     const navigate = useNavigate();
+
+    console.log("room",room);
 
     useEffect(() => {
         if (user != null ) {
@@ -32,6 +34,7 @@ function Home({ isConnected }) {
 
     useEffect(() => {
         handleReloadData();
+       
     },[]);
         
     
@@ -124,7 +127,7 @@ function Home({ isConnected }) {
                             {room[key].name}
                             {room[key].password? <p>Privée</p>:<p>Public</p>}
                             {room[key].password?<input className="inputDesign" type="password" id="testPasswordRoom" />:null}
-                            {!roomClosed? <button className="border border-blue-300" onClick={() => handleJoinRoom(key)}>Rejoindre</button>:<img src={close}/>}
+                            {room[key].state? <button className="border border-blue-300" onClick={() => handleJoinRoom(key)}>Rejoindre</button>:<img src={close}/>}
                             </li>
                         ))}
                     </ul>
