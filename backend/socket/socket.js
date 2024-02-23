@@ -91,12 +91,15 @@ function room(socket,io)  {
 
         roomsJoined?.forEach(room => {
             socket.leave(room);
-        console.log(`Le client ${userEmail} a quitté le salon ${room}`);
-        const userIndex = roomUserMap[room]?.indexOf(userEmail);
 
-        if (roomUserMap[room] && userIndex !== -1) {
-            roomUserMap[room].splice(userIndex, 1);
-        }
+            const userIndex = roomUserMap[room]?.findIndex(user => user.userEmail === userEmail);
+            console.log('userIndex', userIndex);
+
+            if (roomUserMap[room]) {
+                roomUserMap[room].splice(userIndex, 1);
+            }
+            console.log('roomUserMap', roomUserMap[room]);
+
         io.to(room).emit('roomUsers', roomUserMap[room]);
         });
 
