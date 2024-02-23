@@ -52,7 +52,7 @@ function room(socket,io)  {
         const roomName = socket.roomName;
         const password = socket.password;
         if (roomId != "undefined") {
-            roomSocketMap[roomId] = {name : roomName, userEmail:socket.userEmail, password:password};
+            roomSocketMap[roomId] = {name : roomName, userEmail:socket.userEmail, password:password, state : true};
         }
 
         io.emit('roomCreated', roomSocketMap);
@@ -135,7 +135,10 @@ function quizz(socket,io) {
 
         roomQuizzMap[roomId] = {"name":quizzName, "questions":quizzQuestions};
 
+        roomSocketMap[roomId].state = false;
+        io.emit('roomCreated', roomSocketMap);
         io.to(roomId).emit('question', {"question":roomQuizzMap[roomId].questions[time], "idQuizz": quizzId});
+        
 
         //reponse a la question
         setTimeout(function() {
