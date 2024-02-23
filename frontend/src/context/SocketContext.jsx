@@ -76,6 +76,7 @@ export const SocketContextProvider = ({ children }) => {
     useEffect(() => {
         if (socket) {
             socket.on('roomCreated', (room) => {
+                console.log('roomCreated', room);
                 setRoom(room);
             });
             socket.on('userJoinedRoom', (userEmail) => {
