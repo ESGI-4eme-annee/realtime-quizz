@@ -1,22 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useSocketContext } from '../../context/SocketContext';
 
-const ViewUserQuestion = ({nextQuestion, roomId, handleNextQuestion} ) => {
-  // const { question,sendResponse,responseCounts,responseValid } = useSocketContext();
+const ViewUserQuestion = ({nextQuestion, roomId, timerQuestion, quizzId} ) => {
+  const { sendResponse } = useSocketContext();
 
-  // const [selectedAnswer, setSelectedAnswer] = useState(null);
-  // const [answers, setAnswers] = useState([]);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
 
-  // useEffect(() => {
-  //   setAnswers(question?.question?.Answers || []);
-  //   handleNextQuestion();
-  // }, [question]);
-
-  // useEffect(() => {
-  //   if (selectedAnswer !== null && responseValid == null) {
-  //     sendResponse(roomId, question.idQuizz, question.question?.id, selectedAnswer);
-  //   }  
-  // }, [selectedAnswer,answers]);
+  useEffect(() => {
+    if (timerQuestion === 0) {
+        sendResponse(roomId, quizzId, nextQuestion.id, selectedAnswer);
+    }
+  }, [timerQuestion]);
 
   return (
     <div className="viewQuestionheightQuizz">
@@ -34,13 +28,9 @@ const ViewUserQuestion = ({nextQuestion, roomId, handleNextQuestion} ) => {
                   name="answer"
                   value={answer.id}
                   // checked={selectedAnswer === answer.id}
-                  // onChange={() => { 
-                  //   if (responseValid == null) {
-                  //     setSelectedAnswer(answer.id);
-                  //   }}}
+                  onChange={() => setSelectedAnswer(answer.id)}
                 />
                 {answer.name}
-                {/* ( {responseCounts[answer.id] || 0}) */}
               </label>
             </li>
           ))}

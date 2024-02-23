@@ -20,7 +20,6 @@ export const SocketContextProvider = ({ children }) => {
     const [question, setQuestion] = useState({});
     const [responseCounts, setResponseCounts] = useState({});
     const [responseValid, setResponseValid] = useState(null);
-    const [scoreQuizz, setScoreQuizz] = useState([]);
     const [reloadData, setReloadData] = useState(false);
 
     const fetchdata = async () => {
@@ -91,9 +90,6 @@ export const SocketContextProvider = ({ children }) => {
             socket.on('responseValid', (responseValid) => {
                 setResponseValid(responseValid);
             });
-            socket.on('scoreQuizz', (scoreQuizz) => {
-                setScoreQuizz(scoreQuizz);
-            });
         }
 
     }, [socket]); 
@@ -131,9 +127,9 @@ export const SocketContextProvider = ({ children }) => {
     };
 
     //Qizz question clique
-    const sendResponse = (salle,idQuizz,idQuestion,idResponse) => {
+    const sendResponse = (roomId,idQuizz,idQuestion,idResponse) => {
         if (socket) {
-            socket.emit('sendResponse',userId, salle,idQuizz,idQuestion,idResponse);
+            socket.emit('sendResponse', user.userEmail, roomId,idQuizz,idQuestion,idResponse);
         };
     }
 
@@ -152,8 +148,7 @@ export const SocketContextProvider = ({ children }) => {
                 sendResponse,
                 responseCounts,
                 responseValid,
-                leaveRoom,
-                scoreQuizz
+                leaveRoom
             }}>
             {children}
         </SocketContext.Provider>

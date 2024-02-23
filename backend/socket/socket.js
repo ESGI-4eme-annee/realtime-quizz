@@ -102,30 +102,16 @@ function room(socket,io)  {
 
 
     });
-    socket.on('startQuizz', () => {
-        let time = 5;
-        io.emit('timerBeforeStart', time);
-        let interval = setInterval(() => {
-            time--;
-            if (time < 0) {
-                return clearInterval(interval);
-            }
-            io.emit('timerBeforeStart', time);
-        }, 1000);
-    });
 }
-
-const roomQuizzMap = {};
-const roomQuizzProgressMap = {};
-const questionResponseMap = {};
-const scoreUserMap = {};
 
 const roomQuestions = [
     // Exemple de données
     // {
     //     roomId: "1",
     //     quizzId: "1",
-    //     questions: [
+    //     numberOfQuestions: 3,
+    //     currentTimer: 10,
+    //     Questions: [
     //         {
     //             id: 10,
     //             name: 'Couleur blanche',
@@ -136,6 +122,16 @@ const roomQuestions = [
     //                 { id: 29, name: 'vert', valid: false, questionId: 10 },
     //                 { id: 30, name: 'jaune', valid: false, questionId: 10 }
     //             ]
+    //         }
+    //     ],
+    //     scores: [
+    //         {
+    //             userId: 1,
+    //             score: 4
+    //         },
+    //         {
+    //             userId: 2,
+    //             score: 1
     //         }
     //     ]
     // }
@@ -150,10 +146,12 @@ function quizz(socket,io) {
             roomId: roomId,
             quizzId: quizz.id,
             questions: quizz.Questions,
-            numberOfQuestions: quizz.Questions.length
+            numberOfQuestions: quizz.Questions.length,
+            currentTimer: quizz.Questions[0].time,
+            scores: []
         });
 
-        let time = 5;
+        let time = 3;
         io.emit('timerBeforeStart', time);
         let interval = setInterval(() => {
             time--;
@@ -201,22 +199,22 @@ function quizz(socket,io) {
     });
 
     //response envoyer par les joueurs
-    socket.on('sendResponse', (userId, salle, idQuizz, idQuestion, idResponse) => {
-        // roomQuizzProgressMap[salle] ??= {};
-        // roomQuizzProgressMap[salle][idQuizz] ??= {};
-        // roomQuizzProgressMap[salle][idQuizz][idQuestion] ??= {};
-        // roomQuizzProgressMap[salle][idQuizz][idQuestion][userId] = idResponse;
+    socket.on('sendResponse', (userEmail, roomId, quizzId, idQuestion, idResponse) => {
+        const question = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions.find(question => question.id === idQuestion);
+        const response = question.Answers.find(answer => answer.id === idResponse);
 
-        // console.log("roomQuizzProgressMap", roomQuizzProgressMap[salle][idQuizz][idQuestion]);
+        let scores = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).scores;
+        if (response && response.valid) {
+            const score = scores.find(score => score.userEmail === userEmail);
+            if (score) {
+                score.score++;
+            } else {
+                scores.push({userEmail, score: 1});
+            }
+        }
 
-        // const responseCounts = Object.values(roomQuizzProgressMap[salle][idQuizz][idQuestion]).reduce((acc, value) => {
-        //     acc[value] = (acc[value] || 0) + 1;
-        //     return acc;
-        // }, {});
-
-        // io.to(salle).emit('responseCounts', responseCounts);
+        io.to(roomId).emit('scoresQuizz', scores);
     });
 }
-
 
 module.exports = {app, io, server};

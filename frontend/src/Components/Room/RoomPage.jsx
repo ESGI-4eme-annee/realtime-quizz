@@ -13,7 +13,7 @@ function RoomPage({ isLogged }) {
 
     const { roomId } = useParams();
 
-    const {joinRoom,roomUsers,user,room,scoreQuizz,socket } = useSocketContext();
+    const {joinRoom, roomUsers, user, room, socket } = useSocketContext();
     const [showQuizzCreate, setShowQuizzCreate] = useState(false);
     const [quizzList, setQuizzList] = useState([]);
     const [quizz, setQuizz] = useState({});
@@ -25,6 +25,7 @@ function RoomPage({ isLogged }) {
     const [quizzProgress, setQuizzProgress] = useState(true);
     const [viewQuestion, setViewQuestion] = useState(false);
 
+    const [scoresQuizz, setScoresQuizz] = useState(null);
     const [nextQuestion, setNextQuestion] = useState(null);
     const [disabledButtonStartQuizz, setDisabledButtonStartQuizz] = useState(true);
 
@@ -46,7 +47,6 @@ function RoomPage({ isLogged }) {
     }, [user]);
 
     useEffect(() => {
-        joinRoom(roomId);
         socket?.on('timerBeforeStart', (time) => {
             document.getElementById('modal-timer-before-quizz').showModal();
             setTimerBeforeStart(time);
@@ -60,17 +60,19 @@ function RoomPage({ isLogged }) {
 
         socket.on('nextQuestion', (nextQuestion) => {
             setNextQuestion(nextQuestion);
-            console.log('nextQuestion', nextQuestion);
         });
 
         socket?.on('timerQuestion', (time) => {
             setTimerQuestion(time);
-            console.log(time);
             if (time === 0) {
                 setTimeout(() => {
                     setTimerQuestion(null);
                 }, 3000);
             }
+        });
+
+        socket?.on('scoresQuizz', (scores) => {
+            setScoresQuizz(scores);
         });
     }, [socket,roomId]);
 
@@ -93,8 +95,6 @@ function RoomPage({ isLogged }) {
     }
 
     const handleStartQuizz = () => {
-        console.log('Lancement du quizz');
-        
         if (socket) {
             socket.emit('startQuizz', { quizz, salle: roomId });
         };
@@ -104,11 +104,11 @@ function RoomPage({ isLogged }) {
         //envoyer le quizz aux clients
     }
 
-    const handleNextQuestion = () => {
-        roomUsers.forEach(user => {
-            user.score = scoreQuizz[user.userId];
-        });
-    }
+    // const handleNextQuestion = () => {
+    //     roomUsers.forEach(user => {
+    //         user.score = scoreQuizz[user.userId];
+    //     });
+    // }
 
     const clickNextQuestion = () => {
         socket.emit('needNextQuestion', { quizzId: quizz.id, roomId, questionId: nextQuestion.id });
@@ -143,12 +143,16 @@ function RoomPage({ isLogged }) {
 
             <div className="right">
                 <div className="userOnline">
-                    <h2>Utilisateurs dans la salle</h2>
+                    <h2>Tableau des scores</h2>
                     <ul className="listUserOnline">
-                        {roomUsers?.sort((a, b) => (b.score || 0) - (a.score || 0))
-                        .map((user, index) => (
-                            <li key={index}>{user.userEmail} score:{user.score || 0}</li>
-                        ))}
+                        {
+                            scoresQuizz !== null
+                            ? scoresQuizz.sort((a, b) => (b.score || 0) - (a.score || 0))
+                            .map((user, index) => (
+                                <li key={index}>{user.userEmail}: {user.score || 0} points</li>
+                            ))
+                            : null
+                        }
                     </ul>
                 </div>
             </div>
@@ -205,7 +209,7 @@ function RoomPage({ isLogged }) {
                 {
                     nextQuestion !== null
                     ? <div className="cote">
-                        <ViewUserQuestion nextQuestion={nextQuestion} roomId={roomId} handleNextQuestion={handleNextQuestion} />
+                        <ViewUserQuestion nextQuestion={nextQuestion} quizzId={quizz.id} roomId={roomId} timerQuestion={timerQuestion} />
                     </div>
                     : null
                 }
