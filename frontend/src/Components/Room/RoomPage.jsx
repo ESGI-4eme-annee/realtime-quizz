@@ -9,6 +9,10 @@ import getQuizz from '../../hook/getQuizz';
 import ViewQuizz from "./ViewQuizz";
 import ViewQuestion from "./ViewQuestion";
 import Notification from "../Notification/Notification.jsx";
+import gold from '../../assets/img/gold.png';
+import silver from '../../assets/img/silver.png';
+import bronze from '../../assets/img/bronze.png';
+
 
 function RoomPage({ isLogged }) {
 
@@ -29,6 +33,7 @@ function RoomPage({ isLogged }) {
 
     const navigate = useNavigate();
 
+    console.log('roomUsers',roomUsers[roomId]);
 
     //liste des quizz dans le select
     const fetchdata = async () => {
@@ -37,17 +42,18 @@ function RoomPage({ isLogged }) {
     }
 
     useEffect(() => {
-        // if(roomDontExist){
-        //     navigate(`/`);
-        // }
-        fetchdata();
-        joinRoom(roomId);
         if (user != null ) {
             if (user.userRole === 'admin'&& room[roomId]?.userEmail === user.userEmail ) {
                 setUserIsAdmin(true);
             }
         }
-    }, [user,roomId,clientJoin]);
+    }, [clientJoin,user,roomId]);
+
+    useEffect(() => {
+        fetchdata();
+        joinRoom(roomId);
+    }, [user,roomId]);
+    
 
     useEffect(() => {
         socket?.on('timerBeforeStart', (time) => {
@@ -139,11 +145,17 @@ function RoomPage({ isLogged }) {
 
             <div className="right">
                 <div className="userOnline">
-                    <h2>Utilisateurs dans la salle</h2>
+                    <h2>Classement de la salle</h2>
                     <ul className="listUserOnline">
-                        {roomUsers?.sort((a, b) => (b.score || 0) - (a.score || 0))
+                    {roomUsers
+                        ?.sort((a, b) => (b.score || 0) - (a.score || 0))
                         .map((user, index) => (
-                            <li key={index}>{user.userEmail} score:{user.score || 0}</li>
+                        <li className="liClassement" key={index}>
+                            {index === 0 ? <img src={gold} alt="Gold Medal" /> : null}
+                            {index === 1 ? <img src={silver} alt="Silver Medal" /> : null}
+                            {index === 2 ? <img src={bronze} alt="bronze Medal" /> : null}
+                            {user.userEmail} score:{user.score || 0}
+                        </li>
                         ))}
                     </ul>
                 </div>

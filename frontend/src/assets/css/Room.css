@@ -156,3 +156,8 @@
     margin-right: 20px ;
 }
 
+.liClassement{
+    display: flex;
+    align-items: center;
+}
+
