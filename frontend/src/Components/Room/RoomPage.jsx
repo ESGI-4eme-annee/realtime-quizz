@@ -121,6 +121,12 @@ function RoomPage({ isLogged }) {
         socket.emit('startQuizz', roomId);
     }
 
+    const closeModale = (state) => {
+        if(state){
+            document.getElementById('my_modal_1').close();
+        }
+    }
+
     return (
         <div>
             <h1 className="text-9xl absolute inset-1/2 font-bold shadow-2xl">
@@ -148,15 +154,14 @@ function RoomPage({ isLogged }) {
                 ? <div className="createQuizz">
                     {/* <button className="buttonCreate" onClick={() => { createQuizz () }}>Cree un quizz</button> */}
                     {/* { showQuizzCreate? <CreateQuizz setShowQuizzCreate={setShowQuizzCreate} setReload={setReload}/> : null} */}
-                   <button className="btn" onClick={() => { createQuizz () }}>open modal</button> 
+                   <button className="btn" onClick={() => { createQuizz () }}>Cree un quizz</button> 
                     <dialog id="my_modal_1" className="modal">
                         <div className="modal-box">
                         <h3 className="font-bold text-lg">Creation du Quizz</h3>
-                        { showQuizzCreate?<CreateQuizz setShowQuizzCreate={setShowQuizzCreate} setReload={setReload}/>: null}
+                        { showQuizzCreate?<CreateQuizz setShowQuizzCreate={setShowQuizzCreate} setReload={setReload} closeModale={closeModale} />: null}
                             <div className="modal-action">
                             <form method="dialog">
-                                {/* if there is a button in form, it will close the modal */}
-                                <button className="btn">Close</button>
+                                <button className="btn" onClick={() => setShowQuizzCreate(!showQuizzCreate)} >Close</button>
                             </form>
                             </div>
                         </div>

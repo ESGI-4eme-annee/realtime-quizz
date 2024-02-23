@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import postQuizz from '../../hook/postQuizz';
 
-const CreateQuizz = ({ setShowQuizzCreate, setReload, reload }) => {
+const CreateQuizz = ({ setShowQuizzCreate, setReload, reload,closeModale }) => {
   const [questionName, setQuestionName] = useState('');
   const [options, setOptions] = useState(['', '', '']);
   const [correctOption, setCorrectOption] = useState('');
@@ -80,9 +80,14 @@ const CreateQuizz = ({ setShowQuizzCreate, setReload, reload }) => {
   };
 
   const handleSendQuizz = async () => {
-    await postQuizz({ name: title, quizz: quizz });
-    setShowQuizzCreate(false);
-    setReload(!reload);
+    if(quizz.length > 0 && title !== ''){
+      await postQuizz({ name: title, quizz: quizz });
+      setShowQuizzCreate(false);
+      setReload(!reload);
+      closeModale(true);
+    }else{
+      alert('Veuillez ajouter des questions ou mettez un titre au quizz !');
+    }
   };
 
   return (
