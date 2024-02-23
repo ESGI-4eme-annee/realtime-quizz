@@ -170,7 +170,7 @@ function quizz(socket,io) {
                     io.to(roomId).emit('timerQuestion', timer);
                 }, 1000);
 
-                io.to(roomId).emit('nextQuestion', quizz.Questions[0]);
+                io.to(roomId).emit('nextQuestion', {question: quizz.Questions[0], quizzId: quizz.id});
 
                 return;
             }
@@ -190,6 +190,8 @@ function quizz(socket,io) {
         let indexQuestion = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions.findIndex(question => question.id === questionId);
         let nextQuestion = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions[indexQuestion + 1];
 
+        console.log('nextQuestion backend', nextQuestion)
+
         if (nextQuestion) {
             let timer = nextQuestion.time;
 
@@ -202,7 +204,7 @@ function quizz(socket,io) {
             }, 1000);
         }
 
-        io.to(roomId).emit('nextQuestion', nextQuestion);
+        io.to(roomId).emit('nextQuestion', {question: nextQuestion, quizzId});
     });
 
     //response envoyer par les joueurs
@@ -217,6 +219,11 @@ function quizz(socket,io) {
                 score.score++;
             } else {
                 scores.push({userEmail, score: 1});
+            }
+        } else {
+            const score = scores.find(score => score.userEmail === userEmail);
+            if (!score) {
+                scores.push({userEmail, score: 0});
             }
         }
 

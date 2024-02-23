@@ -22,6 +22,7 @@ function RoomPage({ isLogged }) {
     const [showQuizzCreate, setShowQuizzCreate] = useState(false);
     const [quizzList, setQuizzList] = useState([]);
     const [quizz, setQuizz] = useState({});
+    const [quizzId, setQuizzId] = useState(null);
     const [quizzView, setQuizzView] = useState(false);
     const [userIsAdmin, setUserIsAdmin] = useState(false);
     const [timerBeforeStart, setTimerBeforeStart] = useState(null);
@@ -73,8 +74,10 @@ function RoomPage({ isLogged }) {
             }
         });
 
-        socket.on('nextQuestion', (nextQuestion) => {
-            setNextQuestion(nextQuestion);
+        socket.on('nextQuestion', ({question, quizzId}) => {
+            console.log('nextQuestion frontend', question, quizzId)
+            setNextQuestion(question || null);
+            setQuizzId(quizzId);
         });
 
         socket?.on('timerQuestion', (time) => {
@@ -273,7 +276,7 @@ function RoomPage({ isLogged }) {
                 {
                     nextQuestion !== null
                     ? <div className="cote">
-                        <ViewUserQuestion nextQuestion={nextQuestion} quizzId={quizz.id} roomId={roomId} timerQuestion={timerQuestion} />
+                        <ViewUserQuestion nextQuestion={nextQuestion} quizzId={quizzId} roomId={roomId} timerQuestion={timerQuestion} />
                         <Notification isVisible={displayNotification} notification={notification} />
                     </div>
                     : null
