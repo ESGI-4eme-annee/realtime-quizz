@@ -102,3 +102,57 @@
     background-color: #127920;
 }
 
+.modal-box{
+    max-width: 60em !important;
+}
+
+.createQuizzForm{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 20em;
+    flex: 1;
+}
+
+.createQuizzAll{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.createQuizzLabel{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.quizzGroupQuestion{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 25px;
+    border: solid 1px #000000;
+}
+
+.divQuestionCreate{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.questionText{
+    margin-right: 20px ;
+}
+

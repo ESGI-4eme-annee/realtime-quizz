@@ -23,6 +23,7 @@ export const SocketContextProvider = ({ children }) => {
     const [scoreQuizz, setScoreQuizz] = useState([]);
     const [reloadData, setReloadData] = useState(false);
     const [clientJoin, setClientJoin] = useState(false);
+    const [roomDontExist, setRoomDontExist] = useState(false);
 
     const fetchdata = async () => {
         try {
@@ -97,6 +98,7 @@ export const SocketContextProvider = ({ children }) => {
             socket.on('scoreQuizz', (scoreQuizz) => {
                 setScoreQuizz(scoreQuizz);
             });
+            
         }
 
     }, [socket]); 
@@ -168,7 +170,8 @@ export const SocketContextProvider = ({ children }) => {
                 responseValid,
                 leaveRoom,
                 scoreQuizz,
-                clientJoin
+                clientJoin,
+                roomDontExist
             }}>
             {children}
         </SocketContext.Provider>
