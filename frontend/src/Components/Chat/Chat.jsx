@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import { useParams } from 'react-router-dom';
 import { useSocketContext } from '../../context/SocketContext';
+import '../../assets/css/Room.css';
 
 const socket = io('http://localhost:3000');
 
@@ -10,13 +11,13 @@ const Chat = ({ username }) => {
     const [currentMessage, setCurrentMessage] = useState('');
     const [messageList, setMessageList] = useState([]);
     const { messageChat } = useSocketContext();
+    const endOfMessagesRef = useRef(null);
 
     const sendMessage = (event) => {
         event.preventDefault();
 
         if (socket) {
             if (currentMessage) {
-                console.log('username', username);
                 const messageData = {
                     roomId: roomId,
                     author: username,
@@ -24,11 +25,13 @@ const Chat = ({ username }) => {
                     time: new Date().toLocaleTimeString()
                 }
                 socket.emit('sendMessage', messageData);
-                // setMessageList((list) => [...list, messageData]);
-                console.log('messageData ENVOIE', messageData);
                 setCurrentMessage('');
             };
         };
+    };
+
+    const scrollToBottom = () => {
+        endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
 
@@ -37,15 +40,18 @@ const Chat = ({ username }) => {
         {
             setMessageList((list) => [...list, messageChat]);
         }
-        // setMessageList((list) => [...list, messageChat]);
     }, [messageChat]);
 
+    useEffect(() => {
+        scrollToBottom();
+    }, [messageList]);
+
     return (
-        <div className="flex min-h-screen flex-col justify-between p-12">
+        <div className="chat-container">
             {messageList.map((messageContent, index) => {
                 if (messageContent.author === username) {
                     return (
-                        <div className="chat chat-end"  key={index}>
+                        <div className="chat chat-end" key={index}>
                             <div className="chat-header">{messageContent.author}</div>
                             <div className="chat-bubble chat-bubble-primary">
                                 {messageContent.message}
@@ -58,7 +64,7 @@ const Chat = ({ username }) => {
                     );
                 } else {
                     return (
-                        <div className="chat chat-start"  key={index}>
+                        <div className="chat chat-start" key={index}>
                             <div className="chat-header">{messageContent.author}</div>
                             <div className="chat-bubble">
                                 {messageContent.message}
@@ -71,7 +77,8 @@ const Chat = ({ username }) => {
                     );
                 }
             })}
-            <form onSubmit={sendMessage}>
+            <div ref={endOfMessagesRef} />
+            <form onSubmit={sendMessage} className='chat-form'>
                 <input
                     className="input"
                     type="text"
