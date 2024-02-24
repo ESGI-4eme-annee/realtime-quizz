@@ -8,6 +8,7 @@ import getQuizzList from '../../hook/getQuizzList';
 import getQuizz from '../../hook/getQuizz';
 import ViewQuizz from "./ViewQuizz";
 import ViewQuestion from "./ViewQuestion";
+import ViewUserQuestion from "./ViewUserQuestion";
 import Notification from "../Notification/Notification.jsx";
 import gold from '../../assets/img/gold.png';
 import silver from '../../assets/img/silver.png';
@@ -22,18 +23,21 @@ function RoomPage({ isLogged }) {
     const [showQuizzCreate, setShowQuizzCreate] = useState(false);
     const [quizzList, setQuizzList] = useState([]);
     const [quizz, setQuizz] = useState({});
+    const [quizzId, setQuizzId] = useState(null);
     const [quizzView, setQuizzView] = useState(false);
     const [userIsAdmin, setUserIsAdmin] = useState(false);
     const [timerBeforeStart, setTimerBeforeStart] = useState(null);
+    const [timerQuestion, setTimerQuestion] = useState(null);
     const [reload, setReload] = useState(false);
     const [quizzProgress, setQuizzProgress] = useState(true);
     const [viewQuestion, setViewQuestion] = useState(false);
     const [displayNotification, setDisplayNotification] = useState(false);
     const [notification, setNotification] = useState({});
+    const [scoresQuizz, setScoresQuizz] = useState([]);
 
     const navigate = useNavigate();
 
-    console.log('roomUsers',roomUsers[roomId]);
+    const [nextQuestion, setNextQuestion] = useState(null);
 
     //liste des quizz dans le select
     const fetchdata = async () => {
@@ -53,16 +57,49 @@ function RoomPage({ isLogged }) {
         fetchdata();
         joinRoom(roomId);
     }, [user,roomId]);
+
+    useEffect(() => {
+        console.log('scoreQuizz', scoresQuizz);
+        console.log('roomUsers', roomUsers);
+        roomUsers.forEach(user => {
+            scoresQuizz.forEach(userScore => {
+                if (user.userId === userScore.userId) {
+                    user.score = userScore.score;
+                }
+            });
+          });
+
+    },[scoreQuizz,scoresQuizz]);
     
 
     useEffect(() => {
         socket?.on('timerBeforeStart', (time) => {
+            document.getElementById('modal-timer-before-quizz').showModal();
             setTimerBeforeStart(time);
             if (time === 0) {
                 setTimeout(() => {
+                    document.getElementById('modal-timer-before-quizz').close();
                     setTimerBeforeStart(null);
                 }, 1000);
             }
+        });
+
+        socket.on('nextQuestion', ({question, quizzId}) => {
+            setNextQuestion(question || null);
+            setQuizzId(quizzId);
+        });
+
+        socket?.on('timerQuestion', (time) => {
+            setTimerQuestion(time);
+            if (time === 0) {
+                setTimeout(() => {
+                    setTimerQuestion(null);
+                }, 3000);
+            }
+        });
+
+        socket?.on('scoresQuizz', (scores) => {
+            setScoresQuizz(scores);
         });
 
         socket?.on('alertQuizzStarting', (data) => {
@@ -81,7 +118,7 @@ function RoomPage({ isLogged }) {
             }, 3000);
         });
 
-        socket?.on('alertQuizzEnd', (data) => {
+        socket?.on('alertQuestionWillEnd', (data) => {
             setNotification(data);
             setDisplayNotification(true);
             setTimeout(() => {
@@ -111,20 +148,24 @@ function RoomPage({ isLogged }) {
 
     const handleStartQuizz = () => {
         console.log('Lancement du quizz');
-        sendQuizz(quizz, roomId);
+        if (socket) {
+            socket.emit('startQuizz', { quizz, salle: roomId });
+        };
+
+        // sendQuizz(quizz, roomId);
         setQuizzProgress(false);
         setViewQuestion(true);
         //envoyer le quizz aux clients
     }
 
-    const handleNextQuestion = () => {
-        roomUsers.forEach(user => {
-            user.score = scoreQuizz[user.userId];
-        });
-    }
+    // const handleNextQuestion = () => {
+    //     roomUsers.forEach(user => {
+    //         user.score = scoreQuizz[user.userId];
+    //     });
+    // }
 
-    const beginQuizz = () => {
-        socket.emit('startQuizz', roomId);
+    const clickNextQuestion = () => {
+        socket.emit('needNextQuestion', { quizzId: quizz.id, roomId, questionId: nextQuestion.id });
     }
 
     const closeModale = (state) => {
@@ -135,10 +176,27 @@ function RoomPage({ isLogged }) {
 
     return (
         <div>
-            <h1 className="text-9xl absolute inset-1/2 font-bold shadow-2xl">
-                {timerBeforeStart ? timerBeforeStart : null}
-                {timerBeforeStart === 0 ? 'Go' : null}
-            </h1>
+             <dialog id="modal-timer-before-quizz" className="modal">
+                <div className="modal-box py-32">
+                    <h1 className="text-9xl font-bold mx-auto w-auto text-center">
+                        {timerBeforeStart ? timerBeforeStart : null}
+                        {timerBeforeStart === 0 ? 'Go' : null}
+                    </h1>
+                </div>
+            </dialog>
+
+            {
+                timerQuestion !== null
+                ? <div className="toast toast-top toast-end">
+                    <div className="alert alert-info flex justify-center w-auto">
+                        <span className="text-2xl font-semibold text-white">
+                            {timerQuestion ? timerQuestion : null}
+                            {timerQuestion === 0 ? 'Fin du temps' : null}
+                        </span>
+                    </div>
+                </div>
+                : null
+            }
 
             <h1>Room</h1>
             <p>Utilisateur connecté : {isLogged ? 'Oui' : 'Non'}</p>
@@ -200,11 +258,18 @@ function RoomPage({ isLogged }) {
                 : null
             }
 
-            {
-                userIsAdmin
-                ? <div className="btn btn-active">
-                    <button onClick={() => beginQuizz()}>Lancer le quizz</button>
-                </div>
+{
+                userIsAdmin 
+                ? <> 
+                    <button 
+                        onClick={handleStartQuizz} disabled={!quizzView}
+                        className="btn">
+                            Lancer le quizz
+                    </button>
+                    <button className="btn" onClick={clickNextQuestion} disabled={!quizzView}>
+                        Next Question
+                    </button>
+                </>
                 : null
             }
 
@@ -214,14 +279,15 @@ function RoomPage({ isLogged }) {
                     ? (quizzView ? <ViewQuizz quizz={quizz}/> : null )
                     : null
                 }
-                <div className="cote">
-                   <ViewQuestion roomId={roomId} handleNextQuestion={handleNextQuestion} />
-                   <Notification isVisible={displayNotification} notification={notification} />
-                </div>
+                {
+                    nextQuestion !== null
+                    ? <div className="cote">
+                        <ViewUserQuestion nextQuestion={nextQuestion} quizzId={quizzId} roomId={roomId} timerQuestion={timerQuestion} />
+                        <Notification isVisible={displayNotification} notification={notification} />
+                    </div>
+                    : null
+                }
             </div>
-            {userIsAdmin? <div className="lanceQuizz"> 
-                <button onClick={handleStartQuizz}>Lancer le quizz</button>
-            </div>: null}
                 
         </div>
     );

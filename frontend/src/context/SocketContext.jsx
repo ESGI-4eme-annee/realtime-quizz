@@ -82,7 +82,6 @@ export const SocketContextProvider = ({ children }) => {
             socket.on('userJoinedRoom', (userEmail) => {
                 console.log(`Le client ${userEmail} a rejoint le salon`);
                 setClientJoin(userEmail);
-
             });
             socket.on('roomUsers', (roomUserMap) => {
                 setRoomUsers(roomUserMap);
@@ -147,9 +146,9 @@ export const SocketContextProvider = ({ children }) => {
     }
 
     //Qizz question clique
-    const sendResponse = (salle,idQuizz,idQuestion,idResponse) => {
+    const sendResponse = (salle,idQuizz,idQuestion,idResponse,timer) => {
         if (socket) {
-            socket.emit('sendResponse',userId, salle,idQuizz,idQuestion,idResponse);
+            socket.emit('sendResponse',userId, salle,idQuizz,idQuestion,idResponse,timer);
         };
     }
 
