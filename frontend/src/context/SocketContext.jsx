@@ -20,6 +20,7 @@ export const SocketContextProvider = ({ children }) => {
     const [question, setQuestion] = useState({});
     const [responseCounts, setResponseCounts] = useState({});
     const [responseValid, setResponseValid] = useState(null);
+    const [scoreQuizz, setScoreQuizz] = useState([]);
     const [reloadData, setReloadData] = useState(false);
     const [clientJoin, setClientJoin] = useState(false);
     const [roomDontExist, setRoomDontExist] = useState(false);
@@ -81,7 +82,6 @@ export const SocketContextProvider = ({ children }) => {
             socket.on('userJoinedRoom', (userEmail) => {
                 console.log(`Le client ${userEmail} a rejoint le salon`);
                 setClientJoin(userEmail);
-
             });
             socket.on('roomUsers', (roomUserMap) => {
                 setRoomUsers(roomUserMap);
@@ -95,7 +95,12 @@ export const SocketContextProvider = ({ children }) => {
             socket.on('responseValid', (responseValid) => {
                 setResponseValid(responseValid);
             });
+            socket.on('scoreQuizz', (scoreQuizz) => {
+                setScoreQuizz(scoreQuizz);
+            });
+            
         }
+
     }, [socket]); 
 
 
@@ -130,10 +135,20 @@ export const SocketContextProvider = ({ children }) => {
         }
     };
 
-    //Qizz question clique
-    const sendResponse = (roomId,idQuizz,idQuestion,idResponse) => {
+    //Quizz lancer le quizz
+    const sendQuizz = (quizz,salle ) => {
         if (socket) {
-            socket.emit('sendResponse', user.userEmail, roomId,idQuizz,idQuestion,idResponse);
+            socket.emit('sendQuizz', {
+                quizz: quizz,
+                salle: salle
+            });
+        };
+    }
+
+    //Qizz question clique
+    const sendResponse = (salle,idQuizz,idQuestion,idResponse,timer) => {
+        if (socket) {
+            socket.emit('sendResponse',userId, salle,idQuizz,idQuestion,idResponse,timer);
         };
     }
 
@@ -148,11 +163,13 @@ export const SocketContextProvider = ({ children }) => {
                 joinRoom,
                 user,
                 roomUsers,
+                sendQuizz,
                 question,
                 sendResponse,
                 responseCounts,
                 responseValid,
                 leaveRoom,
+                scoreQuizz,
                 clientJoin,
                 roomDontExist
             }}>

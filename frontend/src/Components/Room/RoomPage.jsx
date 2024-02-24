@@ -7,6 +7,7 @@ import CreateQuizz from './CreateQuizz';
 import getQuizzList from '../../hook/getQuizzList';
 import getQuizz from '../../hook/getQuizz';
 import ViewQuizz from "./ViewQuizz";
+import ViewQuestion from "./ViewQuestion";
 import ViewUserQuestion from "./ViewUserQuestion";
 import Notification from "../Notification/Notification.jsx";
 import gold from '../../assets/img/gold.png';
@@ -15,10 +16,10 @@ import bronze from '../../assets/img/bronze.png';
 
 
 function RoomPage({ isLogged }) {
+
     const { roomId } = useParams();
 
     const {joinRoom,roomUsers,user,sendQuizz,room,scoreQuizz,socket,clientJoin } = useSocketContext();
-
     const [showQuizzCreate, setShowQuizzCreate] = useState(false);
     const [quizzList, setQuizzList] = useState([]);
     const [quizz, setQuizz] = useState({});
@@ -32,15 +33,11 @@ function RoomPage({ isLogged }) {
     const [viewQuestion, setViewQuestion] = useState(false);
     const [displayNotification, setDisplayNotification] = useState(false);
     const [notification, setNotification] = useState({});
+    const [scoresQuizz, setScoresQuizz] = useState([]);
 
     const navigate = useNavigate();
 
-    console.log('roomUsers',roomUsers[roomId]);
-
-    const [scoresQuizz, setScoresQuizz] = useState(null);
     const [nextQuestion, setNextQuestion] = useState(null);
-    const [disabledButtonStartQuizz, setDisabledButtonStartQuizz] = useState(true);
-
 
     //liste des quizz dans le select
     const fetchdata = async () => {
@@ -54,13 +51,26 @@ function RoomPage({ isLogged }) {
                 setUserIsAdmin(true);
             }
         }
-        
-    }, [clientJoin, user, roomId]);
+    }, [clientJoin,user,roomId]);
 
     useEffect(() => {
         fetchdata();
         joinRoom(roomId);
     }, [user,roomId]);
+
+    useEffect(() => {
+        console.log('scoreQuizz', scoresQuizz);
+        console.log('roomUsers', roomUsers);
+        roomUsers.forEach(user => {
+            scoresQuizz.forEach(userScore => {
+                if (user.userId === userScore.userId) {
+                    user.score = userScore.score;
+                }
+            });
+          });
+
+    },[scoreQuizz,scoresQuizz]);
+    
 
     useEffect(() => {
         socket?.on('timerBeforeStart', (time) => {
@@ -75,7 +85,6 @@ function RoomPage({ isLogged }) {
         });
 
         socket.on('nextQuestion', ({question, quizzId}) => {
-            console.log('nextQuestion frontend', question, quizzId)
             setNextQuestion(question || null);
             setQuizzId(quizzId);
         });
@@ -91,7 +100,6 @@ function RoomPage({ isLogged }) {
 
         socket?.on('scoresQuizz', (scores) => {
             setScoresQuizz(scores);
-            console.log('scores', scores);
         });
 
         socket?.on('alertQuizzStarting', (data) => {
@@ -142,17 +150,10 @@ function RoomPage({ isLogged }) {
         if (socket) {
             socket.emit('startQuizz', { quizz, salle: roomId });
         };
-
         setQuizzProgress(false);
         setViewQuestion(true);
-        //envoyer le quizz aux clients
-    }
 
-    // const handleNextQuestion = () => {
-    //     roomUsers.forEach(user => {
-    //         user.score = scoreQuizz[user.userId];
-    //     });
-    // }
+    }
 
     const clickNextQuestion = () => {
         socket.emit('needNextQuestion', { quizzId: quizz.id, roomId, questionId: nextQuestion.id });
@@ -166,7 +167,7 @@ function RoomPage({ isLogged }) {
 
     return (
         <div>
-            <dialog id="modal-timer-before-quizz" className="modal">
+             <dialog id="modal-timer-before-quizz" className="modal">
                 <div className="modal-box py-32">
                     <h1 className="text-9xl font-bold mx-auto w-auto text-center">
                         {timerBeforeStart ? timerBeforeStart : null}
@@ -195,19 +196,16 @@ function RoomPage({ isLogged }) {
                 <div className="userOnline">
                     <h2>Classement de la salle</h2>
                     <ul className="listUserOnline">
-                    {
-                        scoresQuizz !== null
-                        ? scoresQuizz.sort((a, b) => (b.score || 0) - (a.score || 0))
+                    {roomUsers
+                        ?.sort((a, b) => (b.score || 0) - (a.score || 0))
                         .map((user, index) => (
-                            <li className="liClassement" key={index}>
-                                {index === 0 ? <img src={gold} alt="Gold Medal" /> : null}
-                                {index === 1 ? <img src={silver} alt="Silver Medal" /> : null}
-                                {index === 2 ? <img src={bronze} alt="bronze Medal" /> : null}
-                                {user.userEmail}: {user.score || 0} points
-                            </li>
-                        ))
-                        : null
-                    }
+                        <li className="liClassement" key={index}>
+                            {index === 0 ? <img src={gold} alt="Gold Medal" /> : null}
+                            {index === 1 ? <img src={silver} alt="Silver Medal" /> : null}
+                            {index === 2 ? <img src={bronze} alt="bronze Medal" /> : null}
+                            {user.userEmail} score:{user.score || 0}
+                        </li>
+                        ))}
                     </ul>
                 </div>
             </div>
@@ -236,14 +234,13 @@ function RoomPage({ isLogged }) {
             {
                 userIsAdmin && quizzProgress
                 ? <div className="selectQuizz">
-                    <h2>Choisir un quizz</h2>
-                    <h2>Choisir un quizz</h2>
+                     <h2>Choisir un quizz</h2>
                         <select onFocus={() => setShowQuizzCreate(false)} className="select select-bordered w-full max-w-xs">
                             <option value="" disabled>Choisissez un quizz</option>
                             {quizzList.map((quizz, index) => (
-                                <option key={index} value={quizz.id}>
-                                    {quizz.name}
-                                </option>
+                            <option key={index} value={quizz.id}>
+                                {quizz.name}
+                            </option>
                             ))}
                         </select>
                         <button className="btn" onClick={() => handleConfirmation()}>Confirmer</button>
@@ -251,8 +248,8 @@ function RoomPage({ isLogged }) {
                 </div>
                 : null
             }
-            
-            {
+
+{
                 userIsAdmin 
                 ? <> 
                     <button 
@@ -282,6 +279,7 @@ function RoomPage({ isLogged }) {
                     : null
                 }
             </div>
+                
         </div>
     );
 }

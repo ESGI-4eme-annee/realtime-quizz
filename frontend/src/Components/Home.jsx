@@ -19,8 +19,6 @@ function Home({ isConnected }) {
 
     const navigate = useNavigate();
 
-    console.log("room",room);
-
     useEffect(() => {
         if (user != null ) {
             setUserData(user);

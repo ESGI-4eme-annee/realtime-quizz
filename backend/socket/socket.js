@@ -107,40 +107,15 @@ function room(socket,io)  {
     });
 }
 
-const roomQuestions = [
-    // Exemple de données
-    // {
-    //     roomId: "1",
-    //     quizzId: "1",
-    //     numberOfQuestions: 3,
-    //     currentTimer: 10,
-    //     Questions: [
-    //         {
-    //             id: 10,
-    //             name: 'Couleur blanche',
-    //             time: 5,
-    //             quizzId: 9,
-    //             Answers: [
-    //                 { id: 28, name: 'blanc', valid: true, questionId: 10 },
-    //                 { id: 29, name: 'vert', valid: false, questionId: 10 },
-    //                 { id: 30, name: 'jaune', valid: false, questionId: 10 }
-    //             ]
-    //         }
-    //     ],
-    //     scores: [
-    //         {
-    //             userId: 1,
-    //             score: 4
-    //         },
-    //         {
-    //             userId: 2,
-    //             score: 1
-    //         }
-    //     ]
-    // }
-];
+const roomQuizzMap = {};
+const roomQuizzProgressMap = {};
+const questionResponseMap = {};
+const scoreUserMap = {};
+const roomQuestions = [];
+
 
 function quizz(socket,io) {
+    
     socket.on('startQuizz', (data) => {
         const roomId = data.salle;
         const quizz = data.quizz;
@@ -153,6 +128,7 @@ function quizz(socket,io) {
             currentTimer: quizz.Questions[0].time,
             scores: []
         });
+
 
         let time = 3;
         io.emit('timerBeforeStart', time);
@@ -228,26 +204,42 @@ function quizz(socket,io) {
     });
 
     //response envoyer par les joueurs
-    socket.on('sendResponse', (userEmail, roomId, quizzId, idQuestion, idResponse) => {
-        const question = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions.find(question => question.id === idQuestion);
-        const response = question.Answers.find(answer => answer.id === idResponse);
+    socket.on('sendResponse', (userId, roomId, quizzId, idQuestion, idResponse,timer) => {
+        roomQuizzProgressMap[roomId] ??= {};
+        roomQuizzProgressMap[roomId][quizzId] ??= {};
+        roomQuizzProgressMap[roomId][quizzId][idQuestion] ??= {};
+        roomQuizzProgressMap[roomId][quizzId][idQuestion][userId] = idResponse;
 
-        let scores = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).scores;
-        if (response && response.valid) {
-            const score = scores.find(score => score.userEmail === userEmail);
-            if (score) {
-                score.score++;
+        const responseCounts = Object.values(roomQuizzProgressMap[roomId][quizzId][idQuestion]).reduce((acc, value) => {
+            acc[value] = (acc[value] || 0) + 1;
+            return acc;
+        }, {});
+
+        if(!timer){
+        io.to(roomId).emit('responseCounts', responseCounts);
+        }else{
+            const question = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions.find(question => question.id === idQuestion);
+            const response = question.Answers.find(answer => answer.id === idResponse);
+        
+            let scores = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).scores;
+            if (response && response.valid) {
+                
+                    io.to(roomId).emit('responseValid', response.id);
+                
+                const score = scores.find(score => score.userId === userId);
+                if (score) {
+                    score.score++;
+                } else {
+                    scores.push({userId, score: 1});
+                }
             } else {
-                scores.push({userEmail, score: 1});
+                const score = scores.find(score => score.userId === userId);
+                if (!score) {
+                    scores.push({userId, score: 0});
+                }
             }
-        } else {
-            const score = scores.find(score => score.userEmail === userEmail);
-            if (!score) {
-                scores.push({userEmail, score: 0});
-            }
+            io.to(roomId).emit('scoresQuizz', scores);
         }
-
-        io.to(roomId).emit('scoresQuizz', scores);
     });
 }
 
