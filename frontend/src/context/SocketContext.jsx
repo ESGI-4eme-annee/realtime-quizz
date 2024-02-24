@@ -83,7 +83,6 @@ export const SocketContextProvider = ({ children }) => {
                 setClientJoin(userEmail);
             });
             socket.on('roomUsers', (roomUserMap) => {
-                console.log('roomUsers', roomUserMap);
                 setRoomUsers(roomUserMap);
             });
             socket.on('question', (question) => {

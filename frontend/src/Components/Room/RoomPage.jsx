@@ -34,10 +34,8 @@ function RoomPage({ isLogged }) {
     const [displayNotification, setDisplayNotification] = useState(false);
     const [notification, setNotification] = useState({});
     const [scoresQuizz, setScoresQuizz] = useState([]);
-
-    const navigate = useNavigate();
-
     const [nextQuestion, setNextQuestion] = useState(null);
+    const navigate = useNavigate();
 
     //liste des quizz dans le select
     const fetchdata = async () => {
@@ -45,15 +43,12 @@ function RoomPage({ isLogged }) {
         setQuizzList(data);
     }
 
-
     useEffect(() => {
         socket?.on('roomUsers', (tabUser) => {
             if (tabUser && room[roomId] ) {
                 let userEmailCreater = room[roomId]?.userEmail;
                 let continueGame = false;
                 tabUser.forEach(user => {
-                    console.log("user.userEmail",user.userEmail);
-                    console.log("userEmailCreater",userEmailCreater);
                     if (user.userEmail === userEmailCreater) {
                         continueGame = true;
                     }
