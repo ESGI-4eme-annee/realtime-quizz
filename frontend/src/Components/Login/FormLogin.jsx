@@ -52,7 +52,7 @@ function FormTheme({setIsLogged}) {
                     Email
                 </label>
                 <input
-                    className="register-login__form__container__field__input"
+                    className="input input-bordered w-full max-w-xs mb-3"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -66,14 +66,14 @@ function FormTheme({setIsLogged}) {
                     Mot de passe
                 </label>
                 <input
-                    className="register-login__form__container__field__input"
+                    className="input input-bordered w-full max-w-xs mb-3"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
             </div>
         </div>
-        <input type="submit" value="Se connecter" className="register-login__form__submit cursor-pointer"/>
+        <button type="submit" value="Se connecter"  className="btn">Se connecter</button>
       </form>
 
   );
