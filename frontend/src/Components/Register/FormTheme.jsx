@@ -54,7 +54,7 @@ function FormTheme() {
                         Name
                     </label>
                     <input
-                        className="register-login__form__container__field__input"
+                        className="input input-bordered w-full max-w-xs mb-3"
                         id="name"
                         type="text"
                         value={name}
@@ -69,7 +69,7 @@ function FormTheme() {
                         Email
                     </label>
                     <input
-                        className="register-login__form__container__field__input"
+                        className="input input-bordered w-full max-w-xs mb-3"
                         id="email"
                         type="text"
                         value={email}
@@ -84,7 +84,7 @@ function FormTheme() {
                         Mot de passe
                     </label>
                     <input
-                        className="register-login__form__container__field__input"
+                        className="input input-bordered w-full max-w-xs mb-3"
                         id="password"
                         type="password"
                         value={password}
@@ -92,7 +92,7 @@ function FormTheme() {
                     />
                 </div>
             </div>
-            <input type="submit" value="S'inscrire" className="register-login__form__submit cursor-pointer" />
+            <button type="submit" value="S'inscrire"  className="btn">S'inscrire'</button>
         </form>
 
     );

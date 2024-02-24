@@ -195,70 +195,78 @@ function RoomPage({ isLogged }) {
                 : null
             }
 
-            <h1>Room</h1>
-            <p>Utilisateur connecté : {isLogged ? 'Oui' : 'Non'}</p>
+            {/* <h1>Room</h1>
+            <p>Utilisateur connecté : {isLogged ? 'Oui' : 'Non'}</p> */}
 
             <div className="right">
                 <div className="userOnline">
-                    <h2>Classement de la salle</h2>
-                    <ul className="listUserOnline">
-                    {roomUsers
+                    <h1>Classement de la salle</h1>
+                    <table className="table" id="table">
+                    <tbody>
+                        {roomUsers
                         ?.sort((a, b) => (b.score || 0) - (a.score || 0))
                         .map((user, index) => (
-                        <li className="liClassement" key={index}>
-                            {index === 0 ? <img src={gold} alt="Gold Medal" /> : null}
-                            {index === 1 ? <img src={silver} alt="Silver Medal" /> : null}
-                            {index === 2 ? <img src={bronze} alt="bronze Medal" /> : null}
-                            {user.userEmail} score:{user.score || 0}
-                        </li>
+                            <tr className="liClassement border-2 border-solid border-black" key={index}>
+                            <th>{index === 0 ? <img src={gold} alt="Gold Medal" /> :
+                                index === 1 ? <img src={silver} alt="Silver Medal" /> :
+                                index === 2 ? <img src={bronze} alt="bronze Medal" /> : index+1}
+                            </th>
+                            <th> {user.userEmail} </th>
+                            <th> Score : {user.score || 0} </th>
+                            </tr>
                         ))}
-                    </ul>
+                    </tbody>
+                    </table>
                 </div>
             </div>
 
+
             {
                 userIsAdmin
-                ? <div className="createQuizz">
-                    {/* <button className="buttonCreate" onClick={() => { createQuizz () }}>Cree un quizz</button> */}
-                    {/* { showQuizzCreate? <CreateQuizz setShowQuizzCreate={setShowQuizzCreate} setReload={setReload}/> : null} */}
-                   <button className="btn" onClick={() => { createQuizz () }}>Cree un quizz</button>
-                    <dialog id="my_modal_1" className="modal">
-                        <div className="modal-box">
-                        <h3 className="font-bold text-lg">Creation du Quizz</h3>
-                        { showQuizzCreate?<CreateQuizz setShowQuizzCreate={setShowQuizzCreate} setReload={setReload} closeModale={closeModale} />: null}
-                            <div className="modal-action">
-                            <form method="dialog">
-                                <button className="btn" onClick={() => setShowQuizzCreate(!showQuizzCreate)} >Close</button>
-                            </form>
-                            </div>
+                ?
+                <div className="allAdmin">
+                    <div className="partAdmin">
+                        <div className="createQuizz">
+                        <button className="btn" onClick={() => { createQuizz () }}>Cree un quizz</button>
+                            <dialog id="my_modal_1" className="modal">
+                                <div className="modal-box">
+                                <h3 className="font-bold text-lg">Creation du Quizz</h3>
+                                { showQuizzCreate?<CreateQuizz setShowQuizzCreate={setShowQuizzCreate} setReload={setReload} closeModale={closeModale} />: null}
+                                    <div className="modal-action">
+                                    <form method="dialog">
+                                        <button className="btn" onClick={() => setShowQuizzCreate(!showQuizzCreate)} >Close</button>
+                                    </form>
+                                    </div>
+                                </div>
+                            </dialog>
                         </div>
-                    </dialog>
-                </div>
-                : null
-            }
+                    {
+                         quizzProgress
+                        ? <div className="selectQuizz">
+                            <h2 className="text-white">Choisir un quizz</h2>
+                            <div className="flex flex-row">
+                                <select onFocus={() => setShowQuizzCreate(false)} className="select select-bordered w-full max-w-xs">
+                                    <option value="" disabled>Choisissez un quizz</option>
+                                    {quizzList.map((quizz, index) => (
+                                    <option key={index} value={quizz.id}>
+                                        {quizz.name}
+                                    </option>
+                                    ))}
+                                </select>
+                                <button className="btn" onClick={() => handleConfirmation()}>Confirmer</button>
+                                </div>
+                        </div>
+                        : null
+                    }
 
-            {
-                userIsAdmin && quizzProgress
-                ? <div className="selectQuizz">
-                     <h2>Choisir un quizz</h2>
-                        <select onFocus={() => setShowQuizzCreate(false)} className="select select-bordered w-full max-w-xs">
-                            <option value="" disabled>Choisissez un quizz</option>
-                            {quizzList.map((quizz, index) => (
-                            <option key={index} value={quizz.id}>
-                                {quizz.name}
-                            </option>
-                            ))}
-                        </select>
-                        <button className="btn" onClick={() => handleConfirmation()}>Confirmer</button>
-
+                    </div>
                 </div>
-                : null
-            }
+            :null }
 
 {
-                userIsAdmin
-                ? <>
-                    <button
+                userIsAdmin 
+                ? <> 
+                    <button 
                         onClick={handleStartQuizz} disabled={!quizzView}
                         className="btn">
                             Lancer le quizz

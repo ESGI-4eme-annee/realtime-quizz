@@ -6,16 +6,17 @@ import React from "react";
 function RegisterPage() {
 
     return (
-        <main className="border-2 solid black display flex flex-row justify-center bg-blue-400 ">
-            
+        <div className='flexLog'>
+        <div className=" connection">            
             <div className="register-login__container">
                 <div className="register-login__container__logo">
-                    <h2 className="text-3xl underline text-center mb-3">Inscription</h2>
+                    <h2 className="text-3xl text-center mb-3">Inscription</h2>
                 </div>
                 <FormTheme/>
                 <p>Vous avez déjà un compte ? <Link to="/login">Connectez-vous</Link></p>
             </div>
-        </main>
+        </div>
+        </div>
     )
 }
 
