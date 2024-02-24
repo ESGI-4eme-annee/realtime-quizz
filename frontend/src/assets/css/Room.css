@@ -3,8 +3,8 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    margin-top: 20px;
-    margin-bottom: 20px;
+ 
+    margin-right: 3em;
 }
 
 .buttonCreate{
@@ -20,8 +20,9 @@
 
 .selectQuizz{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     margin-top: 20px;
+    align-items: center;
 }
 
 .selectText{
@@ -159,5 +160,31 @@
 .liClassement{
     display: flex;
     align-items: center;
+}
+
+#table{
+    background-color: var(--background-color);
+    border-radius: 0px;
+    border: solid 1px #000000;
+}
+
+.partAdmin{
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: var(--cinq-color);
+    padding: 30px;
+    border-radius: 1em;
+}
+
+.allAdmin{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 25px;
+    align-items: flex-start;
 }
 
