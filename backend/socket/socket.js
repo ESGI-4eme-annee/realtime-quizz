@@ -105,21 +105,6 @@ function room(socket,io)  {
 
 
     });
-    socket.on('startQuizz', () => {
-        let time = 5;
-        io.emit('timerBeforeStart', time);
-        let interval = setInterval(() => {
-            time--;
-            if (time < 0) {
-                io.emit('alertQuizzStarting', {
-                    title: 'Le quizz commence 🏁',
-                    message: 'Bon courage ! 💪'
-                });
-                return clearInterval(interval);
-            }
-            io.emit('timerBeforeStart', time);
-        }, 1000);
-    });
 }
 
 const roomQuizzMap = {};
@@ -203,6 +188,9 @@ function quizz(socket,io) {
         
             let scores = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).scores;
             if (response && response.valid) {
+                
+                    io.to(roomId).emit('responseValid', response.id);
+                
                 const score = scores.find(score => score.userId === userId);
                 if (score) {
                     score.score++;

@@ -16,6 +16,8 @@ const ViewUserQuestion = ({nextQuestion, roomId, timerQuestion, quizzId} ) => {
   }, [selectedAnswer]);
 
   useEffect(() => {
+    console.log("responseValid", responseValid);
+    console.log();
     if (timerQuestion === 0) {
         sendResponse(roomId, quizzId, nextQuestion.id, selectedAnswer, true);
     }
@@ -30,7 +32,7 @@ const ViewUserQuestion = ({nextQuestion, roomId, timerQuestion, quizzId} ) => {
         Question : <span className="font-semibold text-3xl mb-5">{nextQuestion.name}</span>
         <ul>
           {nextQuestion.Answers.map((answer, index) => (
-            <li key={answer.id}>
+            <li key={answer.id} className={responseValid === answer.id ? "valid" : ""}>
               <label className='answerAlone'>
                 <input
                   type="radio"
@@ -39,7 +41,7 @@ const ViewUserQuestion = ({nextQuestion, roomId, timerQuestion, quizzId} ) => {
                   checked={selectedAnswer === answer.id}
                   onChange={() => setSelectedAnswer(answer.id)}
                 />
-                {answer.name}( {responseCounts[answer.id] || 0})
+               {answer.name}( {responseCounts[answer.id] || 0})
               </label>
             </li>
           ))}

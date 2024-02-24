@@ -147,22 +147,13 @@ function RoomPage({ isLogged }) {
     }
 
     const handleStartQuizz = () => {
-        console.log('Lancement du quizz');
         if (socket) {
             socket.emit('startQuizz', { quizz, salle: roomId });
         };
-
-        // sendQuizz(quizz, roomId);
         setQuizzProgress(false);
         setViewQuestion(true);
-        //envoyer le quizz aux clients
-    }
 
-    // const handleNextQuestion = () => {
-    //     roomUsers.forEach(user => {
-    //         user.score = scoreQuizz[user.userId];
-    //     });
-    // }
+    }
 
     const clickNextQuestion = () => {
         socket.emit('needNextQuestion', { quizzId: quizz.id, roomId, questionId: nextQuestion.id });

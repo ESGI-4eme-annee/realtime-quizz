@@ -28,7 +28,7 @@ const ViewQuestion = ({roomId, handleNextQuestion} ) => {
         Question : {question.question?.name}
         <ul>
           {answers.map((answer, index) => (
-            <li key={answer.id} className={responseValid?.response === answer.id ? "valid" : ""}>
+            <li key={answer.id} className={responseValid === answer.id ? "valid" : ""}>
               <label className='answerAlone' >
                 <input
                   type="radio"
