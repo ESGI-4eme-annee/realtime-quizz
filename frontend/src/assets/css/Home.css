@@ -1,3 +1,21 @@
+:root {
+    --primary-color: #5D5C61;
+    --background-color: #7395AE;
+    --trois-color: #9fa5a4;
+    --quatre-color: #B1A296;
+    --cinq-color: #557A95;
+  }
+
+  html, body {
+    height: 100%;
+background-color: var(--quatre-color); /* Replace with your desired background color */
+
+}
+
+.bt{
+    background-color: var(--primary-color);
+}
+
 .title{
     display: flex;
     justify-content: center;
@@ -38,8 +56,10 @@
     justify-content: center;
     margin-top: 20px;
     align-items: center;
-    padding: 10px;
-    border: solid 1px #000000;
+    padding: 30px;
+    border: solid 3px var(--primary-color);
+    border-radius: 5%;
+    background-color: var(--background-color);
 }
 
 .inputDesign{
@@ -50,7 +70,22 @@
     border: solid 1px #000000;
 }
 
+.line{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+
 /*back*/
+.viewSalleHeight{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex: 1;
+}
+
 .viewSalle{
     display: flex;
     flex-direction: column;
@@ -75,6 +110,11 @@
     align-items: center;
     margin-top: 20px;
     padding: 10px;
-    border: solid 1px #000000;
+    border: solid 3px var(--primary-color);
+    background-color: var(--cinq-color);
+    color: #ffffff;
     margin-right: 10px;
+    padding: 25px;
+    border-radius: 6%;
+    width: 15em;
 }

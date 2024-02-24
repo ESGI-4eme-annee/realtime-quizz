@@ -109,28 +109,37 @@ function Home({ isConnected }) {
 
             { userIsAdmin ? <div className="divCenter">
                 <div className="divCreateRoom">
-                    <h2>Créer une salle</h2>
-                    <input className="inputDesign" type="text" id="nameRoom" placeholder="Nom de la salle" required />
-                    <input className="inputDesign" type="checkbox" id="checkRoom" onChange={handleCheckboxChange} />
+                    <h1 className="font-bold text-lg">Créer une salle</h1>
+                    <input className="input input-bordered w-full max-w-xs mt-5" type="text" id="nameRoom" placeholder="Nom de la salle" required />
+                    {/* <div className="line"><input className="" type="checkbox" id="checkRoom" onChange={handleCheckboxChange} /><p>Ajouter un mdp</p></div> */}
+                    <div className="form-control">
+                        <label className="label cursor-pointer">
+                            <input type="checkbox" id="checkRoom" onChange={handleCheckboxChange}  className="checkbox bg-white" />
+                            <span className="label-text m-5">Ajouter un mdp</span> 
+                        </label>
+                    </div>
+
                     {showPassword && (
-                        <input className="inputDesign" type="password" id="passwordRoom" placeholder="Mot de passe" />
+                        <input className="input input-bordered w-full max-w-xs mb-5" type="password" id="passwordRoom" placeholder="Mot de passe" />
                     )}
                     <button onClick={handleCreateRoom} className="btn">Créer</button>
                 </div>
             </div> : <></>}
+            <div className="viewSalleHeight">
                 <div className="viewSalle">
-                    <p>Salles :</p>
+                    <p className="text-lg font-bold mb-5">Salles :</p>
                     <ul className="listRoom">
                         {Object.keys(room).map((key, index) => (
                             <li className="room" key={index}>
-                            {room[key].name}
-                            {room[key].password? <p>Privée</p>:<p>Public</p>}
-                            {room[key].password?<input className="inputDesign" type="password" id="testPasswordRoom" />:null}
-                            {room[key].state? <button className="border border-blue-300" onClick={() => handleJoinRoom(key)}>Rejoindre</button>:<img src={close}/>}
+                            <div className="m-1">{room[key].password? <p className="badge">Privée</p>:<p className="badge">Public</p>}</div>
+                            <p className="m-5">{room[key].name}</p>
+                            {room[key].password?<input className="input input-bordered w-full max-w-xs mb-3" type="password" id="testPasswordRoom" placeholder="Mot de Passe" />:null}
+                            {room[key].state? <button className="btn " onClick={() => handleJoinRoom(key)}>Rejoindre</button>:<img src={close}/>}
                             </li>
                         ))}
                     </ul>
                 </div>
+            </div>
         </div>
     );
 }

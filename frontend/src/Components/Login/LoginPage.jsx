@@ -2,6 +2,8 @@ import FormLogin from './FormLogin';
 import { Link } from 'react-router-dom';
 import React, { useEffect, useState } from "react";
 import { accountService } from "../../services/account.service";
+import '../../assets/css/registerLogin.css';
+
 
 function LoginPage({setIsLogged}) {
 
@@ -16,18 +18,14 @@ function LoginPage({setIsLogged}) {
     
 
     return (
-        <main className="border-2 solid black display flex flex-row justify-center bg-blue-400">
+        <div className='flexLog'>
+        <div className=" connection">
             
-            {/* <p>Bonjour {userData.userEmail} </p> */}
-
-            <div className="register-login__container">
-                <div className="register-login__container__logo">
-                    <h2 className="text-3xl underline text-center mb-3">Connexion</h2>
-                </div>
+                    <h2 className="text-3xl text-center mb-3">Connexion</h2>
                 <FormLogin setIsLogged={setIsLogged}/>
-                <p>Vous n’avez pas de compte ? <Link to="/register">Inscrivez-vous</Link></p>
+                <p className='mt-5 text-white '>Vous n’avez pas de compte ? <Link to="/register">Inscrivez-vous</Link></p>
             </div>
-        </main>
+            </div>
     )
 }
 
