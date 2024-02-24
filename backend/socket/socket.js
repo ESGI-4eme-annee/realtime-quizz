@@ -112,14 +112,16 @@ function room(socket,io)  {
 
         });
 
-        socket.on('sendMessage', (data) => {
-            const { roomId, message } = data;
-            console.log(`Message reçu : ${message}`);
-            console.log(`roomID : ${roomId}`);
-            io.to(roomId).emit('receiveMessage', data);
-        });
+        
 
 
+    });
+
+    socket.on('sendMessage', (data) => {
+        const { roomId, message } = data;
+        console.log(`Message reçu : ${message}`);
+        console.log(`roomID : ${roomId}`);
+        io.to(roomId).emit('receiveMessage', data);
     });
 }
 

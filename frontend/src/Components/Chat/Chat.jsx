@@ -24,6 +24,8 @@ const Chat = ({ username }) => {
                     time: new Date().toLocaleTimeString()
                 }
                 socket.emit('sendMessage', messageData);
+                // setMessageList((list) => [...list, messageData]);
+                console.log('messageData ENVOIE', messageData);
                 setCurrentMessage('');
             };
         };
@@ -31,29 +33,52 @@ const Chat = ({ username }) => {
 
 
     useEffect(() => {
-        console.log('messageChat', messageChat);
-        setMessageList((list) => [...list, messageChat]);
+        if (messageChat.message)
+        {
+            setMessageList((list) => [...list, messageChat]);
+        }
+        // setMessageList((list) => [...list, messageChat]);
     }, [messageChat]);
 
     return (
-        <div>
+        <div className="flex min-h-screen flex-col justify-between p-12">
             {messageList.map((messageContent, index) => {
-                return (
-                    <div key={index}>
-                        <h1>{messageContent.message}</h1>
-                        <p>{messageContent.author}</p>
-                        <p>{messageContent.time}</p>
-                    </div>
-                
-                );
+                if (messageContent.author === username) {
+                    return (
+                        <div className="chat chat-end"  key={index}>
+                            <div className="chat-header">{messageContent.author}</div>
+                            <div className="chat-bubble chat-bubble-primary">
+                                {messageContent.message}
+                            </div>
+                            <div className="chat-footer opacity-50">
+                            <time className="text-xs opacity-50">{messageContent.time}</time>
+                            </div>
+                        </div>
+                    
+                    );
+                } else {
+                    return (
+                        <div className="chat chat-start"  key={index}>
+                            <div className="chat-header">{messageContent.author}</div>
+                            <div className="chat-bubble">
+                                {messageContent.message}
+                            </div>
+                            <div className="chat-footer opacity-50">
+                            <time className="text-xs opacity-50">{messageContent.time}</time>
+                            </div>
+                        </div>
+                    
+                    );
+                }
             })}
             <form onSubmit={sendMessage}>
                 <input
+                    className="input"
                     type="text"
                     value={currentMessage}
                     onChange={(e) => setCurrentMessage(e.target.value)}
                 />
-                <button type="submit">Send</button>
+                <button type="submit" className="btn">Envoyer</button>
             </form>
         </div>
     );
