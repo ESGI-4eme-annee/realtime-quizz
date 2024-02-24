@@ -103,6 +103,7 @@ function room(socket,io)  {
             if (userCreate) {
                 delete roomSocketMap[room];
                 io.emit('roomCreated', roomSocketMap);
+                io.to(room).emit('adminLeave', true);
 
             }
 
@@ -139,7 +140,7 @@ function quizz(socket,io) {
 
 
         let time = 3;
-        io.emit('timerBeforeStart', time);
+        io.to(roomId).emit('timerBeforeStart', time);
         let interval = setInterval(() => {
             time--;
             if (time < 0) {
