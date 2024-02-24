@@ -167,18 +167,26 @@ function quizz(socket,io) {
                     if (timer < 0) {
                         return clearInterval(interval2);
                     }
+
+                    if(timer === 3) {
+                        io.emit('alertQuestionWillEnd', {
+                            title: 'La question va bientôt se terminer !',
+                            message: 'Il ne reste plus que quelques secondes pour répondre'
+                        });
+                    }
+
                     io.to(roomId).emit('timerQuestion', timer);
                 }, 1000);
 
                 io.to(roomId).emit('nextQuestion', {question: quizz.Questions[0], quizzId: quizz.id});
+                io.to(roomId).emit('alertQuizzStarting', {
+                    title: 'Le quizz commence 🏁',
+                    message: 'Bon courage ! 💪'
+                });
 
                 return;
             }
             io.to(roomId).emit('timerBeforeStart', time);
-            io.to(roomId).emit('alertQuizzStarting', {
-                title: 'Le quizz commence 🏁',
-                message: 'Bon courage ! 💪'
-            });
         }, 1000);
     });
 
@@ -194,12 +202,24 @@ function quizz(socket,io) {
 
         if (nextQuestion) {
             let timer = nextQuestion.time;
+            io.emit('alertNextQuestion', {
+                title: 'Question suivante',
+                message: 'La question suivante commence'
+            });
 
             let interval = setInterval(() => {
                 timer--;
                 if (timer < 0) {
                     return clearInterval(interval);
                 }
+
+                if(timer === 3) {
+                    io.emit('alertQuestionWillEnd', {
+                        title: 'La question va bientôt se terminer !',
+                        message: 'Il ne reste plus que quelques secondes pour répondre'
+                    });
+                }
+
                 io.to(roomId).emit('timerQuestion', timer);
             }, 1000);
         }
