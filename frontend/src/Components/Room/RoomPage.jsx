@@ -43,22 +43,12 @@ function RoomPage({ isLogged }) {
         setQuizzList(data);
     }
 
-    useEffect(() => {
-        socket?.on('roomUsers', (tabUser) => {
-            if (tabUser && room[roomId] ) {
-                let userEmailCreater = room[roomId]?.userEmail;
-                let continueGame = false;
-                tabUser.forEach(user => {
-                    if (user.userEmail === userEmailCreater) {
-                        continueGame = true;
-                    }
-                }); 
-                if(!continueGame){
+        socket?.on('adminLeave', (state) => {
+                if(state){
                     navigate('/');
                 }
-            }
         });
-    }, [socket,roomId,room]);
+  
     
     useEffect(() => {
         if (user != null ) {
