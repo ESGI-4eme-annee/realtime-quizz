@@ -166,14 +166,49 @@ function quizz(socket,io) {
         }, 1000);
     });
 
+    socket.on('needNextQuestion', (data) => {
+        const roomId = data.roomId;
+        const quizzId = data.quizzId;
+        const questionId = data.questionId;
+
+        let indexQuestion = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions.findIndex(question => question.id === questionId);
+        let nextQuestion = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions[indexQuestion + 1];
+
+        console.log('nextQuestion backend', nextQuestion)
+
+        if (nextQuestion) {
+            let timer = nextQuestion.time;
+            io.emit('alertNextQuestion', {
+                title: 'Question suivante',
+                message: 'La question suivante commence'
+            });
+
+            let interval = setInterval(() => {
+                timer--;
+                if (timer < 0) {
+                    return clearInterval(interval);
+                }
+
+                if(timer === 3) {
+                    io.emit('alertQuestionWillEnd', {
+                        title: 'La question va bientôt se terminer !',
+                        message: 'Il ne reste plus que quelques secondes pour répondre'
+                    });
+                }
+
+                io.to(roomId).emit('timerQuestion', timer);
+            }, 1000);
+        }
+
+        io.to(roomId).emit('nextQuestion', {question: nextQuestion, quizzId});
+    });
+
     //response envoyer par les joueurs
     socket.on('sendResponse', (userId, roomId, quizzId, idQuestion, idResponse,timer) => {
         roomQuizzProgressMap[roomId] ??= {};
         roomQuizzProgressMap[roomId][quizzId] ??= {};
         roomQuizzProgressMap[roomId][quizzId][idQuestion] ??= {};
         roomQuizzProgressMap[roomId][quizzId][idQuestion][userId] = idResponse;
-
-        console.log("roomQuizzProgressMap", roomQuizzProgressMap[roomId][quizzId][idQuestion]);
 
         const responseCounts = Object.values(roomQuizzProgressMap[roomId][quizzId][idQuestion]).reduce((acc, value) => {
             acc[value] = (acc[value] || 0) + 1;
@@ -203,7 +238,6 @@ function quizz(socket,io) {
                     scores.push({userId, score: 0});
                 }
             }
-            console.log("scores", scores);
             io.to(roomId).emit('scoresQuizz', scores);
         }
     });
