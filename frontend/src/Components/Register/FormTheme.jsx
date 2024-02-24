@@ -92,7 +92,7 @@ function FormTheme() {
                     />
                 </div>
             </div>
-            <input type="submit" value="S'inscrire" className="register-login__form__submit" />
+            <input type="submit" value="S'inscrire" className="register-login__form__submit cursor-pointer" />
         </form>
 
     );
