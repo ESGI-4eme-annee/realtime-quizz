@@ -17,6 +17,7 @@ export const SocketContextProvider = ({ children }) => {
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [room, setRoom] = useState({});
     const [roomUsers, setRoomUsers] = useState([]);
+    const [messageChat, setMessageChat] = useState('');
 
 
     const fetchdata = async () => {
@@ -83,6 +84,9 @@ export const SocketContextProvider = ({ children }) => {
             socket.on('roomUsers', (roomUserMap) => {
                 setRoomUsers(roomUserMap);
             });
+            socket.on('receiveMessage', (data) => {
+                setMessageChat(data);
+            });
         }
 
     }, [socket]); 
@@ -111,7 +115,8 @@ export const SocketContextProvider = ({ children }) => {
                 room,
                 joinRoom,
                 user,
-                roomUsers
+                roomUsers,
+                messageChat
             }}>
             {children}
         </SocketContext.Provider>

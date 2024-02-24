@@ -34,8 +34,8 @@ function RoomPage({ isLogged }) {
             if (user.userRole === 'admin') {
                 setUserIsAdmin(true);
             }
+            setUsername(user.userEmail);
         }
-        setUsername(user.name);
     }, [user]);
 
     const createQuizz = () => {

@@ -1,57 +1,51 @@
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
+import { useParams } from 'react-router-dom';
+import { useSocketContext } from '../../context/SocketContext';
 
 const socket = io('http://localhost:3000');
 
-const Chat = ({ username, room }) => {
+const Chat = ({ username }) => {
+    const { roomId } = useParams();
     const [currentMessage, setCurrentMessage] = useState('');
     const [messageList, setMessageList] = useState([]);
-    // const [messages, setMessages] = useState([]);
+    const { messageChat } = useSocketContext();
 
-    // useEffect(() => {
-    //     socket.on('chatMessage', (msg) => {
-    //         setMessages((messages) => [...messages, msg]);
-    //     });
-
-    //     return () => {
-    //         socket.off('chatMessage');
-    //     };
-    // }, []);
-
-    const sendMessage = async (event) => {
+    const sendMessage = (event) => {
         event.preventDefault();
 
-        if (currentMessage) {
-            const messageData = {
-                room: room,
-                author: username,
-                message: currentMessage,
-                time: new Date().toLocaleTimeString()
-            }
-            await socket.emit('sendMessage', messageData);
-            setMessageList((list) => [...list, messageData]);
-        }
+        if (socket) {
+            if (currentMessage) {
+                console.log('username', username);
+                const messageData = {
+                    roomId: roomId,
+                    author: username,
+                    message: currentMessage,
+                    time: new Date().toLocaleTimeString()
+                }
+                socket.emit('sendMessage', messageData);
+                setCurrentMessage('');
+            };
+        };
     };
 
+
     useEffect(() => {
-        socket.on('receiveMessage', (data) => {
-            setMessageList((list) => [...list, data]);
-        })
-    }, [socket]);
+        console.log('messageChat', messageChat);
+        setMessageList((list) => [...list, messageChat]);
+    }, [messageChat]);
 
     return (
         <div>
-            {/* {messages.map((msg, index) => (
-                <div className={msg.name === username ? "chat chat-end" : "chat chat-start"} key={index}>
-                    <div className="chat-header">{msg.name}</div>
-                    <div className={msg.name === username ? "chat-bubble chat-bubble-secondary" : "chat-bubble"}>{msg.content}</div>
-                    <div className="chat-footer opacity-50">
-                        <time className="text-xs opacity-50">{msg.timeSent}</time>
+            {messageList.map((messageContent, index) => {
+                return (
+                    <div key={index}>
+                        <h1>{messageContent.message}</h1>
+                        <p>{messageContent.author}</p>
+                        <p>{messageContent.time}</p>
                     </div>
-                </div>
-            ))} */}
-            {messageList.map((messageContent) => {
-                return <h1>{messageContent.message}</h1>
+                
+                );
             })}
             <form onSubmit={sendMessage}>
                 <input
