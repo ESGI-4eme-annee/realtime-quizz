@@ -19,7 +19,7 @@ function RoomPage({ isLogged }) {
 
     const { roomId } = useParams();
 
-    const {joinRoom,roomUsers,user,sendQuizz,room,scoreQuizz,socket,clientJoin } = useSocketContext();
+    const {createRoom,joinRoom,roomUsers,user,sendQuizz,room,scoreQuizz,socket,clientJoin } = useSocketContext();
     const [showQuizzCreate, setShowQuizzCreate] = useState(false);
     const [quizzList, setQuizzList] = useState([]);
     const [quizz, setQuizz] = useState({});
@@ -34,10 +34,8 @@ function RoomPage({ isLogged }) {
     const [displayNotification, setDisplayNotification] = useState(false);
     const [notification, setNotification] = useState({});
     const [scoresQuizz, setScoresQuizz] = useState([]);
-
-    const navigate = useNavigate();
-
     const [nextQuestion, setNextQuestion] = useState(null);
+    const navigate = useNavigate();
 
     //liste des quizz dans le select
     const fetchdata = async () => {
@@ -45,6 +43,23 @@ function RoomPage({ isLogged }) {
         setQuizzList(data);
     }
 
+    useEffect(() => {
+        socket?.on('roomUsers', (tabUser) => {
+            if (tabUser && room[roomId] ) {
+                let userEmailCreater = room[roomId]?.userEmail;
+                let continueGame = false;
+                tabUser.forEach(user => {
+                    if (user.userEmail === userEmailCreater) {
+                        continueGame = true;
+                    }
+                }); 
+                if(!continueGame){
+                    navigate('/');
+                }
+            }
+        });
+    }, [socket,roomId,room]);
+    
     useEffect(() => {
         if (user != null ) {
             if (user.userRole === 'admin'&& room[roomId]?.userEmail === user.userEmail ) {
@@ -59,8 +74,6 @@ function RoomPage({ isLogged }) {
     }, [user,roomId]);
 
     useEffect(() => {
-        console.log('scoreQuizz', scoresQuizz);
-        console.log('roomUsers', roomUsers);
         roomUsers.forEach(user => {
             scoresQuizz.forEach(userScore => {
                 if (user.userId === userScore.userId) {

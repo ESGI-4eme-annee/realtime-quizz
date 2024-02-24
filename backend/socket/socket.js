@@ -85,6 +85,7 @@ function room(socket,io)  {
 
     });
     socket.on('leaveRoom', (data) => {
+        console.log('leaveRoom', data);
         const userEmail = data.userEmail;
 
         const roomsJoined = socket.rooms;
@@ -93,14 +94,21 @@ function room(socket,io)  {
             socket.leave(room);
 
             const userIndex = roomUserMap[room]?.findIndex(user => user.userEmail === userEmail);
-            console.log('userIndex', userIndex);
+            const userCreate = roomSocketMap[room]?.userEmail === userEmail;
 
             if (roomUserMap[room]) {
                 roomUserMap[room].splice(userIndex, 1);
             }
-            console.log('roomUserMap', roomUserMap[room]);
+
+            if (userCreate) {
+                delete roomSocketMap[room];
+                io.emit('roomCreated', roomSocketMap);
+
+            }
 
         io.to(room).emit('roomUsers', roomUserMap[room]);
+
+
         });
 
 
