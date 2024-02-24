@@ -76,7 +76,6 @@ export const SocketContextProvider = ({ children }) => {
     useEffect(() => {
         if (socket) {
             socket.on('roomCreated', (room) => {
-                console.log('roomCreated', room);
                 setRoom(room);
             });
             socket.on('userJoinedRoom', (userEmail) => {
@@ -84,6 +83,7 @@ export const SocketContextProvider = ({ children }) => {
                 setClientJoin(userEmail);
             });
             socket.on('roomUsers', (roomUserMap) => {
+                console.log('roomUsers', roomUserMap);
                 setRoomUsers(roomUserMap);
             });
             socket.on('question', (question) => {
@@ -130,7 +130,7 @@ export const SocketContextProvider = ({ children }) => {
     const leaveRoom = () => {
         if (socket) {
             socket.emit('leaveRoom', {
-                userId: userId
+                userEmail: userEmail,
             });
         }
     };

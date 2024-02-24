@@ -47,6 +47,7 @@ function Home({ isConnected }) {
         if(name !== '')
         { 
             createRoom(name, newUuid, password);
+            navigate(`/room/${newUuid}`);
         }else{
             alert('Veuillez entrer un nom de salle')
 
