@@ -199,18 +199,20 @@ function RoomPage({ isLogged }) {
                 <div className="userOnline">
                     <h1>Classement de la salle</h1>
                     <table className="table" id="table">
-                    {roomUsers
+                    <tbody>
+                        {roomUsers
                         ?.sort((a, b) => (b.score || 0) - (a.score || 0))
                         .map((user, index) => (
-                        <tr className="liClassement border-2 border-solid border-black" key={index}>
-                         <th>{index === 0 ? <img src={gold} alt="Gold Medal" /> : 
-                            index === 1 ? <img src={silver} alt="Silver Medal" /> :
-                            index === 2 ? <img src={bronze} alt="bronze Medal" /> : index+1}
-                        </th>
-                        <th> {user.userEmail} </th>
-                        <th> Score : {user.score || 0} </th>
-                        </tr>
+                            <tr className="liClassement border-2 border-solid border-black" key={index}>
+                            <th>{index === 0 ? <img src={gold} alt="Gold Medal" /> : 
+                                index === 1 ? <img src={silver} alt="Silver Medal" /> :
+                                index === 2 ? <img src={bronze} alt="bronze Medal" /> : index+1}
+                            </th>
+                            <th> {user.userEmail} </th>
+                            <th> Score : {user.score || 0} </th>
+                            </tr>
                         ))}
+                    </tbody>
                     </table>
                 </div>
             </div>
