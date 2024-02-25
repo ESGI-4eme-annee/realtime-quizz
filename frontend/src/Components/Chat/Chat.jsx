@@ -16,13 +16,51 @@ const Chat = ({ username, nextQuestion }) => {
     const [isBlocked, setIsBlocked] = useState(false);
 
     const possibleAnswers = nextQuestion ? nextQuestion.Answers.map(answer => answer.name) : [];
+    const keywords = [
+        "1",
+        "2",
+        "3",
+        "première",
+        "deuxième",
+        "troisième",
+        "première réponse",
+        "deuxième réponse",
+        "troisième réponse",
+        "réponse 1",
+        "réponse 2",
+        "réponse 3",
+        "1ère",
+        "2ème",
+        "3ème",
+        "1re",
+        "2e",
+        "3e",
+        "premier choix",
+        "deuxième choix",
+        "troisième choix",
+        "option 1",
+        "option 2",
+        "option 3",
+        "alternative 1",
+        "alternative 2",
+        "alternative 3",
+        "choix 1",
+        "choix 2",
+        "choix 3",
+        "un",
+        "deux",
+        "trois",
+        "premier",
+        "deuxième",
+        "troisième"
+    ];
 
     const sendMessage = (event) => {
         event.preventDefault();
 
         if (socket) {
             if (currentMessage) {
-                const isCheating = nextQuestion && possibleAnswers && possibleAnswers.some(answer => currentMessage.toLowerCase().includes(answer.toLowerCase()));
+                const isCheating = nextQuestion && (possibleAnswers.some(answer => currentMessage.toLowerCase().replace(/\s/g, '').includes(answer.toLowerCase())) || keywords.some(keyword => currentMessage.toLowerCase().replace(/\s/g, '').includes(keyword)));
 
                 if (isCheating) {
                     const newCheatCount = cheatCount + 1;
