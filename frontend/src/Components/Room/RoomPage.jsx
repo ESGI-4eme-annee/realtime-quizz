@@ -321,7 +321,7 @@ function RoomPage({ isLogged }) {
                     </div>
                     : null
                 }
-                <Chat username={username} />
+                <Chat username={username} nextQuestion={nextQuestion} />
             </div>
 
             <Notification isVisible={displayNotification} notification={notification} />

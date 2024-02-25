@@ -100,12 +100,11 @@ export const SocketContextProvider = ({ children }) => {
                 setScoreQuizz(scoreQuizz);
             });
             socket.on('receiveMessage', (data) => {
-                console.log('receiveMessage CONTEXT', data);
                 setMessageChat(data);
             });
         }
 
-    }, [socket]); 
+    }, [socket]);
 
 
     //ROOM create
@@ -156,6 +155,10 @@ export const SocketContextProvider = ({ children }) => {
         };
     }
 
+    const resetMessageChat = () => {
+        setMessageChat({});
+    };
+
     return (
         <SocketContext.Provider value={
             {
@@ -176,7 +179,9 @@ export const SocketContextProvider = ({ children }) => {
                 scoreQuizz,
                 clientJoin,
                 roomDontExist,
-                messageChat
+                messageChat,
+                setMessageChat,
+                resetMessageChat
             }}>
             {children}
         </SocketContext.Provider>
