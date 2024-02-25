@@ -73,7 +73,7 @@ function FormTheme({setIsLogged}) {
                 />
             </div>
         </div>
-        <button type="submit" value="Se connecter"  className="btn">Se connecter</button>
+        <button type="submit" value="Se connecter"  className="btn btn-primary">Se connecter</button>
       </form>
 
   );

@@ -6,6 +6,6 @@ import { SocketContextProvider  } from "./context/SocketContext.jsx";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <SocketContextProvider>
-    <App />
+    <App/>
     </SocketContextProvider>
 )

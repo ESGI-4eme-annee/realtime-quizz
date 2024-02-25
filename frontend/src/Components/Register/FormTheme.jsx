@@ -92,7 +92,7 @@ function FormTheme() {
                     />
                 </div>
             </div>
-            <button type="submit" value="S'inscrire"  className="btn">S'inscrire'</button>
+            <button type="submit" value="S'inscrire"  className="btn btn-primary">S'inscrire</button>
         </form>
 
     );

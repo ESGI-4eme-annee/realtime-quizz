@@ -19,13 +19,12 @@ function LoginPage({setIsLogged}) {
 
     return (
         <div className='flexLog'>
-        <div className=" connection">
-            
-                    <h2 className="text-3xl text-center mb-3">Connexion</h2>
+            <div className="h-fit bg-base-300 connection border-solid border-2 border-neutral-content">
+                <h2 className="text-3xl text-center mb-3">Connexion</h2>
                 <FormLogin setIsLogged={setIsLogged}/>
-                <p className='mt-5 text-white '>Vous n’avez pas de compte ? <Link to="/register">Inscrivez-vous</Link></p>
+                <p className='mt-5'>Vous n’avez pas de compte ? <Link to="/register" className="text-primary">Inscrivez-vous</Link></p>
             </div>
-            </div>
+        </div>
     )
 }
 

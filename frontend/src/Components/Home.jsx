@@ -108,7 +108,7 @@ function Home({ isConnected }) {
             }
 
             { userIsAdmin ? <div className="divCenter">
-                <div className="divCreateRoom">
+                <div className="divCreateRoom bg-base-300 border-solid border-2 border-neutral-content">
                     <h1 className="font-bold text-lg">Créer une salle</h1>
                     <input className="input input-bordered w-full max-w-xs mt-5" type="text" id="nameRoom" placeholder="Nom de la salle" required />
                     {/* <div className="line"><input className="" type="checkbox" id="checkRoom" onChange={handleCheckboxChange} /><p>Ajouter un mdp</p></div> */}
@@ -122,7 +122,7 @@ function Home({ isConnected }) {
                     {showPassword && (
                         <input className="input input-bordered w-full max-w-xs mb-5" type="password" id="passwordRoom" placeholder="Mot de passe" />
                     )}
-                    <button onClick={handleCreateRoom} className="btn">Créer</button>
+                    <button onClick={handleCreateRoom} className="btn btn-primary">Créer</button>
                 </div>
             </div> : <></>}
             <div className="viewSalleHeight">
