@@ -18,7 +18,7 @@ async function signup(req, res) {
         });
     }
 
-    if (req.body.password.length < 8 || req.body.password.length > 32) {
+    if (req.body.password.length > 32) {
       return res
         .status(400)
         .json({
@@ -41,6 +41,55 @@ async function signup(req, res) {
       password: hashedPassword,
       name: req.body.name,
       api_token: apiToken,
+    });
+
+    res.status(201).json({
+      message: "Utilisateur créé !",
+      email: user.email,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function signupAdmin(req, res) {
+  try {
+    if (!req.body?.email || !req.body?.password || !req.body?.name) {
+      return res.status(400).json({ error: "Missing parameters" });
+    }
+
+    if (!/\S+@\S+\.\S+/.test(req.body.email)) {
+      return res
+        .status(400)
+        .json({
+          error: "L'adresse e-mail est invalide.",
+        });
+    }
+
+    if (req.body.password.length > 32) {
+      return res
+        .status(400)
+        .json({
+          error: "Le mot de passe doit contenir entre 8 et 32 caractères.",
+        });
+    }
+
+    const usertest = await User.findOne({
+      where: { email: req.body.email },
+    });
+
+    if (usertest) {
+      return res.status(400).json({ error: "Adresse mail incorrecte" });
+    }
+
+    const apiToken = generateToken(32);
+    const hashedPassword =req.body.password;
+    const user = User.create({
+      email: req.body.email,
+      password: hashedPassword,
+      name: req.body.name,
+      api_token: apiToken,
+      role: "admin",
     });
 
     res.status(201).json({
@@ -217,5 +266,6 @@ module.exports = {
   getConnectedUser,
   logout,
   getConnectedUserNav,
-  setScore,
+  setScore,  signupAdmin,
+
 };
