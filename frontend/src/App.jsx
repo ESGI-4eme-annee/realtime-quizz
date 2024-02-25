@@ -4,6 +4,7 @@ import LoginPage from './Components/Login/LoginPage';
 import NavBar from './Components/NavBar';
 import Home from './Components/Home';
 import RoomPage from './Components/Room/RoomPage';
+import RegisterPageAdmin from './Components/RegisterAdmin/RegisterPageAdmin';
 import { useEffect, useState } from 'react';
 import { accountService } from "../src/services/account.service";
 
@@ -30,6 +31,7 @@ function App() {
         <NavBar isLogged={isLogged}/>
         <Routes>
           <Route path="register" element={<RegisterPage />} />
+          <Route path="registerAdmin" element={<RegisterPageAdmin />} />
           <Route index path="login" element={<LoginPage setIsLogged={setIsLogged}/>} />
           <Route path="/" element={<Home isConnected={isLogged} isAdmin={isAdmin} />} />
           <Route path="room/:roomId" element={<RoomPage isLogged={isLogged}/>} />

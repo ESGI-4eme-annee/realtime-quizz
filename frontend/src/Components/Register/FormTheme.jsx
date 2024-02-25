@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import register from '../../hook/register';
+import registerAdmin from '../../hook/registerAdmin';
 // import '@css/RegisterLogin/RegisterLoginForm.css';
 import { useNavigate } from "react-router-dom";
 
-function FormTheme() {
+function FormTheme({ admin}) {
     const navigate = useNavigate();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -22,7 +23,12 @@ function FormTheme() {
 
         if (name != "" && email != "" && password != "") {
             try {
-                const sign = await register(data);
+                let sign;
+                if (admin) {
+                 sign = await registerAdmin(data);
+                } else {
+                 sign = await register(data);
+                }
 
                 if(error){
                     setError("");
