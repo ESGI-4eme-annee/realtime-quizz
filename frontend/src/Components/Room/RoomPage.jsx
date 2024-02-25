@@ -38,6 +38,7 @@ function RoomPage({ isLogged }) {
     const [scoresQuizz, setScoresQuizz] = useState([]);
     const [nextQuestion, setNextQuestion] = useState(null);
     const [quizzStarted, setQuizzStarted] = useState(false);
+    const [quizzEnd, setQuizzEnd] = useState(false);
     const navigate = useNavigate();
 
     //liste des quizz dans le select
@@ -46,21 +47,38 @@ function RoomPage({ isLogged }) {
         setQuizzList(data);
     }
 
-        socket?.on('adminLeave', (state) => {
-                if(state){
-                    navigate('/');
-                }
-        });
-
+    socket?.on('adminLeave', (state) => {
+            if(state){
+                navigate('/');
+            }
+    });
 
     useEffect(() => {
-        if (user != null ) {
+        if (user != null) {
             if (user.userRole === 'admin'&& room[roomId]?.userEmail === user.userEmail ) {
                 setUserIsAdmin(true);
             }
             setUsername(user.userEmail);
         }
     }, [clientJoin,user,roomId]);
+
+    useEffect(() => {
+        socket?.on('timerQuestion', (time) => {
+            setTimerQuestion(time);
+            if (time <= 0) {
+                setTimeout(() => {
+                    setTimerQuestion(null);
+                    if (userIsAdmin) {
+                        socket.emit('needNextQuestion', { quizzId: quizz.id, roomId, questionId: nextQuestion.id });
+                    }
+                }, 3000);
+            }
+        });
+
+        return () => {
+            socket.off('timerQuestion');
+        }
+    }, [userIsAdmin, nextQuestion]);
 
     useEffect(() => {
         fetchdata();
@@ -91,17 +109,12 @@ function RoomPage({ isLogged }) {
             }
         });
 
-        socket.on('nextQuestion', ({question, quizzId}) => {
+        socket?.on('nextQuestion', ({question, quizzId}) => {
             setNextQuestion(question || null);
             setQuizzId(quizzId);
-        });
-
-        socket?.on('timerQuestion', (time) => {
-            setTimerQuestion(time);
-            if (time <= 0) {
-                setTimeout(() => {
-                    setTimerQuestion(null);
-                }, 3000);
+            setQuizzStarted(true);
+            if (question === undefined) {
+                setQuizzEnd(true);
             }
         });
 
@@ -132,11 +145,11 @@ function RoomPage({ isLogged }) {
                 setDisplayNotification(false);
             }, 3000);
         });
-    }, [socket,roomId,reload]);
+    }, [socket, roomId, reload]);
 
     useEffect(() => {
         fetchdata();
-    }, [reload,roomId]);
+    }, [reload, roomId]);
 
     //affiche le formulaire de création de quizz
     const createQuizz = () => {
@@ -159,14 +172,14 @@ function RoomPage({ isLogged }) {
         };
         setQuizzProgress(false);
         setViewQuestion(true);
-        setQuizzStarted(true);
     }
 
-    const clickNextQuestion = () => {
-        if(nextQuestion !== null){
-            socket.emit('needNextQuestion', { quizzId: quizz.id, roomId, questionId: nextQuestion.id });
-        }
-    }
+    // const clickNextQuestion = () => {
+    //     setTimerQuestion(null);
+    //     if(nextQuestion !== null){
+    //         socket.emit('needNextQuestion', { quizzId: quizz.id, roomId, questionId: nextQuestion.id });
+    //     }
+    // }
 
     const closeModale = (state) => {
         if(state){
@@ -274,8 +287,12 @@ function RoomPage({ isLogged }) {
             :null }
 
             {
-                userIsAdmin && quizzView
-                ? <>
+                quizzEnd ? <h1 className="text-3xl">Quizz finished</h1> : null
+            }
+
+            {
+                userIsAdmin && quizzView 
+                ? <> 
                     {
                         !quizzStarted && nextQuestion === null
                         ?
@@ -289,9 +306,6 @@ function RoomPage({ isLogged }) {
                     {
                         quizzStarted  && nextQuestion !== null
                         ? <>
-                            <button className="btn btn-primary" onClick={clickNextQuestion} disabled={timerQuestion != null}>
-                                Next Question
-                            </button>
                             <div>
                                 Gestion du temps
                                 <button className="btn ml-4" onClick={() => handleTimer(10)} disabled={timerQuestion == null}>
@@ -319,7 +333,7 @@ function RoomPage({ isLogged }) {
                     ? <div className="cote w-2/4 bg-base-300 p-10">
                         <ViewUserQuestion nextQuestion={nextQuestion} quizzId={quizzId} roomId={roomId} timerQuestion={timerQuestion} />
                     </div>
-                    : null
+                    : !userIsAdmin && !quizzEnd ? <div className="text-3xl">L'administrateur va bientôt lancer le quizz...</div> : null
                 }
                 <Chat username={username} nextQuestion={nextQuestion} />
             </div>
