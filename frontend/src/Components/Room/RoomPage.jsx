@@ -76,7 +76,10 @@ function RoomPage({ isLogged }) {
         });
 
         return () => {
-            socket.off('timerQuestion');
+            if (socket) {
+                socket.off('timerQuestion');
+
+            }
         }
     }, [userIsAdmin, nextQuestion]);
 
