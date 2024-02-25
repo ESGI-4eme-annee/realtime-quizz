@@ -22,7 +22,7 @@ const ViewQuizz = ({ quizz }) => {
         </span>
       </h2>
       {quizz.Questions.map((question, index) => (
-        <div key={question.id} className="card border w-2/3 bg-base-100 shadow-md rounded-2xl p-5">
+        <div key={question.id} className="card border w-2/3 bg-base-100 shadow-md rounded-2xl p-5 mb-4">
           <div className="card-body">
             <h2 className="card-title font-semibold mb-2">Question : {question.name}</h2>
             {question.Answers.map((answer, index) => (
