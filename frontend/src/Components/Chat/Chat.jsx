@@ -12,6 +12,8 @@ const Chat = ({ username, nextQuestion }) => {
     const [messageList, setMessageList] = useState([]);
     const { messageChat, resetMessageChat } = useSocketContext();
     const endOfMessagesRef = useRef(null);
+    const [cheatCount, setCheatCount] = useState(0);
+    const [isBlocked, setIsBlocked] = useState(false);
 
     const possibleAnswers = nextQuestion ? nextQuestion.Answers.map(answer => answer.name) : [];
 
@@ -20,11 +22,19 @@ const Chat = ({ username, nextQuestion }) => {
 
         if (socket) {
             if (currentMessage) {
-                console.log('question name', nextQuestion ? nextQuestion.name : 'No question');
                 const isCheating = nextQuestion && possibleAnswers && possibleAnswers.some(answer => currentMessage.toLowerCase().includes(answer.toLowerCase()));
 
                 if (isCheating) {
-                    setMessageList((list) => [...list, { author: 'System', message: 'Tentative de triche détectée. Votre message n\'a pas été envoyé.', time: new Date().toLocaleTimeString() }]);
+                    const newCheatCount = cheatCount + 1;
+                    setCheatCount(newCheatCount);
+                    if (newCheatCount > 1) {
+                        setIsBlocked(true);
+                        setTimeout(() => setIsBlocked(false), 5000);
+                        setMessageList((list) => [...list, { author: 'System', message: 'Tentative de triche détectée. Vous êtes bloqué du chat pendant 5 secondes.', time: new Date().toLocaleTimeString(), messageType: 'error' }]);
+                    } else {
+                        setMessageList((list) => [...list, { author: 'System', message: 'Tentative de triche détectée. Votre message n\'a pas été envoyé.', time: new Date().toLocaleTimeString(), messageType: 'warning' }]);
+                    }
+                    setCurrentMessage('');
                 } else {
                     const messageData = {
                         roomId: roomId,
@@ -66,7 +76,7 @@ const Chat = ({ username, nextQuestion }) => {
     return (
         <div className="chat-container">
             {messageList.map((messageContent, index) => {
-                const isSystemMessage = messageContent.author === 'System';
+                const bubbleClass = messageContent.messageType === 'error' ? 'chat-bubble-error' : (messageContent.messageType === 'warning' ? 'chat-bubble-warning' : '');
                 if (messageContent.author === username) {
                     return (
                         <div className="chat chat-end" key={index}>
@@ -84,7 +94,7 @@ const Chat = ({ username, nextQuestion }) => {
                     return (
                         <div className="chat chat-start" key={index}>
                             <div className="chat-header">{messageContent.author}</div>
-                            <div className={`chat-bubble ${isSystemMessage ? 'chat-bubble-warning' : ''}`}>
+                            <div className={`chat-bubble ${bubbleClass}`}>
                                 {messageContent.message}
                             </div>
                             <div className="chat-footer opacity-50">
@@ -102,6 +112,7 @@ const Chat = ({ username, nextQuestion }) => {
                     type="text"
                     value={currentMessage}
                     onChange={(e) => setCurrentMessage(e.target.value)}
+                    disabled={isBlocked}
                 />
                 <button type="submit" className="btn">Envoyer</button>
             </form>
