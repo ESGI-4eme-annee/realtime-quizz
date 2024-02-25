@@ -8,7 +8,7 @@ services:
       - ./backend:/app
     ports:
       - 3000:3000
-    command: sh -c "npm install && npm run start & sleep 10 && node migration"
+    command: sh -c "npm install && npm run start & sleep 10 && node migration && tail -f /dev/null"
     depends_on:
       - db
 
