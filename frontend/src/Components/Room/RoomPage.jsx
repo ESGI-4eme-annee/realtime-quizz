@@ -36,6 +36,7 @@ function RoomPage({ isLogged }) {
     const [scoresQuizz, setScoresQuizz] = useState([]);
     const [nextQuestion, setNextQuestion] = useState(null);
     const [quizzStarted, setQuizzStarted] = useState(false);
+    const [quizzEnd, setQuizzEnd] = useState(false);
     const navigate = useNavigate();
 
     //liste des quizz dans le select
@@ -90,6 +91,10 @@ function RoomPage({ isLogged }) {
         socket.on('nextQuestion', ({question, quizzId}) => {
             setNextQuestion(question || null);
             setQuizzId(quizzId);
+            setQuizzStarted(true);
+            if (nextQuestion === null) {
+                setQuizzEnd(true);
+            }
         });
 
         socket?.on('timerQuestion', (time) => {
@@ -155,7 +160,6 @@ function RoomPage({ isLogged }) {
         };
         setQuizzProgress(false);
         setViewQuestion(true);
-        setQuizzStarted(true);
     }
 
     const clickNextQuestion = () => {
@@ -268,6 +272,10 @@ function RoomPage({ isLogged }) {
                     </div>
                 </div>
             :null }
+
+            {
+                quizzEnd ? <h1 className="text-3xl">Quizz finished</h1> : null
+            }
 
             {
                 userIsAdmin && quizzView 

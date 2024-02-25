@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useSocketContext } from '../../context/SocketContext';
-import Notification from "../Notification/Notification.jsx";
 
 const ViewUserQuestion = ({nextQuestion, roomId, timerQuestion, quizzId} ) => {
   const { sendResponse,responseValid,responseCounts } = useSocketContext();
 
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-
-  console.log();
 
   useEffect(() => {
     if (selectedAnswer !== null && responseValid == null) {
