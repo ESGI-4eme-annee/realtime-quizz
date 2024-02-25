@@ -153,7 +153,7 @@ export const SocketContextProvider = ({ children }) => {
     const sendResponse = (salle,idQuizz,idQuestion,idResponse,timer) => {
         if (socket) {
             socket.emit('sendResponse',userId, salle,idQuizz,idQuestion,idResponse,timer);
-        };
+        }
     }
 
     const resetMessageChat = () => {

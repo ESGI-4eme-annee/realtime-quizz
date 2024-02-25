@@ -17,14 +17,19 @@ function NavBar({ isLogged }) {
                         </li>   
                         {
                             isLogged ?
-                            <li className="px-10 text-xl">
-                                <Link to="/" onClick={() => { 
-                                    localStorage.removeItem('token'); 
-                                    document.cookie = "";
-                                    window.location.reload(); 
+                            <>
+                                <li className="px-10 text-xl">
+                                    <Link to="/" onClick={() => {
+                                        localStorage.removeItem('token');
+                                        document.cookie = "";
+                                        window.location.reload();
 
-                                }}>Déconnexion</Link>
-                            </li>
+                                    }}>Déconnexion</Link>
+                                </li>
+                                <li className="px-10 text-xl">
+                                    <Link to="/history">Historique</Link>
+                                </li>
+                            </>
                             : <>
                                 <li className="px-10 text-xl">
                                     <Link to="/login">Connexion</Link>
