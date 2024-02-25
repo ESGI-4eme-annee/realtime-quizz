@@ -32,6 +32,9 @@ function NavBar({ isLogged }) {
                                 <li className="px-10 text-xl">
                                     <Link to="/register">Inscription</Link>
                                 </li>
+                                <li className="px-10 text-xl">
+                                    <Link to="/registerAdmin">Inscription Admin</Link>
+                                </li>
                             </>
                         }  
                         <li className="px-10 text-xl">

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import FormTheme from './FormTheme';
+import FormTheme from '../Register/FormTheme';
 function RegisterPage() {
 
     return (
@@ -7,9 +7,9 @@ function RegisterPage() {
         <div className="bg-base-300 connection border-solid border-2 border-neutral-content">
             <div className="register-login__container">
                 <div className="register-login__container__logo">
-                    <h2 className="text-3xl text-center mb-3">Inscription</h2>
+                    <h2 className="text-3xl text-center mb-3">Inscription Admin</h2>
                 </div>
-                <FormTheme admin={false}/>
+                <FormTheme admin={true}/>
                 <p className='mt-5'>Vous avez déjà un compte ? <Link to="/login" className="text-primary">Connectez-vous</Link></p>
             </div>
         </div>
