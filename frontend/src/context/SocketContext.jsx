@@ -92,6 +92,7 @@ export const SocketContextProvider = ({ children }) => {
             });
             socket.on('responseCounts', (responseCounts) => {
                 setResponseCounts(responseCounts);
+                console.log('responseCounts CONTEXT -> ', responseCounts);
             });
             socket.on('responseValid', (responseValid) => {
                 setResponseValid(responseValid);

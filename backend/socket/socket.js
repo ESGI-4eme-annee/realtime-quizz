@@ -169,7 +169,6 @@ function quizz(socket,io) {
 
                     io.to(roomId).emit('timerQuestion', currentQuizz.currentTimer);
 
-                    console.log('currentQuizz.currentTimer', currentQuizz.currentTimer);
                     if (currentQuizz.currentTimer <= 0) {
                         let correctAnswer = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizz.id).questions.find(question => question.id === quizz.Questions[0].id).Answers.find(answer => answer.valid);
                         io.to(roomId).emit('responseValid', correctAnswer.id);
@@ -255,7 +254,7 @@ function quizz(socket,io) {
         }, {});
 
         if(!timer){
-        io.to(roomId).emit('responseCounts', responseCounts);
+            io.to(roomId).emit('responseCounts', responseCounts);
         }else{
             const question = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions.find(question => question.id === idQuestion);
             const response = question.Answers.find(answer => answer.id === idResponse);
