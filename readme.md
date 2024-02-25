@@ -26,6 +26,7 @@ Intégrer Tailwind à notre projet m'a permis de développer rapidement la parti
 De plus, avec l'aide de Daisy UI, la création de composants s'est déroulée très rapidement.
 Dans l'ensemble, ce projet était très intéressant et m'a permis d'acquérir de nouvelles compétences que je pourrai ensuite intégrer dans d'autres projets.
 
+<<<<<<< Updated upstream
 
 
 Benoît De Carli (Benoitapps)
@@ -57,3 +58,15 @@ Bonus :
 Défis rencontrés :
 Il a été assez compliqué d'initialiser les websockets étant donné que le projet a été réalisé sous Node.js et React.js, alors que durant les cours, nous étions sur d'autres langages.
 De plus, la bonne gestion des salles tout en tenant compte des rôles, ainsi que la possibilité d'ouvrir plusieurs salles en même temps, ont demandé une petite réflexion. Enfin, la gestion des scores en temps réel a aussi été un peu compliquée à gérer.
+
+
+Melvin Courant (MelvinCourant):
+- mise en place des notifications en temps réel durant le quizz
+- sauvegarde du score des joueurs dans la base de données et historique
+- style de l'application avec Tailwind CSS et Daisy UI
+
+Défis rencontrés :
+J'ai eu pas mal de difficultés concernant la sauvegarde des scores des joueurs dans la base de données, mais j'ai finalement réussi à trouver une solution.
+
+Ayant réalisé pas mal le style de l'application, j'ai pu apprendre à utiliser Tailwind CSS et Daisy UI, ce qui a été un gain de temps considérable pour le peu de temps que nous avions.
+J'ai également pu apprendre à utiliser SocketIo, ce qui m'a permis de comprendre comment fonctionne la communication en temps réel entre le serveur et les clients.
