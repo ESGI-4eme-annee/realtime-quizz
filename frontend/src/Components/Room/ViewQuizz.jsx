@@ -13,7 +13,7 @@ const ViewQuizz = ({ quizz }) => {
 
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-2/4 flex flex-col pr-4">
       <h2 className="text-3xl border-b mb-6 pb-2">Partie administration</h2>
       <h2 className="mb-2">
         Nom du quizz : 

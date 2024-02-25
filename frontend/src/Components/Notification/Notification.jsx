@@ -2,7 +2,7 @@ export default function Notification({isVisible = false, notification}) {
     return (
         <>
             {
-                isVisible && <div role="alert" className="alert shadow-lg fixed bottom-4 right-4 w-96">
+                isVisible && <div role="alert" className="alert shadow-lg fixed bottom-4 left-4 w-96">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                          className="stroke-info shrink-0 w-6 h-6">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"

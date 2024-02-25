@@ -182,7 +182,7 @@ function RoomPage({ isLogged }) {
     }
 
     return (
-        <div>
+        <div className="p-5">
             <dialog id="modal-timer-before-quizz" className="modal">
                 <div className="modal-box py-32">
                     <h1 className="text-9xl font-bold mx-auto w-auto text-center">
@@ -210,13 +210,13 @@ function RoomPage({ isLogged }) {
 
             <div className="right">
                 <div className="userOnline">
-                    <h1>Classement de la salle</h1>
+                    <h1 className="my-2">Classement de la salle</h1>
                     <table className="table" id="table">
-                    <tbody>
+                    <tbody className="text-primary-content">
                         {roomUsers
                         ?.sort((a, b) => (b.score || 0) - (a.score || 0))
                         .map((user, index) => (
-                            <tr className="liClassement border-2 border-solid border-black" key={index}>
+                            <tr className="liClassement bg-primary" key={index}>
                             <th>{index === 0 ? <img src={gold} alt="Gold Medal" /> :
                                 index === 1 ? <img src={silver} alt="Silver Medal" /> :
                                 index === 2 ? <img src={bronze} alt="bronze Medal" /> : index+1}
@@ -235,9 +235,9 @@ function RoomPage({ isLogged }) {
                 userIsAdmin
                 ?
                 <div className="allAdmin">
-                    <div className="partAdmin">
+                    <div className="partAdmin bg-base-300 border-solid border-2 border-neutral-content flex-col gap-4">
                         <div className="createQuizz">
-                        <button className="btn" onClick={() => { createQuizz () }}>Cree un quizz</button>
+                        <button className="btn" onClick={() => { createQuizz () }}>Creer un quizz</button>
                             <dialog id="my_modal_1" className="modal">
                                 <div className="modal-box">
                                 <h3 className="font-bold text-lg">Creation du Quizz</h3>
@@ -251,11 +251,11 @@ function RoomPage({ isLogged }) {
                             </dialog>
                         </div>
                     {
-                        quizzProgress
-                        ? <div className="selectQuizz">
-                            <h2 className="text-white">Choisir un quizz</h2>
-                            <div className="flex flex-row">
-                                <select onFocus={() => setShowQuizzCreate(false)} className="select select-bordered w-full max-w-xs">
+                         quizzProgress
+                        ? <div className="w-80">
+                            <h2>Choisir un quizz</h2>
+                            <div className="w-full flex justify-between">
+                                <select onFocus={() => setShowQuizzCreate(false)} className="select select-bordered">
                                     <option value="" disabled>Choisissez un quizz</option>
                                     {quizzList.map((quizz, index) => (
                                     <option key={index} value={quizz.id}>
@@ -263,7 +263,7 @@ function RoomPage({ isLogged }) {
                                     </option>
                                     ))}
                                 </select>
-                                <button className="btn" onClick={() => handleConfirmation()}>Confirmer</button>
+                                <button className="btn btn-primary" onClick={() => handleConfirmation()}>Confirmer</button>
                                 </div>
                         </div>
                         : null
@@ -275,7 +275,7 @@ function RoomPage({ isLogged }) {
 
             {
                 userIsAdmin && quizzView
-                ? <> 
+                ? <>
                     {
                         !quizzStarted && nextQuestion === null
                         ?
@@ -316,17 +316,16 @@ function RoomPage({ isLogged }) {
                 }
                 {
                     nextQuestion !== null
-                    ? <div className="cote">
+                    ? <div className="cote w-2/4 bg-base-300 p-10">
                         <ViewUserQuestion nextQuestion={nextQuestion} quizzId={quizzId} roomId={roomId} timerQuestion={timerQuestion} />
-                        <Notification isVisible={displayNotification} notification={notification} />
                     </div>
                     : null
                 }
-                <div className="cote">
-                    <Chat username={username} />
-                </div>
+                <Chat username={username} />
             </div>
-                
+
+            <Notification isVisible={displayNotification} notification={notification} />
+
         </div>
     );
 }

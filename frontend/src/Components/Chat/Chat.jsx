@@ -47,7 +47,7 @@ const Chat = ({ username }) => {
     }, [messageList]);
 
     return (
-        <div className="chat-container">
+        <div className="chat-container bg-base-300 border-solid border-2 border-neutral-content p-4">
             {messageList.map((messageContent, index) => {
                 if (messageContent.author === username) {
                     return (
@@ -80,12 +80,12 @@ const Chat = ({ username }) => {
             <div ref={endOfMessagesRef} />
             <form onSubmit={sendMessage} className='chat-form'>
                 <input
-                    className="input"
+                    className="input w-full"
                     type="text"
                     value={currentMessage}
                     onChange={(e) => setCurrentMessage(e.target.value)}
                 />
-                <button type="submit" className="btn">Envoyer</button>
+                <button type="submit" className="btn btn-primary">Envoyer</button>
             </form>
         </div>
     );
