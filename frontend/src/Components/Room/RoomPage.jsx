@@ -102,6 +102,7 @@ function RoomPage({ isLogged }) {
             if(users.current.length > 0 && quizzId && quizz.name) {
                 setQuizzEnd(true);
                 sendScores(users.current);
+                users.current = [];
             }
         });
     }, [users.current]);

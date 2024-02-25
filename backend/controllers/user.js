@@ -258,7 +258,7 @@ async function getHistory(req, res) {
 
 async function addScore(req, res) {
   try {
-    if(!req.params?.id || !req.body?.score|| !req.body?.quizzId || !req.body?.quizzName) {
+    if(!req.params?.id || req.body?.score === undefined || !req.body?.quizzId || !req.body?.quizzName) {
       return res.status(400).json({ error: "Missing parameters" });
     } else {
       const score = req.body.score;
