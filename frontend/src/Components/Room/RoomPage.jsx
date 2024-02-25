@@ -35,6 +35,7 @@ function RoomPage({ isLogged }) {
     const [notification, setNotification] = useState({});
     const [scoresQuizz, setScoresQuizz] = useState([]);
     const [nextQuestion, setNextQuestion] = useState(null);
+    const [quizzStarted, setQuizzStarted] = useState(false);
     const navigate = useNavigate();
 
     //liste des quizz dans le select
@@ -70,10 +71,9 @@ function RoomPage({ isLogged }) {
                     user.score = userScore.score;
                 }
             });
-          });
+        });
 
     },[scoreQuizz,scoresQuizz]);
-    
 
     useEffect(() => {
         socket?.on('timerBeforeStart', (time) => {
@@ -94,7 +94,7 @@ function RoomPage({ isLogged }) {
 
         socket?.on('timerQuestion', (time) => {
             setTimerQuestion(time);
-            if (time === 0) {
+            if (time <= 0) {
                 setTimeout(() => {
                     setTimerQuestion(null);
                 }, 3000);
@@ -155,11 +155,13 @@ function RoomPage({ isLogged }) {
         };
         setQuizzProgress(false);
         setViewQuestion(true);
-
+        setQuizzStarted(true);
     }
 
     const clickNextQuestion = () => {
-        socket.emit('needNextQuestion', { quizzId: quizz.id, roomId, questionId: nextQuestion.id });
+        if(nextQuestion !== null){
+            socket.emit('needNextQuestion', { quizzId: quizz.id, roomId, questionId: nextQuestion.id });
+        }
     }
 
     const closeModale = (state) => {
@@ -168,9 +170,16 @@ function RoomPage({ isLogged }) {
         }
     }
 
+    // handle timer during the quizz, add or remove time from the current timer
+    const handleTimer = (time) => {
+        if (socket) {
+            socket.emit('handleTimer', { time, quizzId: quizz.id, roomId });
+        };
+    }
+
     return (
         <div>
-             <dialog id="modal-timer-before-quizz" className="modal">
+            <dialog id="modal-timer-before-quizz" className="modal">
                 <div className="modal-box py-32">
                     <h1 className="text-9xl font-bold mx-auto w-auto text-center">
                         {timerBeforeStart ? timerBeforeStart : null}
@@ -184,8 +193,8 @@ function RoomPage({ isLogged }) {
                 ? <div className="toast toast-top toast-end">
                     <div className="alert alert-info flex justify-center w-auto">
                         <span className="text-2xl font-semibold text-white">
-                            {timerQuestion ? timerQuestion : null}
-                            {timerQuestion === 0 ? 'Fin du temps' : null}
+                            {timerQuestion > 0 ? timerQuestion : null}
+                            {timerQuestion <= 0 ? 'Fin du temps' : null}
                         </span>
                     </div>
                 </div>
@@ -238,7 +247,7 @@ function RoomPage({ isLogged }) {
                             </dialog>
                         </div>
                     {
-                         quizzProgress
+                        quizzProgress
                         ? <div className="selectQuizz">
                             <h2 className="text-white">Choisir un quizz</h2>
                             <div className="flex flex-row">
@@ -260,17 +269,37 @@ function RoomPage({ isLogged }) {
                 </div>
             :null }
 
-{
-                userIsAdmin 
+            {
+                userIsAdmin && quizzView 
                 ? <> 
-                    <button 
-                        onClick={handleStartQuizz} disabled={!quizzView}
-                        className="btn">
-                            Lancer le quizz
-                    </button>
-                    <button className="btn" onClick={clickNextQuestion} disabled={!quizzView}>
-                        Next Question
-                    </button>
+                    {
+                        !quizzStarted && nextQuestion === null
+                        ?
+                        <button 
+                            onClick={handleStartQuizz} disabled={!quizzView}
+                            className="btn">
+                                Lancer le quizz
+                        </button>
+                        : null
+                    }
+                    {
+                        quizzStarted  && nextQuestion !== null
+                        ? <>
+                            <button className="btn" onClick={clickNextQuestion} disabled={timerQuestion != null}>
+                                Next Question
+                            </button>
+                            <div>
+                                Gestion du temps
+                                <button className="btn" onClick={() => handleTimer(10)} disabled={timerQuestion == null}>
+                                    +10s
+                                </button>
+                                <button className="btn" onClick={() => handleTimer(-10)} disabled={timerQuestion == null}>
+                                    -10s
+                                </button>
+                            </div>
+                        </>
+                        : null
+                    }
                 </>
                 : null
             }

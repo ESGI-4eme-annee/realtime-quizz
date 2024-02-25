@@ -16,9 +16,7 @@ const ViewUserQuestion = ({nextQuestion, roomId, timerQuestion, quizzId} ) => {
   }, [selectedAnswer]);
 
   useEffect(() => {
-    console.log("responseValid", responseValid);
-    console.log();
-    if (timerQuestion === 0) {
+    if (timerQuestion <= 0) {
         sendResponse(roomId, quizzId, nextQuestion.id, selectedAnswer, true);
     }
   }, [timerQuestion]);
