@@ -1,8 +1,12 @@
-import React from 'react';
+import {React, useEffect} from 'react';
 import { Outlet, Link } from "react-router-dom";
+import { themeChange } from 'theme-change'
 // import '@css/NavBar.css';
 
 function NavBar({ isLogged }) {
+    useEffect(() => {
+        themeChange(false);
+    }, []);
     return (
         <>
             <header className="navbar bg-base-300">
@@ -29,7 +33,10 @@ function NavBar({ isLogged }) {
                                     <Link to="/register">Inscription</Link>
                                 </li>
                             </>
-                        }                  
+                        }  
+                        <li className="px-10 text-xl">
+                            <button data-toggle-theme="dark,light" data-act-class="ACTIVECLASS">Changer le thème</button>
+                        </li>             
                     </ul>
                 </nav>
             </header>

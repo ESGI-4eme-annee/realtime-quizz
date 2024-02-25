@@ -24,6 +24,8 @@ export const SocketContextProvider = ({ children }) => {
     const [reloadData, setReloadData] = useState(false);
     const [clientJoin, setClientJoin] = useState(false);
     const [roomDontExist, setRoomDontExist] = useState(false);
+    const [messageChat, setMessageChat] = useState('');
+
 
     const fetchdata = async () => {
         try {
@@ -97,7 +99,10 @@ export const SocketContextProvider = ({ children }) => {
             socket.on('scoreQuizz', (scoreQuizz) => {
                 setScoreQuizz(scoreQuizz);
             });
-            
+            socket.on('receiveMessage', (data) => {
+                console.log('receiveMessage CONTEXT', data);
+                setMessageChat(data);
+            });
         }
 
     }, [socket]); 
@@ -170,7 +175,8 @@ export const SocketContextProvider = ({ children }) => {
                 leaveRoom,
                 scoreQuizz,
                 clientJoin,
-                roomDontExist
+                roomDontExist,
+                messageChat
             }}>
             {children}
         </SocketContext.Provider>

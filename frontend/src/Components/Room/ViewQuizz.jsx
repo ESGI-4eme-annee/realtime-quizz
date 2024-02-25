@@ -12,7 +12,7 @@ const ViewQuizz = ({ quizz }) => {
 
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-2/4 flex flex-col pr-4">
       <h2 className="text-3xl border-b mb-6 pb-2">Partie administration</h2>
       <h2 className="mb-2">
         Nom du quizz : 
@@ -22,7 +22,7 @@ const ViewQuizz = ({ quizz }) => {
       </h2>
       { 
         quizz.Questions.map((question, index) => (
-          <div key={question.id} className="card border w-2/3 bg-base-100 shadow-md rounded-2xl p-5">
+          <div key={question.id} className="card border w-2/3 bg-base-100 shadow-md rounded-2xl p-5 mb-4">
             <div className="card-body">
               <h2 className="card-title font-semibold mb-2">Question : {question.name}</h2>
               {question.Answers.map((answer, index) => (

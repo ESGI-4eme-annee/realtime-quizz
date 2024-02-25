@@ -113,6 +113,15 @@ function room(socket,io)  {
         });
 
 
+
+
+    });
+
+    socket.on('sendMessage', (data) => {
+        const { roomId, message } = data;
+        console.log(`Message reçu : ${message}`);
+        console.log(`roomID : ${roomId}`);
+        io.to(roomId).emit('receiveMessage', data);
     });
 }
 
@@ -183,14 +192,14 @@ function quizz(socket,io) {
 
     socket.on('handleTimer', ({ time, quizzId, roomId }) => {
         const currentQuizzIndex = roomQuestions.findIndex(room => room.roomId === roomId && room.quizzId === quizzId);
-    
+
         if (currentQuizzIndex !== -1) {
             roomQuestions[currentQuizzIndex].currentTimer += time;
         } else {
             console.log('Quizz non trouvé dans la salle spécifiée.');
         }
     });
-    
+
     socket.on('needNextQuestion', (data) => {
         const roomId = data.roomId;
         const quizzId = data.quizzId;
@@ -220,7 +229,7 @@ function quizz(socket,io) {
                 }
 
                 io.to(roomId).emit('timerQuestion', currentQuizz.currentTimer);
-                
+
                 if (currentQuizz.currentTimer <= 0) {
                     let correctAnswer = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions.find(question => question.id === nextQuestion.id).Answers.find(answer => answer.valid);
                     io.to(roomId).emit('responseValid', correctAnswer.id);
@@ -250,7 +259,7 @@ function quizz(socket,io) {
         }else{
             const question = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions.find(question => question.id === idQuestion);
             const response = question.Answers.find(answer => answer.id === idResponse);
-        
+
             let scores = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).scores;
             if (response && response.valid) {
                 const score = scores.find(score => score.userId === userId);
