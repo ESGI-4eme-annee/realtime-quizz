@@ -144,9 +144,9 @@ const Chat = ({ username, nextQuestion }) => {
                 }
             })}
             <div ref={endOfMessagesRef} />
-            <form onSubmit={sendMessage} className='chat-form'>
+            <form onSubmit={sendMessage} className='chat-form flex'>
                 <input
-                    className="input input-bordered w-full max-w-xs"
+                    className="input input-bordered w-full max-w-xs flex-grow"
                     type="text"
                     value={currentMessage}
                     onChange={(e) => setCurrentMessage(e.target.value)}

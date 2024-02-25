@@ -264,10 +264,10 @@ function RoomPage({ isLogged }) {
                 <div className="allAdmin">
                     <div className="partAdmin bg-base-300 border-solid border-2 border-neutral-content flex-col gap-4">
                         <div className="createQuizz">
-                        <button className="btn" onClick={() => { createQuizz () }}>Creer un quizz</button>
+                        <button className="btn" onClick={() => { createQuizz () }}>Créer un quizz</button>
                             <dialog id="my_modal_1" className="modal">
                                 <div className="modal-box">
-                                <h3 className="font-bold text-lg">Creation du Quizz</h3>
+                                <h3 className="font-bold text-lg">Création du Quizz</h3>
                                 { showQuizzCreate?<CreateQuizz setShowQuizzCreate={setShowQuizzCreate} setReload={setReload} closeModale={closeModale} />: null}
                                     <div className="modal-action">
                                     <form method="dialog">
