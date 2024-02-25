@@ -1,6 +1,7 @@
 // const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../db").User;
+const History = require("../db").History;
 const generateToken = require("../utils/generateToken");
 require("dotenv").config({ path: ".env", override: true });
 
@@ -189,7 +190,6 @@ function getConnectedUser(req, res) {
           email: user.email,
           name: user.name,
           apiToken: user.api_token,
-          score: user.score,
           // Ajoutez d'autres propriétés de l'utilisateur si nécessaire
         });
       })
@@ -245,18 +245,39 @@ async function logout(req, res) {
   }
 }
 
-async function setScore(req, res) {
+async function getHistory(req, res) {
   try {
-    const user = await User.findOne({
-      where: { id: req.params.id },
-    });
-    const score = req.body.score;
-    user.score = score;
-    user.save();
-    res.status(200).json({ message: "Score mis à jour" });
+      const history = await History.findAll({
+        where: { userId: req.params.id },
+      });
+      res.status(200).json(history);
   } catch (error) {
       res.status(500).json({ error: error.message });
+  }
+}
+
+async function addScore(req, res) {
+  try {
+    if(!req.params?.id || !req.body?.score|| !req.body?.quizzId || !req.body?.quizzName) {
+      return res.status(400).json({ error: "Missing parameters" });
+    } else {
+      const score = req.body.score;
+      const userId = req.params.id.toString();
+      const quizzId = req.body.quizzId.toString();
+      const quizzName = req.body.quizzName;
+
+      await History.create({
+        userId: userId,
+        quizzId: quizzId,
+        quizzName: quizzName,
+        score: score,
+      });
+
+      res.status(201).json({ message: "Score ajouté !" });
     }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }
 
 module.exports = {
@@ -266,6 +287,7 @@ module.exports = {
   getConnectedUser,
   logout,
   getConnectedUserNav,
-  setScore,  signupAdmin,
-
+  getHistory,
+  addScore,
+  signupAdmin,
 };

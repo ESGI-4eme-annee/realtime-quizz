@@ -16,7 +16,7 @@ import silver from '../../assets/img/silver.png';
 import bronze from '../../assets/img/bronze.png';
 import updateScores from '../../hook/updateScores.js';
 import ViewResponseQuizz from "./ViewResponseQuizz.jsx";
-
+import addScore from '../../hook/addScore.js';
 
 function RoomPage({ isLogged }) {
 
@@ -91,6 +91,12 @@ function RoomPage({ isLogged }) {
         joinRoom(roomId);
     }, [user,roomId]);
 
+    function sendScores(roomUsers) {
+        roomUsers.forEach(async (user) => {
+            await addScore(user.userId, quizzId, quizz.name, user.score);
+        });
+    }
+
     useEffect(() => {
         roomUsers.forEach(user => {
             scoresQuizz.forEach(userScore => {
@@ -98,6 +104,11 @@ function RoomPage({ isLogged }) {
                     user.score = userScore.score;
                 }
             });
+        });
+
+        socket?.on('quizzEnd', () => {
+            setQuizzEnd(true);
+            sendScores(roomUsers);
         });
 
     },[scoreQuizz,scoresQuizz]);
@@ -127,10 +138,6 @@ function RoomPage({ isLogged }) {
 
         socket?.on('scoresQuizz', (scores) => {
             setScoresQuizz(scores);
-
-            scores.forEach(async (score) => {
-                await updateScores(score.userId, score.score);
-            });
         });
 
         socket?.on('alertQuizzStarting', (data) => {

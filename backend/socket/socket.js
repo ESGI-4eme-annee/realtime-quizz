@@ -238,9 +238,11 @@ function quizz(socket,io) {
                     return clearInterval(interval);
                 }
             }, 1000);
-        }
 
-        io.to(roomId).emit('nextQuestion', {question: nextQuestion, quizzId});
+            io.to(roomId).emit('nextQuestion', {question: nextQuestion, quizzId});
+        } else {
+            io.to(roomId).emit('quizzEnd');
+        }
     });
 
     //response envoyer par les joueurs

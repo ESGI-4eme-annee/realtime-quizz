@@ -25,12 +25,7 @@ module.exports = function (connection) {
         type: DataTypes.STRING,
         defaultValue: "user",
         allowNull: false,
-      },
-      score:{
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-        allowNull: false,
-      },
+      }
     },
     {
       tableName: "users",
