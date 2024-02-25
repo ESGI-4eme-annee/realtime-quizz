@@ -323,7 +323,7 @@ function RoomPage({ isLogged }) {
                     : null
                 }
                 <div className="cote">
-                    <Chat username={username} />
+                    <Chat username={username} nextQuestion={nextQuestion} />
                 </div>
             </div>
                 

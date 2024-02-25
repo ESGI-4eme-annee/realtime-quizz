@@ -100,12 +100,11 @@ export const SocketContextProvider = ({ children }) => {
                 setScoreQuizz(scoreQuizz);
             });
             socket.on('receiveMessage', (data) => {
-                console.log('receiveMessage CONTEXT', data);
                 setMessageChat(data);
             });
         }
 
-    }, [socket]); 
+    }, [socket]);
 
 
     //ROOM create
