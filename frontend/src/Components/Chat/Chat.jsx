@@ -80,7 +80,7 @@ const Chat = ({ username }) => {
             <div ref={endOfMessagesRef} />
             <form onSubmit={sendMessage} className='chat-form'>
                 <input
-                    className="input"
+                    className="input input-bordered w-full max-w-xs"
                     type="text"
                     value={currentMessage}
                     onChange={(e) => setCurrentMessage(e.target.value)}
