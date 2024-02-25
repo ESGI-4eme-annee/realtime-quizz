@@ -14,7 +14,6 @@ import Notification from "../Notification/Notification.jsx";
 import gold from '../../assets/img/gold.png';
 import silver from '../../assets/img/silver.png';
 import bronze from '../../assets/img/bronze.png';
-import updateScores from '../../hook/updateScores.js';
 import ViewResponseQuizz from "./ViewResponseQuizz.jsx";
 import addScore from '../../hook/addScore.js';
 
