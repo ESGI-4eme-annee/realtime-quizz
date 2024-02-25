@@ -278,6 +278,13 @@ function quizz(socket,io) {
             io.to(roomId).emit('scoresQuizz', scores);
         }
     });
+
+    socket.on('getQuizzResponseForClient', ({roomId, quizzId}) => {
+        let quizz = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId);
+        if (quizz) {
+            io.to(roomId).emit('quizzResponseForClient', quizz.questions);
+        }
+    });
 }
 
 module.exports = {app, io, server};

@@ -15,6 +15,7 @@ import gold from '../../assets/img/gold.png';
 import silver from '../../assets/img/silver.png';
 import bronze from '../../assets/img/bronze.png';
 import updateScores from '../../hook/updateScores.js';
+import ViewResponseQuizz from "./ViewResponseQuizz.jsx";
 
 
 function RoomPage({ isLogged }) {
@@ -40,6 +41,7 @@ function RoomPage({ isLogged }) {
     const [nextQuestion, setNextQuestion] = useState(null);
     const [quizzStarted, setQuizzStarted] = useState(false);
     const [quizzEnd, setQuizzEnd] = useState(false);
+    const [quizzResponseForClient, setQuizzResponseForClient] = useState(null);
     const navigate = useNavigate();
 
     //liste des quizz dans le select
@@ -119,6 +121,7 @@ function RoomPage({ isLogged }) {
             setQuizzStarted(true);
             if (question === undefined) {
                 setQuizzEnd(true);
+                socket.emit('getQuizzResponseForClient', { quizzId, roomId });
             }
         });
 
@@ -152,6 +155,10 @@ function RoomPage({ isLogged }) {
             setTimeout(() => {
                 setDisplayNotification(false);
             }, 3000);
+        });
+
+        socket?.on('quizzResponseForClient', (question) => {
+            setQuizzResponseForClient(question);
         });
     }, [socket, roomId, reload]);
 
@@ -334,7 +341,18 @@ function RoomPage({ isLogged }) {
                     ? <div className="cote w-2/4 bg-base-300 p-10">
                         <ViewUserQuestion nextQuestion={nextQuestion} quizzId={quizzId} roomId={roomId} timerQuestion={timerQuestion} />
                     </div>
-                    : !userIsAdmin && !quizzEnd ? <div className="text-3xl">L'administrateur va bientôt lancer le quizz...</div> : null
+                    : !userIsAdmin && !quizzEnd 
+                        ? <div className="text-3xl">L'administrateur va bientôt lancer le quizz...</div> 
+                        : null
+                }
+                {
+                    quizzResponseForClient !== null && quizzEnd && !userIsAdmin && nextQuestion === null
+                    ? 
+                    <div>
+                        <h2 className='text-2xl mb-2'>Voici les bonnes réponses de ce quizz :</h2>
+                        <ViewResponseQuizz questions={quizzResponseForClient} />
+                    </div>
+                    : null
                 }
                 <Chat username={username} nextQuestion={nextQuestion} />
             </div>
