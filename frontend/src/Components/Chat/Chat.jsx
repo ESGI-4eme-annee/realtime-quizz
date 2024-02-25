@@ -10,7 +10,7 @@ const Chat = ({ username }) => {
     const { roomId } = useParams();
     const [currentMessage, setCurrentMessage] = useState('');
     const [messageList, setMessageList] = useState([]);
-    const { messageChat } = useSocketContext();
+    const { messageChat, resetMessageChat } = useSocketContext();
     const endOfMessagesRef = useRef(null);
 
     const sendMessage = (event) => {
@@ -34,6 +34,14 @@ const Chat = ({ username }) => {
         endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
+    useEffect(() => {
+        socket.emit('joinRoom', roomId);
+    
+        return () => {
+            socket.emit('leaveRoom', roomId);
+            resetMessageChat();
+        };
+    }, [roomId]);
 
     useEffect(() => {
         if (messageChat.message)

@@ -156,6 +156,10 @@ export const SocketContextProvider = ({ children }) => {
         };
     }
 
+    const resetMessageChat = () => {
+        setMessageChat({});
+    };
+
     return (
         <SocketContext.Provider value={
             {
@@ -176,7 +180,9 @@ export const SocketContextProvider = ({ children }) => {
                 scoreQuizz,
                 clientJoin,
                 roomDontExist,
-                messageChat
+                messageChat,
+                setMessageChat,
+                resetMessageChat
             }}>
             {children}
         </SocketContext.Provider>
