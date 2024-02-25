@@ -4,10 +4,12 @@ const express = require  ('express');
 
 const app = express();
 
+require("dotenv").config({ path: ".env", override: true });
+
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: [`${process.env.URL_FRONT}`, 'http://localhost:5173'],
         methods: ["GET", "POST"],
         credentials: true
     }
