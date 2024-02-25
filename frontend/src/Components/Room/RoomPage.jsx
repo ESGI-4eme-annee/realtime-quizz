@@ -289,15 +289,15 @@ function RoomPage({ isLogged }) {
                     {
                         quizzStarted  && nextQuestion !== null
                         ? <>
-                            <button className="btn" onClick={clickNextQuestion} disabled={timerQuestion != null}>
+                            <button className="btn btn-primary" onClick={clickNextQuestion} disabled={timerQuestion != null}>
                                 Next Question
                             </button>
                             <div>
                                 Gestion du temps
-                                <button className="btn" onClick={() => handleTimer(10)} disabled={timerQuestion == null}>
+                                <button className="btn ml-4" onClick={() => handleTimer(10)} disabled={timerQuestion == null}>
                                     +10s
                                 </button>
-                                <button className="btn" onClick={() => handleTimer(-10)} disabled={timerQuestion == null}>
+                                <button className="btn ml-2" onClick={() => handleTimer(-10)} disabled={timerQuestion == null}>
                                     -10s
                                 </button>
                             </div>
