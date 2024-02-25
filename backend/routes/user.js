@@ -7,6 +7,6 @@ router.post('/signup', userCtrl.signup);
 router.post('/login', userCtrl.login);
 router.post('/logout', userCtrl.logout);
 router.get('/connect', userCtrl.getConnectedUser);
-
+router.patch('/:id/setScore', userCtrl.setScore);
 
 module.exports = router;

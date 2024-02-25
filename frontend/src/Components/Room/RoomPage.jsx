@@ -14,6 +14,7 @@ import Notification from "../Notification/Notification.jsx";
 import gold from '../../assets/img/gold.png';
 import silver from '../../assets/img/silver.png';
 import bronze from '../../assets/img/bronze.png';
+import updateScores from '../../hook/updateScores.js';
 
 
 function RoomPage({ isLogged }) {
@@ -123,6 +124,10 @@ function RoomPage({ isLogged }) {
 
         socket?.on('scoresQuizz', (scores) => {
             setScoresQuizz(scores);
+
+            scores.forEach(async (score) => {
+                await updateScores(score.userId, score.score);
+            });
         });
 
         socket?.on('alertQuizzStarting', (data) => {
@@ -172,17 +177,10 @@ function RoomPage({ isLogged }) {
     const handleStartQuizz = () => {
         if (socket) {
             socket.emit('startQuizz', { quizz, salle: roomId });
-        };
+        }
         setQuizzProgress(false);
         setViewQuestion(true);
     }
-
-    // const clickNextQuestion = () => {
-    //     setTimerQuestion(null);
-    //     if(nextQuestion !== null){
-    //         socket.emit('needNextQuestion', { quizzId: quizz.id, roomId, questionId: nextQuestion.id });
-    //     }
-    // }
 
     const closeModale = (state) => {
         if(state){
@@ -194,7 +192,7 @@ function RoomPage({ isLogged }) {
     const handleTimer = (time) => {
         if (socket) {
             socket.emit('handleTimer', { time, quizzId: quizz.id, roomId });
-        };
+        }
     }
 
     return (

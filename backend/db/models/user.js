@@ -26,6 +26,11 @@ module.exports = function (connection) {
         defaultValue: "user",
         allowNull: false,
       },
+      score:{
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+        allowNull: false,
+      },
     },
     {
       tableName: "users",

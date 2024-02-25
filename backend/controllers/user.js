@@ -140,6 +140,7 @@ function getConnectedUser(req, res) {
           email: user.email,
           name: user.name,
           apiToken: user.api_token,
+          score: user.score,
           // Ajoutez d'autres propriétés de l'utilisateur si nécessaire
         });
       })
@@ -195,6 +196,20 @@ async function logout(req, res) {
   }
 }
 
+async function setScore(req, res) {
+  try {
+    const user = await User.findOne({
+      where: { id: req.params.id },
+    });
+    const score = req.body.score;
+    user.score = score;
+    user.save();
+    res.status(200).json({ message: "Score mis à jour" });
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+}
+
 module.exports = {
   signup,
   login,
@@ -202,5 +217,5 @@ module.exports = {
   getConnectedUser,
   logout,
   getConnectedUserNav,
-
+  setScore,
 };
