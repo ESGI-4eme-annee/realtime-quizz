@@ -34,7 +34,7 @@ function NavBar({ isLogged }) {
                                 </li>
                             </>
                         }  
-                        <li>
+                        <li className="px-10 text-xl">
                             <button data-toggle-theme="dark,light" data-act-class="ACTIVECLASS">Changer le thème</button>
                         </li>             
                     </ul>
