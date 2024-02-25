@@ -2,19 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useSocketContext } from '../../context/SocketContext';
 
 const ViewUserQuestion = ({nextQuestion, roomId, timerQuestion, quizzId} ) => {
-  const { sendResponse,responseValid,responseCounts } = useSocketContext();
+  const { sendResponse, responseValid, responseCounts } = useSocketContext();
 
   const [selectedAnswer, setSelectedAnswer] = useState(null);
 
-  // useEffect(() => {
-  //   if (selectedAnswer !== null && responseValid == null) {
-  //     sendResponse(roomId, quizzId, nextQuestion?.id, selectedAnswer, false);
-  //   }  
-  // }, [selectedAnswer]);
+  useEffect(() => {
+    if (selectedAnswer !== null) {
+      sendResponse(roomId, quizzId, nextQuestion?.id, selectedAnswer, false);
+    }  
+  }, [selectedAnswer]);
 
   useEffect(() => {
     if (timerQuestion <= 0 && timerQuestion !== null) {
-      console.log('send response', timerQuestion)
       sendResponse(roomId, quizzId, nextQuestion.id, selectedAnswer, true);
     }
   }, [timerQuestion]);
@@ -38,7 +37,7 @@ const ViewUserQuestion = ({nextQuestion, roomId, timerQuestion, quizzId} ) => {
                   onChange={() => setSelectedAnswer(answer.id)}
                 />
                 {answer.name}
-               {/* ( {responseCounts[answer.id] || 0}) */}
+                ({responseCounts[answer.id] || 0})
               </label>
             </li>
           ))}

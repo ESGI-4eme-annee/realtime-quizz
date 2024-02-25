@@ -255,7 +255,7 @@ function quizz(socket,io) {
         }, {});
 
         if(!timer){
-        io.to(roomId).emit('responseCounts', responseCounts);
+            io.to(roomId).emit('responseCounts', responseCounts);
         }else{
             const question = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions.find(question => question.id === idQuestion);
             const response = question.Answers.find(answer => answer.id === idResponse);
