@@ -60,7 +60,7 @@ function RoomPage({ isLogged }) {
             }
             setUsername(user.userEmail);
         }
-    }, [clientJoin,user,roomId]);
+    }, [clientJoin,user,roomId,room]);
 
     useEffect(() => {
         socket?.on('timerQuestion', (time) => {
@@ -76,7 +76,10 @@ function RoomPage({ isLogged }) {
         });
 
         return () => {
-            socket.off('timerQuestion');
+            if (socket) {
+                socket.off('timerQuestion');
+
+            }
         }
     }, [userIsAdmin, nextQuestion]);
 
