@@ -253,7 +253,7 @@ function RoomPage({ isLogged }) {
                     {
                          quizzProgress
                         ? <div className="w-80">
-                            <h2>Choisir un quizz</h2>
+                            <h2 className="mb-1">Choisir un quizz</h2>
                             <div className="w-full flex justify-between">
                                 <select onFocus={() => setShowQuizzCreate(false)} className="select select-bordered">
                                     <option value="" disabled>Choisissez un quizz</option>
@@ -281,7 +281,7 @@ function RoomPage({ isLogged }) {
                         ?
                         <button
                             onClick={handleStartQuizz} disabled={!quizzView}
-                            className="btn">
+                            className="btn btn-primary">
                                 Lancer le quizz
                         </button>
                         : null
