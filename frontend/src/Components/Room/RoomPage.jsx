@@ -253,7 +253,7 @@ function RoomPage({ isLogged }) {
                     {
                          quizzProgress
                         ? <div className="w-80">
-                            <h2>Choisir un quizz</h2>
+                            <h2 className="mb-1">Choisir un quizz</h2>
                             <div className="w-full flex justify-between">
                                 <select onFocus={() => setShowQuizzCreate(false)} className="select select-bordered">
                                     <option value="" disabled>Choisissez un quizz</option>
@@ -281,7 +281,7 @@ function RoomPage({ isLogged }) {
                         ?
                         <button
                             onClick={handleStartQuizz} disabled={!quizzView}
-                            className="btn">
+                            className="btn btn-primary">
                                 Lancer le quizz
                         </button>
                         : null
@@ -289,15 +289,15 @@ function RoomPage({ isLogged }) {
                     {
                         quizzStarted  && nextQuestion !== null
                         ? <>
-                            <button className="btn" onClick={clickNextQuestion} disabled={timerQuestion != null}>
+                            <button className="btn btn-primary" onClick={clickNextQuestion} disabled={timerQuestion != null}>
                                 Next Question
                             </button>
                             <div>
                                 Gestion du temps
-                                <button className="btn" onClick={() => handleTimer(10)} disabled={timerQuestion == null}>
+                                <button className="btn ml-4" onClick={() => handleTimer(10)} disabled={timerQuestion == null}>
                                     +10s
                                 </button>
-                                <button className="btn" onClick={() => handleTimer(-10)} disabled={timerQuestion == null}>
+                                <button className="btn ml-2" onClick={() => handleTimer(-10)} disabled={timerQuestion == null}>
                                     -10s
                                 </button>
                             </div>
