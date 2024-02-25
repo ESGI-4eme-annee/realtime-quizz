@@ -99,8 +99,10 @@ function RoomPage({ isLogged }) {
 
     useEffect(() => {
         socket?.on('quizzEnd', () => {
-            setQuizzEnd(true);
-            sendScores(users.current);
+            if(users.current.length > 0 && quizzId && quizz.name) {
+                setQuizzEnd(true);
+                sendScores(users.current);
+            }
         });
     }, [users.current]);
 
