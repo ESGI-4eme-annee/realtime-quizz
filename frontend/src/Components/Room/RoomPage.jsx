@@ -60,7 +60,7 @@ function RoomPage({ isLogged }) {
             }
             setUsername(user.userEmail);
         }
-    }, [clientJoin,user,roomId]);
+    }, [clientJoin,user,roomId,room]);
 
     useEffect(() => {
         fetchdata();
