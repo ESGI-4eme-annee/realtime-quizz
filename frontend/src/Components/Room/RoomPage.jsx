@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams,useNavigate } from 'react-router-dom';
 import '../../assets/css/Room.css';
 
@@ -41,6 +41,7 @@ function RoomPage({ isLogged }) {
     const [quizzStarted, setQuizzStarted] = useState(false);
     const [quizzEnd, setQuizzEnd] = useState(false);
     const [quizzResponseForClient, setQuizzResponseForClient] = useState(null);
+    const users = useRef([]);
     const navigate = useNavigate();
 
     //liste des quizz dans le select
@@ -90,11 +91,20 @@ function RoomPage({ isLogged }) {
         joinRoom(roomId);
     }, [user,roomId]);
 
-    function sendScores(roomUsers) {
-        roomUsers.forEach(async (user) => {
+    function sendScores(users) {
+        users.forEach(async (user) => {
             await addScore(user.userId, quizzId, quizz.name, user.score);
         });
     }
+
+    useEffect(() => {
+        socket?.on('quizzEnd', () => {
+            if(users.current.length > 0 && quizzId && quizz.name) {
+                setQuizzEnd(true);
+                sendScores(users.current);
+            }
+        });
+    }, [users.current]);
 
     useEffect(() => {
         roomUsers.forEach(user => {
@@ -105,11 +115,7 @@ function RoomPage({ isLogged }) {
             });
         });
 
-        socket?.on('quizzEnd', () => {
-            setQuizzEnd(true);
-            sendScores(roomUsers);
-        });
-
+        users.current = roomUsers;
     },[scoreQuizz,scoresQuizz]);
 
 
