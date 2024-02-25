@@ -26,8 +26,6 @@ Intégrer Tailwind à notre projet m'a permis de développer rapidement la parti
 De plus, avec l'aide de Daisy UI, la création de composants s'est déroulée très rapidement.
 Dans l'ensemble, ce projet était très intéressant et m'a permis d'acquérir de nouvelles compétences que je pourrai ensuite intégrer dans d'autres projets.
 
-<<<<<<< Updated upstream
-
 
 Benoît De Carli (Benoitapps)
 
@@ -70,3 +68,16 @@ J'ai eu pas mal de difficultés concernant la sauvegarde des scores des joueurs 
 
 Ayant réalisé pas mal le style de l'application, j'ai pu apprendre à utiliser Tailwind CSS et Daisy UI, ce qui a été un gain de temps considérable pour le peu de temps que nous avions.
 J'ai également pu apprendre à utiliser SocketIo, ce qui m'a permis de comprendre comment fonctionne la communication en temps réel entre le serveur et les clients.
+
+
+Alexandre Vauthier (alvauthier) :
+Ma partie était sur la fonctionnalité de chat en temps réel lors d'un quiz.
+J'ai porté un soin particulier au fait que l'envoi et la réception de messages soient instantanés, et que les messages soient bien envoyés dans les bonnes rooms.
+Le chat permet de voir l'email de chaque utilisateur ayant envoyé un message, ainsi que l'heure d'envoi du message.
+Les couleurs permettent facilement d'identifier ses messages afin de les dissocier des messages des autres utilisateurs.
+J'ai ajouté un système anti-triche, qui bloque l'utilisateur lorsqu'il tente de saisir un message contenant une des réponses possibles lors d'une question. Il reçoit ainsi un avertissement dans le chat.
+J'ai pensé également à empêcher l'utilisateur de donner la bonne réponse aux autres d'une autre façon, comme par exemple en indiquant la place de la bonne réponse, que ce soit en chiffre ou en lettre, ou bien en décomposant les lettres de la bonne réponse.
+Si l'utilisateur tente de tricher une seconde fois, après le premier avertissement, l'utilisateur est banni pendant 5 secondes du chat.
+
+J'ai rencontré une petite difficulté au début de mon travail sur cette fonctionnalité. En effet, je pensais avoir tout bien mis dans mon back et mon front pour qu'on puisse correctement envoyer le message et bien le réceptionner sur notre serveur pour qu'il puisse le renvoyer aux utilisateurs présents dans la room du quiz, mais cela ne fonctionnait pas. J'ai par la suite compris qu'il fallait passer par le SocketContext, et en adaptant ce que j'avais déjà développé mon chat fonctionnait correctement.
+Ce projet m'a aidé à apprendre encore plus l'utilisation de Socket.io.
