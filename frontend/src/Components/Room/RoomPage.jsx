@@ -45,20 +45,37 @@ function RoomPage({ isLogged }) {
         setQuizzList(data);
     }
 
-        socket?.on('adminLeave', (state) => {
-                if(state){
-                    navigate('/');
-                }
-        });
-  
-    
+    socket?.on('adminLeave', (state) => {
+            if(state){
+                navigate('/');
+            }
+    });
+
     useEffect(() => {
-        if (user != null ) {
+        if (user != null) {
             if (user.userRole === 'admin'&& room[roomId]?.userEmail === user.userEmail ) {
                 setUserIsAdmin(true);
             }
         }
     }, [clientJoin,user,roomId]);
+
+    useEffect(() => {
+        socket?.on('timerQuestion', (time) => {
+            setTimerQuestion(time);
+            if (time <= 0) {
+                setTimeout(() => {
+                    setTimerQuestion(null);
+                    if (userIsAdmin) {
+                        socket.emit('needNextQuestion', { quizzId: quizz.id, roomId, questionId: nextQuestion.id });
+                    }
+                }, 3000);
+            }
+        });
+
+        return () => {
+            socket.off('timerQuestion');
+        }
+    }, [userIsAdmin, nextQuestion]);
 
     useEffect(() => {
         fetchdata();
@@ -92,17 +109,8 @@ function RoomPage({ isLogged }) {
             setNextQuestion(question || null);
             setQuizzId(quizzId);
             setQuizzStarted(true);
-            if (nextQuestion === null) {
+            if (question === undefined) {
                 setQuizzEnd(true);
-            }
-        });
-
-        socket?.on('timerQuestion', (time) => {
-            setTimerQuestion(time);
-            if (time <= 0) {
-                setTimeout(() => {
-                    setTimerQuestion(null);
-                }, 3000);
             }
         });
 
@@ -133,11 +141,11 @@ function RoomPage({ isLogged }) {
                 setDisplayNotification(false);
             }, 3000);
         });
-    }, [socket,roomId,reload]);
+    }, [socket, roomId, reload]);
 
     useEffect(() => {
         fetchdata();
-    }, [reload,roomId]);
+    }, [reload, roomId]);
 
     //affiche le formulaire de création de quizz
     const createQuizz = () => {
@@ -162,11 +170,12 @@ function RoomPage({ isLogged }) {
         setViewQuestion(true);
     }
 
-    const clickNextQuestion = () => {
-        if(nextQuestion !== null){
-            socket.emit('needNextQuestion', { quizzId: quizz.id, roomId, questionId: nextQuestion.id });
-        }
-    }
+    // const clickNextQuestion = () => {
+    //     setTimerQuestion(null);
+    //     if(nextQuestion !== null){
+    //         socket.emit('needNextQuestion', { quizzId: quizz.id, roomId, questionId: nextQuestion.id });
+    //     }
+    // }
 
     const closeModale = (state) => {
         if(state){
@@ -293,9 +302,9 @@ function RoomPage({ isLogged }) {
                     {
                         quizzStarted  && nextQuestion !== null
                         ? <>
-                            <button className="btn" onClick={clickNextQuestion} disabled={timerQuestion != null}>
+                            {/* <button className="btn" onClick={clickNextQuestion} disabled={timerQuestion != null}>
                                 Next Question
-                            </button>
+                            </button> */}
                             <div>
                                 Gestion du temps
                                 <button className="btn" onClick={() => handleTimer(10)} disabled={timerQuestion == null}>
@@ -324,7 +333,7 @@ function RoomPage({ isLogged }) {
                         <ViewUserQuestion nextQuestion={nextQuestion} quizzId={quizzId} roomId={roomId} timerQuestion={timerQuestion} />
                         <Notification isVisible={displayNotification} notification={notification} />
                     </div>
-                    : null
+                    : !userIsAdmin && !quizzEnd ? <div className="text-3xl">L'administrateur va bientôt lancer le quizz...</div> : null
                 }
             </div>
                 
