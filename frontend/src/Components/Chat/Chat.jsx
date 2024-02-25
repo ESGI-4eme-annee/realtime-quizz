@@ -112,7 +112,7 @@ const Chat = ({ username, nextQuestion }) => {
 
     return (
         <div className="chat-container flex flex-col fixed bottom-0 right-0 w-72 h-96 overflow-auto rounded-lg bg-base-300 border-solid border-2 border-neutral-content pb-16">
-            <div className="text-center font-bold p-2 bg-neutral-content text-neutral-lightest sticky top-0 z-10">Chat en direct</div>
+            <div className="text-center font-bold p-2 bg-white dark:bg-gray-800 text-black dark:text-white sticky top-0 z-10">Chat en direct</div>
             {messageList.map((messageContent, index) => {
                 const bubbleClass = messageContent.messageType === 'error' ? 'chat-bubble-error' : (messageContent.messageType === 'warning' ? 'chat-bubble-warning' : '');
                 if (messageContent.author === username) {
