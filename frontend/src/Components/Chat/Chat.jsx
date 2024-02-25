@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import { useParams } from 'react-router-dom';
 import { useSocketContext } from '../../context/SocketContext';
-import '../../assets/css/Room.css';
 
 const socket = io('http://localhost:3000');
 
@@ -112,7 +111,8 @@ const Chat = ({ username, nextQuestion }) => {
     }, [messageList]);
 
     return (
-        <div className="chat-container bg-base-300 border-solid border-2 border-neutral-content p-4">
+        <div className="chat-container flex flex-col fixed bottom-0 right-0 w-72 h-96 overflow-auto rounded-lg bg-base-300 border-solid border-2 border-neutral-content pb-16">
+            <div className="text-center font-bold p-2 bg-white dark:bg-gray-800 text-black dark:text-white sticky top-0 z-10">Chat en direct</div>
             {messageList.map((messageContent, index) => {
                 const bubbleClass = messageContent.messageType === 'error' ? 'chat-bubble-error' : (messageContent.messageType === 'warning' ? 'chat-bubble-warning' : '');
                 if (messageContent.author === username) {
@@ -144,9 +144,9 @@ const Chat = ({ username, nextQuestion }) => {
                 }
             })}
             <div ref={endOfMessagesRef} />
-            <form onSubmit={sendMessage} className='chat-form'>
+            <form onSubmit={sendMessage} className='chat-form flex bottom-0 fixed'>
                 <input
-                    className="input input-bordered w-full max-w-xs"
+                    className="input input-bordered w-full max-w-xs flex-grow"
                     type="text"
                     value={currentMessage}
                     onChange={(e) => setCurrentMessage(e.target.value)}
