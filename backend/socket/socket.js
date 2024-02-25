@@ -112,7 +112,7 @@ function room(socket,io)  {
 
         });
 
-        
+
 
 
     });
@@ -129,11 +129,11 @@ const roomQuizzMap = {};
 const roomQuizzProgressMap = {};
 const questionResponseMap = {};
 const scoreUserMap = {};
+
 const roomQuestions = [];
 
 
 function quizz(socket,io) {
-
     socket.on('startQuizz', (data) => {
         const roomId = data.salle;
         const quizz = data.quizz;
@@ -155,21 +155,27 @@ function quizz(socket,io) {
             if (time < 0) {
                 clearInterval(interval);
 
-                let timer = quizz.Questions[0].time;
                 let interval2 = setInterval(() => {
-                    timer--;
-                    if (timer < 0) {
-                        return clearInterval(interval2);
-                    }
+                    let currentQuizz = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizz.id);
 
-                    if(timer === 3) {
+                    currentQuizz.currentTimer--;
+
+                    if(currentQuizz.currentTimer === 3) {
                         io.emit('alertQuestionWillEnd', {
                             title: 'La question va bientôt se terminer !',
                             message: 'Il ne reste plus que quelques secondes pour répondre'
                         });
                     }
 
-                    io.to(roomId).emit('timerQuestion', timer);
+                    io.to(roomId).emit('timerQuestion', currentQuizz.currentTimer);
+
+                    console.log('currentQuizz.currentTimer', currentQuizz.currentTimer);
+                    if (currentQuizz.currentTimer <= 0) {
+                        let correctAnswer = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizz.id).questions.find(question => question.id === quizz.Questions[0].id).Answers.find(answer => answer.valid);
+                        io.to(roomId).emit('responseValid', correctAnswer.id);
+
+                        return clearInterval(interval2);
+                    }
                 }, 1000);
 
                 io.to(roomId).emit('nextQuestion', {question: quizz.Questions[0], quizzId: quizz.id});
@@ -184,6 +190,16 @@ function quizz(socket,io) {
         }, 1000);
     });
 
+    socket.on('handleTimer', ({ time, quizzId, roomId }) => {
+        const currentQuizzIndex = roomQuestions.findIndex(room => room.roomId === roomId && room.quizzId === quizzId);
+
+        if (currentQuizzIndex !== -1) {
+            roomQuestions[currentQuizzIndex].currentTimer += time;
+        } else {
+            console.log('Quizz non trouvé dans la salle spécifiée.');
+        }
+    });
+
     socket.on('needNextQuestion', (data) => {
         const roomId = data.roomId;
         const quizzId = data.quizzId;
@@ -192,29 +208,34 @@ function quizz(socket,io) {
         let indexQuestion = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions.findIndex(question => question.id === questionId);
         let nextQuestion = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions[indexQuestion + 1];
 
-        console.log('nextQuestion backend', nextQuestion)
-
         if (nextQuestion) {
-            let timer = nextQuestion.time;
             io.emit('alertNextQuestion', {
                 title: 'Question suivante',
                 message: 'La question suivante commence'
             });
 
-            let interval = setInterval(() => {
-                timer--;
-                if (timer < 0) {
-                    return clearInterval(interval);
-                }
+            // put nextQuestion.timer to currentTimer
+            roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).currentTimer = nextQuestion.time;
 
-                if(timer === 3) {
+            let interval = setInterval(() => {
+                let currentQuizz = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId);
+                currentQuizz.currentTimer--;
+
+                if(currentQuizz.currentTimer === 3) {
                     io.emit('alertQuestionWillEnd', {
                         title: 'La question va bientôt se terminer !',
                         message: 'Il ne reste plus que quelques secondes pour répondre'
                     });
                 }
 
-                io.to(roomId).emit('timerQuestion', timer);
+                io.to(roomId).emit('timerQuestion', currentQuizz.currentTimer);
+
+                if (currentQuizz.currentTimer <= 0) {
+                    let correctAnswer = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).questions.find(question => question.id === nextQuestion.id).Answers.find(answer => answer.valid);
+                    io.to(roomId).emit('responseValid', correctAnswer.id);
+
+                    return clearInterval(interval);
+                }
             }, 1000);
         }
 
@@ -241,9 +262,6 @@ function quizz(socket,io) {
 
             let scores = roomQuestions.find(room => room.roomId === roomId && room.quizzId === quizzId).scores;
             if (response && response.valid) {
-
-                    io.to(roomId).emit('responseValid', response.id);
-
                 const score = scores.find(score => score.userId === userId);
                 if (score) {
                     score.score++;

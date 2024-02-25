@@ -23,7 +23,7 @@ const ViewQuestion = ({roomId, handleNextQuestion} ) => {
     <div className="viewQuestionheightQuizz">
       <h2>Quizz</h2>
       Temps : {question.question?.time}
-      <div className='centreQuizz'>
+      <div className='centreQuizz card border w-2/3 bg-base-100 shadow-md rounded-2xl p-5'>
         
         Question : {question.question?.name}
         <ul>
@@ -32,6 +32,7 @@ const ViewQuestion = ({roomId, handleNextQuestion} ) => {
               <label className='answerAlone' >
                 <input
                   type="radio"
+                  className="radio"
                   name="answer"
                   value={answer.id}
                   checked={selectedAnswer === answer.id}

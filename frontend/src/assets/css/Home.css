@@ -4,12 +4,10 @@
     --trois-color: #9fa5a4;
     --quatre-color: #B1A296;
     --cinq-color: #557A95;
-  }
+}
 
-  html, body {
-    height: 100%;
-background-color: var(--quatre-color); /* Replace with your desired background color */
-
+html, body {
+    min-height: 100vh;
 }
 
 .bt{
@@ -57,9 +55,7 @@ background-color: var(--quatre-color); /* Replace with your desired background c
     margin-top: 20px;
     align-items: center;
     padding: 30px;
-    border: solid 3px var(--primary-color);
     border-radius: 5%;
-    background-color: var(--background-color);
 }
 
 .inputDesign{
@@ -67,7 +63,6 @@ background-color: var(--quatre-color); /* Replace with your desired background c
     flex-direction: row;
     justify-content: center;
     margin-top: 20px;
-    border: solid 1px #000000;
 }
 
 .line{
@@ -109,10 +104,6 @@ background-color: var(--quatre-color); /* Replace with your desired background c
     justify-content: center;
     align-items: center;
     margin-top: 20px;
-    padding: 10px;
-    border: solid 3px var(--primary-color);
-    background-color: var(--cinq-color);
-    color: #ffffff;
     margin-right: 10px;
     padding: 25px;
     border-radius: 6%;

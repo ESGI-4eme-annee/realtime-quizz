@@ -16,9 +16,7 @@ const ViewUserQuestion = ({nextQuestion, roomId, timerQuestion, quizzId} ) => {
   }, [selectedAnswer]);
 
   useEffect(() => {
-    console.log("responseValid", responseValid);
-    console.log();
-    if (timerQuestion === 0) {
+    if (timerQuestion <= 0) {
         sendResponse(roomId, quizzId, nextQuestion.id, selectedAnswer, true);
     }
   }, [timerQuestion]);
@@ -27,7 +25,7 @@ const ViewUserQuestion = ({nextQuestion, roomId, timerQuestion, quizzId} ) => {
     <div className="viewQuestionheightQuizz">
       <h2>Quizz</h2>
       Temps : {nextQuestion.time} secondes
-      <div className='centreQuizz'>
+      <div className='centreQuizz card border w-2/3 bg-base-100 shadow-md rounded-2xl p-5'>
         
         Question : <span className="font-semibold text-3xl mb-5">{nextQuestion.name}</span>
         <ul>
@@ -38,6 +36,7 @@ const ViewUserQuestion = ({nextQuestion, roomId, timerQuestion, quizzId} ) => {
                   type="radio"
                   name="answer"
                   value={answer.id}
+                  className="mx-3"
                   checked={selectedAnswer === answer.id}
                   onChange={() => setSelectedAnswer(answer.id)}
                 />

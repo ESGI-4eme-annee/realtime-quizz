@@ -1,7 +1,8 @@
 .flexLog{
     display: flex;
-    flex-direction: row;
     justify-content: center;
+    align-items: center;
+    height: calc(100vh - 76px);
 }
 
 .connection{
@@ -11,7 +12,5 @@
     margin-top: 20px;
     align-items: center;
     padding: 50px;
-    border: solid 3px var(--primary-color);
     border-radius: 5%;
-    background-color: var(--background-color);
 }

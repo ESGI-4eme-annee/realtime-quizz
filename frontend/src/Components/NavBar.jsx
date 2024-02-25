@@ -9,9 +9,9 @@ function NavBar({ isLogged }) {
     }, []);
     return (
         <>
-            <header>
-                <nav>
-                    <ul className="flex bg-black text-white h-14 justify-center items-center">  
+            <header className="navbar bg-base-300">
+                <nav className="navbar-center">
+                    <ul className="menu menu-horizontal px-1">
                         <li className="px-10 text-xl">
                             <Link to="/">Home</Link>
                         </li>   
